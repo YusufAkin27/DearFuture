@@ -1,0 +1,64 @@
+/**
+ * Dear Future – Renk paleti ve tema değişkenleri
+ * Tüm renkler theme sınıfından alınır: .theme-light | .theme-dark
+ */
+
+/* ========== LIGHT THEME (Varsayılan) ========== */
+.theme-light {
+  /* Ana renkler */
+  --primary-color: #00a8cc;
+  --primary-gradient: linear-gradient(90deg, #00a8cc 0%, #00d2fc 100%);
+  --secondary-color: #142850;
+  --accent-color: #27496d;
+  --accent-bright: #00d2fc;
+  --accent-alt: #0c7b93;
+
+  /* Arka plan */
+  --background-color: #f7f9fb;
+  --surface-color: #ffffff;
+
+  /* Metin */
+  --text-main: #142850;
+  --text-body: #2c3e50;
+  --text-secondary: #6c7a89;
+  --text-muted: #90a4ae;
+
+  /* UI */
+  --radius-button: 30px;
+  --radius-card: 16px;
+
+  /* Buton ikincil (İptal, Geri) */
+  --btn-secondary-bg: #e3f2fd;
+  --btn-secondary-text: #00a8cc;
+
+  /* Gölge */
+  --shadow-card: 0 4px 20px rgba(20, 40, 80, 0.08);
+  --shadow-button: 0 4px 14px rgba(0, 168, 204, 0.25);
+}
+
+/* ========== DARK THEME ========== */
+.theme-dark {
+  --primary-color: #00a8cc;
+  --primary-gradient: linear-gradient(90deg, #00a8cc 0%, #00d2fc 100%);
+  --secondary-color: #142850;
+  --accent-color: #27496d;
+  --accent-bright: #00d2fc;
+  --accent-alt: #0c7b93;
+
+  --background-color: #101820;
+  --surface-color: #1f2933;
+
+  --text-main: #e0e6ed;
+  --text-body: #e0e6ed;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --radius-button: 30px;
+  --radius-card: 16px;
+
+  --btn-secondary-bg: rgba(0, 168, 204, 0.12);
+  --btn-secondary-text: #00d2fc;
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-button: 0 4px 14px rgba(0, 168, 204, 0.35);
+}

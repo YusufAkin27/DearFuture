@@ -1,0 +1,119 @@
+.press-container {
+    padding: 4rem 2rem;
+    color: #fff;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.press-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.press-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.press-header p {
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+.press-section {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 4rem;
+}
+
+.press-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    padding-bottom: 1rem;
+}
+
+.press-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.press-card {
+    background: rgba(30, 41, 59, 0.3);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.press-date {
+    display: block;
+    color: #6366f1;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.press-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #f1f5f9;
+}
+
+.press-card p {
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.read-link {
+    color: #fff;
+    text-decoration: underline;
+    font-size: 0.9rem;
+}
+
+.read-link:hover {
+    color: #6366f1;
+}
+
+.assets-grid {
+    display: flex;
+    gap: 2rem;
+}
+
+.asset-card {
+    background: rgba(30, 41, 59, 0.3);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    width: 200px;
+    text-align: center;
+}
+
+.asset-preview {
+    height: 100px;
+    background: #1e293b;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.asset-card h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.download-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background: #475569;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.download-btn:hover {
+    background: #334155;
+}

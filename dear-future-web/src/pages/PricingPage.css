@@ -1,0 +1,230 @@
+/* Fiyatlandırma – tema renkleri, mobil uyumlu */
+.pricing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 3rem;
+    min-height: 80vh;
+    color: var(--text-main);
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    max-width: 560px;
+}
+
+.pricing-header h1 {
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.5rem 0;
+}
+
+.pricing-header p {
+    color: var(--text-secondary);
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.pricing-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1100px;
+}
+
+@media (min-width: 640px) {
+    .pricing-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .pricing-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+.pricing-card {
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.08);
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-dark .pricing-card {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -8px rgba(20, 40, 80, 0.15);
+}
+
+.theme-dark .pricing-card:hover {
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+}
+
+.pricing-card.recommended {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 168, 204, 0.2);
+}
+
+.pricing-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-gradient);
+    color: #fff;
+    padding: 0.35rem 1rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pricing-plan-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 1rem 0;
+    padding-top: 0.5rem;
+}
+
+.pricing-price-block {
+    margin-bottom: 1.5rem;
+}
+
+.pricing-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    display: block;
+    line-height: 1.2;
+}
+
+.pricing-price-label {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.pricing-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    flex: 1;
+}
+
+.pricing-features li {
+    margin-bottom: 0.65rem;
+    color: var(--text-body);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: var(--primary-color);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.pricing-cta {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-button);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.pricing-card.recommended .pricing-cta {
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: var(--shadow-button);
+}
+
+.pricing-card.recommended .pricing-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 168, 204, 0.3);
+}
+
+.pricing-card:not(.recommended) .pricing-cta {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--primary-color);
+}
+
+.pricing-card:not(.recommended) .pricing-cta:hover {
+    background: rgba(0, 168, 204, 0.08);
+}
+
+/* Loading & error */
+.pricing-loading,
+.pricing-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-secondary);
+    gap: 1rem;
+}
+
+.pricing-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 168, 204, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: pricing-spin 0.8s linear infinite;
+}
+
+@keyframes pricing-spin {
+    to { transform: rotate(360deg); }
+}
+
+.pricing-back-link {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.pricing-back-link:hover {
+    text-decoration: underline;
+}
+
+/* Mobil: kartlar tam genişlik, dokunmatik alan */
+@media (max-width: 639px) {
+    .pricing-container {
+        padding: 1.5rem 0.75rem 2.5rem;
+    }
+
+    .pricing-header {
+        margin-bottom: 2rem;
+    }
+
+    .pricing-card {
+        padding: 1.25rem;
+    }
+
+    .pricing-cta {
+        padding: 1rem 1.25rem;
+        min-height: 48px;
+    }
+}
