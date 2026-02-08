@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-
+// Authentication API calls
 export const login = async (email) => {
     return api.post('/auth/send-code', { email });
 };
