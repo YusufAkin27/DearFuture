@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import jakarta.persistence.LockModeType;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface FutureMessageRepository extends JpaRepository<FutureMessage, Long> {
@@ -42,5 +43,9 @@ public interface FutureMessageRepository extends JpaRepository<FutureMessage, Lo
 
     /** Kullanıcının belirtilen durumlardaki mesaj sayısı (FREE: bekleyen + iletilen toplamı için). */
     long countByUserAndStatusIn(User user, Set<MessageStatus> statuses);
+
+    /** viewToken ile mesajı bul (içerikleriyle birlikte) */
+    @Query("SELECT DISTINCT fm FROM FutureMessage fm LEFT JOIN FETCH fm.contents WHERE fm.viewToken = :viewToken")
+    Optional<FutureMessage> findByViewTokenWithContents(String viewToken);
 
 }

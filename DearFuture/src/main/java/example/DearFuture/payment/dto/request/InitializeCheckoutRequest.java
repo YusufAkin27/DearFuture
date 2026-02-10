@@ -1,12 +1,11 @@
 package example.DearFuture.payment.dto.request;
 
-import example.DearFuture.user.entity.SubscriptionPlan;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class InitializeCheckoutRequest {
 
-    @NotNull(message = "Plan seçiniz (PLUS veya PREMIUM)")
-    private SubscriptionPlan plan;
+    @NotBlank(message = "Plan kodu seçiniz (PLUS, PREMIUM vb.)")
+    private String planCode;
 }

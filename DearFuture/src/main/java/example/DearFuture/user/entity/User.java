@@ -39,14 +39,30 @@ public class User   {
 
     private String profilePictureUrl;
 
-    /** Abonelik planı: FREE, PLUS, PREMIUM. Mesaj limiti ve ek (fotoğraf/dosya/ses) özellikleri buna göre belirlenir. */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "subscription_plan", nullable = false)
-    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREE;
+    /** Abonelik planı. Mesaj limiti ve ek (fotoğraf/dosya/ses) özellikleri buna göre belirlenir. */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subscription_plan_id")
+    private SubscriptionPlan subscriptionPlan;
 
     /** Premium/Plus aboneliğin bitiş tarihi; null ise süresiz veya FREE. */
     @Column(name = "subscription_ends_at")
     private LocalDateTime subscriptionEndsAt;
+
+    /** iyzico kart saklama - cardUserKey */
+    @Column(name = "card_user_key")
+    private String cardUserKey;
+
+    /** iyzico kart saklama - cardToken */
+    @Column(name = "card_token")
+    private String cardToken;
+
+    /** Ardışık başarısız ödeme denemesi sayısı */
+    @Column(name = "consecutive_payment_failures", nullable = false)
+    private int consecutivePaymentFailures = 0;
+
+    /** İlk başarısız ödeme tarihi (7 gün hesabı için) */
+    @Column(name = "payment_failed_since")
+    private LocalDateTime paymentFailedSince;
 
     private LocalDateTime createdAt;
 

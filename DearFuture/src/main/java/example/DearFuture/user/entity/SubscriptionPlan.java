@@ -1,102 +1,129 @@
 package example.DearFuture.user.entity;
 
 import example.DearFuture.message.entity.ContentType;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Kullanıcı abonelik planları.
- * FREE: Sadece metin, sınırlı mesaj.
- * PLUS: Fotoğraf + dosya, daha fazla mesaj ve alıcı.
- * PREMIUM: Ses kaydı dahil, en yüksek limitler.
+ * Abonelik planı entity'si. Admin tarafından yönetilir.
+ * Plan özellikleri (fiyat, limitler, açıklama vb.) veritabanında saklanır.
  */
-public enum SubscriptionPlan {
+@Entity
+@Table(name = "subscription_plans")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SubscriptionPlan {
 
-    FREE(3, 1, false, false, false, 0, 0L, 0, 0L),
-    PLUS(20, 5, true, true, false, 2, 5L * 1024 * 1024, 2, 10L * 1024 * 1024),
-    PREMIUM(100, 20, true, true, true, 5, 10L * 1024 * 1024, 5, 20L * 1024 * 1024);
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    /** Plan başına maksimum aktif (zamanlanmış) mesaj sayısı */
-    private final int maxMessages;
+    /** Plan kodu: FREE, PLUS, PREMIUM vb. Benzersiz tanımlayıcı. */
+    @Column(nullable = false, unique = true, length = 50)
+    private String code;
+
+    /** Plan adı (Türkçe): Ücretsiz, Plus, Premium */
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    /** Plan açıklaması */
+    @Column(length = 500)
+    private String description;
+
+    /** Aylık fiyat (TL). FREE için 0. */
+    @Column(name = "monthly_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal monthlyPrice;
+
+    /** Fiyat etiketi: "₺/ay" */
+    @Column(name = "price_label", length = 20)
+    private String priceLabel;
+
+    // ── Limitler ──
+
+    /** Maksimum aktif (zamanlanmış) mesaj sayısı */
+    @Column(name = "max_messages", nullable = false)
+    private int maxMessages;
+
     /** Mesaj başına maksimum alıcı sayısı */
-    private final int maxRecipientsPerMessage;
+    @Column(name = "max_recipients_per_message", nullable = false)
+    private int maxRecipientsPerMessage;
+
     /** Fotoğraf ekleme izni */
-    private final boolean allowPhoto;
+    @Column(name = "allow_photo", nullable = false)
+    private boolean allowPhoto;
+
     /** Dosya ekleme izni */
-    private final boolean allowFile;
+    @Column(name = "allow_file", nullable = false)
+    private boolean allowFile;
+
     /** Ses kaydı ekleme izni */
-    private final boolean allowVoice;
-    /** Mesaj başına maksimum fotoğraf sayısı (PLUS/PREMIUM) */
-    private final int maxPhotosPerMessage;
+    @Column(name = "allow_voice", nullable = false)
+    private boolean allowVoice;
+
+    /** Mesaj başına maksimum fotoğraf sayısı */
+    @Column(name = "max_photos_per_message", nullable = false)
+    private int maxPhotosPerMessage;
+
     /** Fotoğraf başına maksimum boyut (byte) */
-    private final long maxPhotoSizeBytes;
+    @Column(name = "max_photo_size_bytes", nullable = false)
+    private long maxPhotoSizeBytes;
+
     /** Mesaj başına maksimum dosya sayısı */
-    private final int maxFilesPerMessage;
+    @Column(name = "max_files_per_message", nullable = false)
+    private int maxFilesPerMessage;
+
     /** Dosya başına maksimum boyut (byte) */
-    private final long maxFileSizeBytes;
+    @Column(name = "max_file_size_bytes", nullable = false)
+    private long maxFileSizeBytes;
 
-    SubscriptionPlan(int maxMessages, int maxRecipientsPerMessage,
-                     boolean allowPhoto, boolean allowFile, boolean allowVoice,
-                     int maxPhotosPerMessage, long maxPhotoSizeBytes, int maxFilesPerMessage, long maxFileSizeBytes) {
-        this.maxMessages = maxMessages;
-        this.maxRecipientsPerMessage = maxRecipientsPerMessage;
-        this.allowPhoto = allowPhoto;
-        this.allowFile = allowFile;
-        this.allowVoice = allowVoice;
-        this.maxPhotosPerMessage = maxPhotosPerMessage;
-        this.maxPhotoSizeBytes = maxPhotoSizeBytes;
-        this.maxFilesPerMessage = maxFilesPerMessage;
-        this.maxFileSizeBytes = maxFileSizeBytes;
+    // ── UI / Admin ──
+
+    /** Özellik listesi (fiyatlandırma sayfasında gösterilir) */
+    @ElementCollection
+    @CollectionTable(name = "subscription_plan_features", joinColumns = @JoinColumn(name = "plan_id"))
+    @Column(name = "feature", length = 255)
+    @OrderColumn(name = "feature_order")
+    private List<String> features;
+
+    /** Öne çıkarılan plan mı (fiyatlandırma sayfasında vurgulanır) */
+    @Column(nullable = false)
+    private boolean recommended;
+
+    /** Aktif mi (false ise yeni abonelik satın alınamaz) */
+    @Column(nullable = false)
+    private boolean active;
+
+    /** Görüntüleme sırası (fiyatlandırma sayfasında) */
+    @Column(name = "display_order", nullable = false)
+    private int displayOrder;
+
+    // ── Yardımcı metodlar ──
+
+    /** Bu plan ücretsiz mi? */
+    public boolean isFree() {
+        return monthlyPrice == null || monthlyPrice.compareTo(BigDecimal.ZERO) == 0;
     }
 
-    public int getMaxMessages() {
-        return maxMessages;
-    }
-
-    public int getMaxRecipientsPerMessage() {
-        return maxRecipientsPerMessage;
-    }
-
-    public boolean isAllowPhoto() {
-        return allowPhoto;
-    }
-
-    public boolean isAllowFile() {
-        return allowFile;
-    }
-
-    public boolean isAllowVoice() {
-        return allowVoice;
-    }
-
-    /**
-     * Bu planın kullanabileceği içerik tiplerini döner.
-     */
+    /** Bu planın kullanabileceği içerik tiplerini döner. */
     public Set<ContentType> getAllowedContentTypes() {
-        return switch (this) {
-            case FREE -> Set.of(ContentType.TEXT);
-            case PLUS -> Set.of(ContentType.TEXT, ContentType.IMAGE, ContentType.VIDEO, ContentType.FILE);
-            case PREMIUM -> Set.of(ContentType.TEXT, ContentType.IMAGE, ContentType.VIDEO, ContentType.FILE, ContentType.AUDIO);
-        };
+        if (allowVoice) {
+            return Set.of(ContentType.TEXT, ContentType.IMAGE, ContentType.VIDEO, ContentType.FILE, ContentType.AUDIO);
+        } else if (allowPhoto || allowFile) {
+            return Set.of(ContentType.TEXT, ContentType.IMAGE, ContentType.VIDEO, ContentType.FILE);
+        } else {
+            return Set.of(ContentType.TEXT);
+        }
     }
 
+    /** Belirtilen içerik tipine izin veriyor mu? */
     public boolean allowsContentType(ContentType type) {
         return getAllowedContentTypes().contains(type);
-    }
-
-    public int getMaxPhotosPerMessage() {
-        return maxPhotosPerMessage;
-    }
-
-    public long getMaxPhotoSizeBytes() {
-        return maxPhotoSizeBytes;
-    }
-
-    public int getMaxFilesPerMessage() {
-        return maxFilesPerMessage;
-    }
-
-    public long getMaxFileSizeBytes() {
-        return maxFileSizeBytes;
     }
 }

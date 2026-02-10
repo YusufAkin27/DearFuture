@@ -28,12 +28,14 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
-    /** Kullanıcının abonelik planı */
-    private SubscriptionPlan subscriptionPlan;
+    /** Kullanıcının abonelik plan kodu */
+    private String subscriptionPlanCode;
+    /** Kullanıcının abonelik plan adı */
+    private String subscriptionPlanName;
     private LocalDateTime subscriptionEndsAt;
     /** Etkin plana göre maksimum mesaj sayısı */
     private int maxMessagesPerPlan;
-    /** Mesaj başına max fotoğraf sayısı (PLUS/PREMIUM) */
+    /** Mesaj başına max fotoğraf sayısı */
     private Integer maxPhotosPerMessage;
     /** Fotoğraf başına max boyut (byte) */
     private Long maxPhotoSizeBytes;
@@ -47,9 +49,11 @@ public class UserResponse {
     private boolean marketingEmails;
 
     public static UserResponse fromUser(User user) {
-        SubscriptionPlan plan = user.getSubscriptionPlan() != null ? user.getSubscriptionPlan() : SubscriptionPlan.FREE;
+        SubscriptionPlan plan = user.getSubscriptionPlan();
         boolean expired = user.getSubscriptionEndsAt() != null && LocalDateTime.now().isAfter(user.getSubscriptionEndsAt());
-        SubscriptionPlan effective = expired ? SubscriptionPlan.FREE : plan;
+        // Plan null veya süresi dolmuşsa, plan bilgilerini default (FREE) gibi göster
+        SubscriptionPlan effective = (plan == null || (expired && !plan.isFree())) ? null : plan;
+
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -60,13 +64,14 @@ public class UserResponse {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .profilePictureUrl(user.getProfilePictureUrl())
-                .subscriptionPlan(user.getSubscriptionPlan())
+                .subscriptionPlanCode(plan != null ? plan.getCode() : "FREE")
+                .subscriptionPlanName(plan != null ? plan.getName() : "Ücretsiz")
                 .subscriptionEndsAt(user.getSubscriptionEndsAt())
-                .maxMessagesPerPlan(effective.getMaxMessages())
-                .maxPhotosPerMessage(effective.getMaxPhotosPerMessage() > 0 ? effective.getMaxPhotosPerMessage() : null)
-                .maxPhotoSizeBytes(effective.getMaxPhotoSizeBytes() > 0 ? effective.getMaxPhotoSizeBytes() : null)
-                .maxFilesPerMessage(effective.getMaxFilesPerMessage() > 0 ? effective.getMaxFilesPerMessage() : null)
-                .maxFileSizeBytes(effective.getMaxFileSizeBytes() > 0 ? effective.getMaxFileSizeBytes() : null)
+                .maxMessagesPerPlan(effective != null ? effective.getMaxMessages() : 3)
+                .maxPhotosPerMessage(effective != null && effective.getMaxPhotosPerMessage() > 0 ? effective.getMaxPhotosPerMessage() : null)
+                .maxPhotoSizeBytes(effective != null && effective.getMaxPhotoSizeBytes() > 0 ? effective.getMaxPhotoSizeBytes() : null)
+                .maxFilesPerMessage(effective != null && effective.getMaxFilesPerMessage() > 0 ? effective.getMaxFilesPerMessage() : null)
+                .maxFileSizeBytes(effective != null && effective.getMaxFileSizeBytes() > 0 ? effective.getMaxFileSizeBytes() : null)
                 .locale(user.getLocale() != null ? user.getLocale() : "tr")
                 .emailNotifications(user.isEmailNotifications())
                 .marketingEmails(user.isMarketingEmails())

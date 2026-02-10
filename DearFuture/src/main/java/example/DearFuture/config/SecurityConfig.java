@@ -32,8 +32,11 @@ public class SecurityConfig {
                 // Açık endpoint'ler (OPTIONS preflight dahil)
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/subscription/callback", "/api/subscription/plans").permitAll()
+                .requestMatchers("/api/messages/view/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger opsiyonel
+                // Admin endpoint'leri sadece ADMIN rolüne sahip kullanıcılar
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Diğer tüm endpointler JWT ile korumalı
                 .anyRequest().authenticated()
             );

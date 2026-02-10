@@ -21,4 +21,10 @@ public interface SubscriptionPaymentService {
      * Aboneliği iptal eder: plan FREE yapılır, bitiş tarihi temizlenir.
      */
     void cancelSubscription(Long userId);
+
+    /**
+     * Saklanan kart ile otomatik tekrarlayan ödeme alır.
+     * @return true ise ödeme başarılı, false ise başarısız
+     */
+    boolean processRecurringPayment(User user);
 }

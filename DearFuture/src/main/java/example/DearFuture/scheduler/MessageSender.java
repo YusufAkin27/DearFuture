@@ -1,15 +1,14 @@
 package example.DearFuture.scheduler;
 
-import example.DearFuture.mail.EmailAttachment;
 import example.DearFuture.mail.EmailMessage;
+import example.DearFuture.mail.FutureMessageEmailTemplate;
 import example.DearFuture.mail.MailService;
 import example.DearFuture.message.entity.*;
+import example.DearFuture.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -19,58 +18,52 @@ public class MessageSender {
 
     private final MailService mailService;
 
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
+    /**
+     * Mesaj iletim zamanı geldiğinde, her alıcıya mesaj görüntüleme linki içeren HTML e-posta gönderir.
+     * Mesaj içeriği doğrudan e-postada gönderilmez; alıcı linke tıklayarak özel sayfada görüntüler.
+     */
     @Transactional(readOnly = true)
     public void send(FutureMessage message) {
+        String subject = "Gelecekten bir mesajın var!";
 
-        String subject = "Gelecekten bir mesajın var ✉️";
-
-        StringBuilder bodyBuilder = new StringBuilder();
-        List<EmailAttachment> attachments = new ArrayList<>();
-
-        for (FutureMessageContent content : message.getContents()) {
-
-            if (content.getType() == ContentType.TEXT) {
-                bodyBuilder
-                        .append(content.getTextContent())
-                        .append("\n\n");
-            } else {
-                // Dosya link olarak body'e girsin
-                bodyBuilder
-                        .append("📎 ")
-                        .append(content.getFileName())
-                        .append("\n")
-                        .append(content.getFileUrl())
-                        .append("\n\n");
-
-                attachments.add(
-                        EmailAttachment.builder()
-                                .fileName(content.getFileName())
-                                .fileUrl(content.getFileUrl())
-                                .fileSize(content.getFileSize())
-                                .build()
-                );
+        // Gönderen adını belirle
+        User sender = message.getUser();
+        String senderName = null;
+        if (sender != null) {
+            String first = sender.getFirstName();
+            String last = sender.getLastName();
+            if (first != null && !first.isBlank()) {
+                senderName = first.trim();
+                if (last != null && !last.isBlank()) {
+                    senderName += " " + last.trim();
+                }
             }
         }
 
-        String body = bodyBuilder.toString();
+        // Mesaj görüntüleme URL'i oluştur
+        String baseUrl = frontendUrl != null && !frontendUrl.isBlank()
+                ? frontendUrl.trim().replaceAll("/$", "")
+                : "http://localhost:5173";
+        String viewUrl = baseUrl + "/message/view/" + message.getViewToken();
+
+        // HTML email oluştur
+        String htmlBody = FutureMessageEmailTemplate.build(senderName, viewUrl);
 
         for (String recipient : message.getRecipientEmails()) {
-
             EmailMessage emailMessage = EmailMessage.builder()
                     .toEmail(recipient)
                     .subject(subject)
-                    .body(body)
-                    .isHtml(false) // ileride true yapabilirsin
-                    .attachments(attachments)
+                    .body(htmlBody)
+                    .isHtml(true)
                     .build();
 
             mailService.enqueueEmail(emailMessage);
 
-            log.info(
-                    "FutureMessage id={} queued for {}",
-                    message.getId(),
-                    recipient
-            );
+            log.info("FutureMessage id={} view link queued for {}, token={}",
+                    message.getId(), recipient, message.getViewToken());
         }
     }
 }

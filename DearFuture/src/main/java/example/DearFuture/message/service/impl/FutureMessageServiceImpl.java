@@ -18,6 +18,7 @@ import example.DearFuture.message.repository.FutureMessageRepository;
 import example.DearFuture.message.service.FutureMessageService;
 import example.DearFuture.user.entity.SubscriptionPlan;
 import example.DearFuture.user.entity.User;
+import example.DearFuture.user.repository.SubscriptionPlanRepository;
 import example.DearFuture.user.repository.UserRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -47,6 +48,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     private final FutureMessageRepository futureMessageRepository;
     private final FutureMessageContentRepository futureMessageContentRepository;
     private final UserRepository userRepository;
+    private final SubscriptionPlanRepository planRepository;
     private final Cloudinary cloudinary;
 
     @Override
@@ -55,7 +57,6 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         User user = getCurrentUser();
         SubscriptionPlan plan = effectivePlan(user);
         validateMessageLimit(user, plan);
-        // createMessage sadece TEXT kullanıyor; ek içerik için scheduleMessage kullanılır
         FutureMessage message = new FutureMessage();
         message.setUser(user);
         message.setScheduledAt(request.getScheduledAt());
@@ -100,7 +101,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             throw new RuntimeException("Cannot edit a message that is not in SCHEDULED status");
         }
 
-        if (effectivePlan(user) == SubscriptionPlan.FREE) {
+        if (effectivePlan(user) != null && effectivePlan(user).isFree()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                     "Ücretsiz hesaplar bekleyen mesajlarını düzenleyemez.");
         }
@@ -128,7 +129,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             throw new RuntimeException("Not authorized to delete this message");
         }
 
-        if (message.getStatus() == MessageStatus.SCHEDULED && effectivePlan(user) == SubscriptionPlan.FREE) {
+        if (message.getStatus() == MessageStatus.SCHEDULED && effectivePlan(user) != null && effectivePlan(user).isFree()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                     "Ücretsiz hesaplar bekleyen mesajlarını silemez.");
         }
@@ -185,13 +186,17 @@ public class FutureMessageServiceImpl implements FutureMessageService {
 
     private SubscriptionPlan effectivePlan(User user) {
         if (user.getSubscriptionEndsAt() != null && java.time.LocalDateTime.now().isAfter(user.getSubscriptionEndsAt())) {
-            return SubscriptionPlan.FREE;
+            return getFreePlan();
         }
-        return user.getSubscriptionPlan() != null ? user.getSubscriptionPlan() : SubscriptionPlan.FREE;
+        return user.getSubscriptionPlan() != null ? user.getSubscriptionPlan() : getFreePlan();
+    }
+
+    private SubscriptionPlan getFreePlan() {
+        return planRepository.findByCode("FREE").orElse(null);
     }
 
     private void validateMessageLimit(User user, SubscriptionPlan plan) {
-        if (plan == SubscriptionPlan.FREE) {
+        if (plan != null && plan.isFree()) {
             long totalCount = futureMessageRepository.countByUserAndStatusIn(user,
                     Set.of(MessageStatus.SCHEDULED, MessageStatus.QUEUED, MessageStatus.SENT));
             if (totalCount >= plan.getMaxMessages()) {

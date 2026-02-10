@@ -19,26 +19,29 @@ public class ProfileResponse {
     private String lastName;
     private String profilePictureUrl;
     private boolean emailVerified;
-    /** Kullanıcının abonelik planı: FREE, PLUS, PREMIUM */
-    private SubscriptionPlan subscriptionPlan;
+    /** Kullanıcının abonelik plan kodu: FREE, PLUS, PREMIUM */
+    private String subscriptionPlanCode;
+    /** Kullanıcının abonelik plan adı */
+    private String subscriptionPlanName;
     /** Aboneliğin bitiş tarihi; null ise süresiz veya FREE */
     private LocalDateTime subscriptionEndsAt;
-    /** Planın maksimum mesaj limiti (frontend’de ilerleme göstermek için) */
+    /** Planın maksimum mesaj limiti */
     private int maxMessagesPerPlan;
 
     public static ProfileResponse fromUser(User user) {
-        SubscriptionPlan plan = user.getSubscriptionPlan() != null ? user.getSubscriptionPlan() : SubscriptionPlan.FREE;
+        SubscriptionPlan plan = user.getSubscriptionPlan();
         boolean expired = user.getSubscriptionEndsAt() != null && LocalDateTime.now().isAfter(user.getSubscriptionEndsAt());
-        SubscriptionPlan effective = expired ? SubscriptionPlan.FREE : plan;
+        SubscriptionPlan effective = (plan == null || (expired && !plan.isFree())) ? null : plan;
         return ProfileResponse.builder()
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .profilePictureUrl(user.getProfilePictureUrl())
                 .emailVerified(user.isEmailVerified())
-                .subscriptionPlan(user.getSubscriptionPlan())
+                .subscriptionPlanCode(plan != null ? plan.getCode() : "FREE")
+                .subscriptionPlanName(plan != null ? plan.getName() : "Ücretsiz")
                 .subscriptionEndsAt(user.getSubscriptionEndsAt())
-                .maxMessagesPerPlan(effective.getMaxMessages())
+                .maxMessagesPerPlan(effective != null ? effective.getMaxMessages() : 3)
                 .build();
     }
 }

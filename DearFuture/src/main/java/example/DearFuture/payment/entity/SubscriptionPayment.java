@@ -1,6 +1,5 @@
 package example.DearFuture.payment.entity;
 
-import example.DearFuture.user.entity.SubscriptionPlan;
 import example.DearFuture.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,9 +31,9 @@ public class SubscriptionPayment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "plan", nullable = false)
-    private SubscriptionPlan plan;
+    /** Ödeme yapılan plan kodu (tarihsel kayıt, plan silinse bile kalır) */
+    @Column(name = "plan_code", nullable = false, length = 50)
+    private String planCode;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;

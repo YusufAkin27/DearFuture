@@ -18,6 +18,9 @@ public class MessageResponse {
     private MessageStatus status;
     private List<String> recipientEmails;
 
+    /** Mesajın görüntüleme token'ı (alıcı bu token ile mesajı açar) */
+    private String viewToken;
+
     public static MessageResponse fromEntity(FutureMessage message) {
         String contentText = "";
         if (message.getContents() != null && !message.getContents().isEmpty()) {
@@ -31,6 +34,7 @@ public class MessageResponse {
                 .sentAt(message.getSentAt())
                 .status(message.getStatus())
                 .recipientEmails(message.getRecipientEmails())
+                .viewToken(message.getViewToken())
                 .build();
     }
 }
