@@ -27,14 +27,22 @@ public enum ErrorCode {
 
     VALIDATION_ERROR("VALID_001", "Validation error"),
 
-    /** Plan mesaj limiti aşıldı */
+    /**
+     * Plan mesaj limiti aşıldı
+     */
     PLAN_MESSAGE_LIMIT_EXCEEDED("PLAN_001", "Message limit exceeded for your plan"),
-    /** Bu içerik tipi (fotoğraf/dosya/ses) planınızda yok */
+    /**
+     * Bu içerik tipi (fotoğraf/dosya/ses) planınızda yok
+     */
     PLAN_FEATURE_NOT_AVAILABLE("PLAN_002", "This feature is not available in your plan"),
-    /** Alıcı sayısı plan limitini aşıyor */
+    /**
+     * Alıcı sayısı plan limitini aşıyor
+     */
     PLAN_RECIPIENT_LIMIT_EXCEEDED("PLAN_003", "Recipient limit exceeded for your plan"),
 
-    INTERNAL_ERROR("SYS_001", "Internal server error");
+    INTERNAL_ERROR("SYS_001", "Internal server error"),
+    RESOURCENOTFOUND("CONTRACT_001", "Resource not found"),
+    ;
 
     private final String code;
     private final String message;

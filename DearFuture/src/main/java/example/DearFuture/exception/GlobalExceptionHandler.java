@@ -160,6 +160,8 @@ public class GlobalExceptionHandler {
             case RATE_LIMIT_EXCEEDED -> HttpStatus.TOO_MANY_REQUESTS;
             case ACCOUNT_LOCKED -> HttpStatus.LOCKED;
             case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case RESOURCENOTFOUND -> HttpStatus.NOT_FOUND;
         };
+
     }
 }

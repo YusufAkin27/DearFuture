@@ -1,9 +1,18 @@
 package example.DearFuture.admin.service;
 
+import example.DearFuture.admin.dto.request.ContractCreateRequest;
+import example.DearFuture.admin.dto.request.ContractUpdateRequest;
 import example.DearFuture.admin.dto.request.UpdatePlanRequest;
 import example.DearFuture.admin.dto.response.AdminMessageResponse;
+import example.DearFuture.admin.dto.response.ContractAcceptanceItemResponse;
+import example.DearFuture.admin.dto.response.CookiePreferenceItemResponse;
 import example.DearFuture.admin.dto.response.DashboardStatsResponse;
 import example.DearFuture.admin.dto.response.PlanDetailResponse;
+import example.DearFuture.contract.Contract;
+import example.DearFuture.contract.ContractAcceptanceRepository;
+import example.DearFuture.contract.ContractRepository;
+import example.DearFuture.contract.ContractService;
+import example.DearFuture.cookie.repository.CookiePreferenceRepository;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.MessageStatus;
@@ -16,6 +25,8 @@ import example.DearFuture.user.repository.SubscriptionPlanRepository;
 import example.DearFuture.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +42,10 @@ public class AdminServiceImpl implements AdminService {
     private final SubscriptionPlanRepository planRepository;
     private final FutureMessageRepository messageRepository;
     private final SubscriptionPaymentRepository paymentRepository;
+    private final ContractRepository contractRepository;
+    private final ContractAcceptanceRepository contractAcceptanceRepository;
+    private final ContractService contractService;
+    private final CookiePreferenceRepository cookiePreferenceRepository;
 
     // ════════════════════════════════════════
     //  Dashboard
@@ -213,5 +228,70 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("Mesaj bulunamadı: " + messageId));
         messageRepository.delete(message);
         log.info("Admin deleted message: messageId={}", messageId);
+    }
+
+    // ════════════════════════════════════════
+    //  Sözleşme Yönetimi
+    // ════════════════════════════════════════
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Contract> getAllContracts() {
+        return contractRepository.findAll().stream()
+                .sorted(Comparator.comparing(Contract::getType).thenComparing(Contract::getVersion, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Contract getContract(Long id) {
+        return contractRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sözleşme bulunamadı: " + id));
+    }
+
+    @Override
+    @Transactional
+    public Contract createContract(ContractCreateRequest request) {
+        return contractService.createContract(
+                request.getType(),
+                request.getTitle(),
+                request.getContent(),
+                request.getRequiredApproval());
+    }
+
+    @Override
+    @Transactional
+    public Contract updateContract(Long id, ContractUpdateRequest request) {
+        return contractService.updateContract(
+                id,
+                request.getTitle(),
+                request.getContent(),
+                request.getActive(),
+                request.getRequiredApproval());
+    }
+
+    @Override
+    @Transactional
+    public void deleteContract(Long id) {
+        contractService.deleteContract(id);
+        log.info("Admin deleted contract: id={}", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ContractAcceptanceItemResponse> getContractAcceptances(Long contractId, Pageable pageable) {
+        return contractAcceptanceRepository.findByContractIdOrderByAcceptedAtDesc(contractId, pageable)
+                .map(ContractAcceptanceItemResponse::fromEntity);
+    }
+
+    // ════════════════════════════════════════
+    //  Çerez Tercihleri (kim onaylamış)
+    // ════════════════════════════════════════
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CookiePreferenceItemResponse> getCookiePreferences(Pageable pageable) {
+        return cookiePreferenceRepository.findAll(pageable)
+                .map(CookiePreferenceItemResponse::fromEntity);
     }
 }

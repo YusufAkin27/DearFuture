@@ -20,7 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Value("${app.rate-limit.use-x-forwarded-for}")
+    @Value("${app.rate-limit.use-x-forwarded-for:false}")
     private boolean useXForwardedFor;
 
     private String getClientIp(HttpServletRequest request) {

@@ -1,6 +1,8 @@
 package example.DearFuture.config;
 
+import example.DearFuture.auth.handler.OAuth2LoginSuccessHandler;
 import example.DearFuture.auth.jwt.JwtAuthenticationFilter;
+import example.DearFuture.auth.service.CustomOAuth2UserService;
 import example.DearFuture.ratelimit.GlobalRateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final GlobalRateLimitFilter globalRateLimitFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,18 +31,25 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable()) // REST API için CSRF kapalı
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // OAuth2 login akışı için session gerekir (redirect → Google → callback). Diğer istekler JWT ile stateless.
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
                 // Açık endpoint'ler (OPTIONS preflight dahil)
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/subscription/callback", "/api/subscription/plans").permitAll()
                 .requestMatchers("/api/messages/view/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger opsiyonel
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Google OAuth2 giriş akışı (login sayfası ve callback)
+                .requestMatchers("/login/**", "/oauth2/**").permitAll()
                 // Admin endpoint'leri sadece ADMIN rolüne sahip kullanıcılar
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Diğer tüm endpointler JWT ile korumalı
                 .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
+                .successHandler(oauth2LoginSuccessHandler)
             );
 
         // Both filters before UsernamePasswordAuthenticationFilter (which has registered order). Second add = runs first.

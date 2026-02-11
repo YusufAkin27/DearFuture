@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /** Plan bazında kullanıcı sayısı */
     long countBySubscriptionPlan(SubscriptionPlan plan);
+
+    boolean existsByEmail(String email);
 }
