@@ -1,5 +1,6 @@
 package example.DearFuture.payment.controller;
 
+import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.payment.dto.request.InitializeCheckoutRequest;
 import example.DearFuture.payment.dto.response.CheckoutInitializeResponse;
 import example.DearFuture.payment.dto.response.PlanResponse;
@@ -38,7 +39,7 @@ public class SubscriptionController {
             Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+                .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı"));
         CheckoutInitializeResponse response = subscriptionPaymentService.initializeCheckout(user, request);
         return ResponseEntity.ok(response);
     }

@@ -11,7 +11,7 @@ public interface UserService {
 
     UserResponse getProfile(Long userId);
 
-    ProfileResponse updateProfile(Long request, @Valid UpdateProfileRequest authentication);
+    ProfileResponse updateProfile(Long userId, @Valid UpdateProfileRequest request);
 
     UserResponse updateSettings(Long userId, @Valid UpdateSettingsRequest request);
 

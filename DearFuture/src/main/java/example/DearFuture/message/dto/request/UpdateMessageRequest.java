@@ -11,4 +11,7 @@ public class UpdateMessageRequest {
 
     @Future(message = "Scheduled date must be in the future")
     private Instant scheduledAt;
+
+    /** Herkes okuyabilsin (sadece SCHEDULED mesajlarda güncellenebilir) */
+    private Boolean isPublic;
 }

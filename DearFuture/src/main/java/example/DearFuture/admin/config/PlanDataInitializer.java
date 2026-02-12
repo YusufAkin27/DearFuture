@@ -28,6 +28,7 @@ public class PlanDataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         createDefaultPlans();
+        updateExistingPlanDefaults();
         try {
             planMigrationHelper.migrateExistingUsersToPlanEntity();
         } catch (Exception e) {
@@ -37,14 +38,14 @@ public class PlanDataInitializer implements CommandLineRunner {
 
     private void createDefaultPlans() {
         if (planRepository.count() > 0) {
-            log.info("Subscription plans already exist, skipping initialization.");
+            log.info("Subscription plans already exist, applying default limits.");
             return;
         }
 
         SubscriptionPlan free = SubscriptionPlan.builder()
                 .code("FREE")
                 .name("Ücretsiz")
-                .description("Temel özelliklerle başlayın")
+                .description("3 mesaj hakkı (toplam), her ay yenilenmez")
                 .monthlyPrice(BigDecimal.ZERO)
                 .priceLabel("₺/ay")
                 .maxMessages(3)
@@ -56,7 +57,7 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(0L)
                 .maxFilesPerMessage(0)
                 .maxFileSizeBytes(0L)
-                .features(List.of("3 zamanlanmış mesaj", "Sadece metin", "1 alıcı / mesaj"))
+                .features(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj"))
                 .recommended(false)
                 .active(true)
                 .displayOrder(0)
@@ -65,10 +66,10 @@ public class PlanDataInitializer implements CommandLineRunner {
         SubscriptionPlan plus = SubscriptionPlan.builder()
                 .code("PLUS")
                 .name("Plus")
-                .description("Daha fazla mesaj ve medya desteği")
+                .description("15 mesaj/ay, her ay yenilenir")
                 .monthlyPrice(BigDecimal.valueOf(100))
                 .priceLabel("₺/ay")
-                .maxMessages(20)
+                .maxMessages(15)
                 .maxRecipientsPerMessage(5)
                 .allowPhoto(true)
                 .allowFile(true)
@@ -77,7 +78,7 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(5L * 1024 * 1024)
                 .maxFilesPerMessage(2)
                 .maxFileSizeBytes(10L * 1024 * 1024)
-                .features(List.of("20 zamanlanmış mesaj", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler"))
+                .features(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler"))
                 .recommended(true)
                 .active(true)
                 .displayOrder(1)
@@ -86,10 +87,10 @@ public class PlanDataInitializer implements CommandLineRunner {
         SubscriptionPlan premium = SubscriptionPlan.builder()
                 .code("PREMIUM")
                 .name("Premium")
-                .description("Tüm özellikler, en yüksek limitler")
+                .description("20 mesaj/ay, her ay yenilenir")
                 .monthlyPrice(BigDecimal.valueOf(150))
                 .priceLabel("₺/ay")
-                .maxMessages(100)
+                .maxMessages(20)
                 .maxRecipientsPerMessage(20)
                 .allowPhoto(true)
                 .allowFile(true)
@@ -98,13 +99,56 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(10L * 1024 * 1024)
                 .maxFilesPerMessage(5)
                 .maxFileSizeBytes(20L * 1024 * 1024)
-                .features(List.of("100 zamanlanmış mesaj", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler"))
+                .features(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler"))
                 .recommended(false)
                 .active(true)
                 .displayOrder(2)
                 .build();
 
         planRepository.saveAll(List.of(free, plus, premium));
-        log.info("Default subscription plans created: FREE, PLUS, PREMIUM");
+        log.info("Default subscription plans created: FREE (3), PLUS (15), PREMIUM (20)");
+    }
+
+    /** Mevcut planları kod ile bulup limit ve özellikleri günceller (maxMessages, allowPhoto, allowFile vb.). */
+    private void updateExistingPlanDefaults() {
+        planRepository.findByCode("FREE").ifPresent(plan -> {
+            plan.setMaxMessages(3);
+            plan.setAllowPhoto(false);
+            plan.setAllowFile(false);
+            plan.setAllowVoice(false);
+            plan.setMaxPhotosPerMessage(0);
+            plan.setMaxPhotoSizeBytes(0L);
+            plan.setMaxFilesPerMessage(0);
+            plan.setMaxFileSizeBytes(0L);
+            plan.setFeatures(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj"));
+            planRepository.save(plan);
+            log.info("Updated plan FREE to default limits");
+        });
+        planRepository.findByCode("PLUS").ifPresent(plan -> {
+            plan.setMaxMessages(15);
+            plan.setAllowPhoto(true);
+            plan.setAllowFile(true);
+            plan.setAllowVoice(false);
+            plan.setMaxPhotosPerMessage(2);
+            plan.setMaxPhotoSizeBytes(5L * 1024 * 1024);
+            plan.setMaxFilesPerMessage(2);
+            plan.setMaxFileSizeBytes(10L * 1024 * 1024);
+            plan.setFeatures(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler"));
+            planRepository.save(plan);
+            log.info("Updated plan PLUS to default limits");
+        });
+        planRepository.findByCode("PREMIUM").ifPresent(plan -> {
+            plan.setMaxMessages(20);
+            plan.setAllowPhoto(true);
+            plan.setAllowFile(true);
+            plan.setAllowVoice(true);
+            plan.setMaxPhotosPerMessage(5);
+            plan.setMaxPhotoSizeBytes(10L * 1024 * 1024);
+            plan.setMaxFilesPerMessage(5);
+            plan.setMaxFileSizeBytes(20L * 1024 * 1024);
+            plan.setFeatures(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler"));
+            planRepository.save(plan);
+            log.info("Updated plan PREMIUM to default limits");
+        });
     }
 }

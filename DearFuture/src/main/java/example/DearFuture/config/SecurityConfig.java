@@ -7,6 +7,7 @@ import example.DearFuture.ratelimit.GlobalRateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,12 +39,16 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/subscription/callback", "/api/subscription/plans").permitAll()
                 .requestMatchers("/api/messages/view/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/messages/public").permitAll()
+                .requestMatchers("/api/contact/send", "/api/contact/verify-email").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // Google OAuth2 giriş akışı (login sayfası ve callback)
                 .requestMatchers("/login/**", "/oauth2/**").permitAll()
                 // Admin endpoint'leri sadece ADMIN rolüne sahip kullanıcılar
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Public mesajlar: liste herkese açık, yıldız/starred giriş gerekir
+                .requestMatchers("/api/messages/public/**").authenticated()
                 // Diğer tüm endpointler JWT ile korumalı
                 .anyRequest().authenticated()
             )

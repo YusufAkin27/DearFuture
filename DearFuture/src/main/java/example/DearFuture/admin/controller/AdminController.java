@@ -4,11 +4,15 @@ import example.DearFuture.admin.dto.request.ContractCreateRequest;
 import example.DearFuture.admin.dto.request.ContractUpdateRequest;
 import example.DearFuture.admin.dto.request.UpdatePlanRequest;
 import example.DearFuture.admin.dto.response.AdminMessageResponse;
+import example.DearFuture.admin.dto.response.AdminPaymentResponse;
 import example.DearFuture.admin.dto.response.ContractAcceptanceItemResponse;
 import example.DearFuture.admin.dto.response.CookiePreferenceItemResponse;
 import example.DearFuture.admin.dto.response.DashboardStatsResponse;
 import example.DearFuture.admin.dto.response.PlanDetailResponse;
 import example.DearFuture.admin.service.AdminService;
+import example.DearFuture.contact_us.dto.DataResponseMessage;
+import example.DearFuture.contact_us.entity.ContactUs;
+import example.DearFuture.contact_us.service.ContactUsService;
 import example.DearFuture.contract.Contract;
 import example.DearFuture.user.dto.response.UserResponse;
 import jakarta.validation.Valid;
@@ -19,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Admin paneli REST API'leri.
@@ -30,6 +35,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ContactUsService contactUsService;
 
     // ════════════════════════════════════════
     //  Dashboard
@@ -115,6 +121,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllMessages());
     }
 
+    /** Tek mesaj detayı */
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<AdminMessageResponse> getMessage(@PathVariable Long messageId) {
+        return ResponseEntity.ok(adminService.getMessage(messageId));
+    }
+
     /** Belirli kullanıcının mesajlarını listele */
     @GetMapping("/messages/user/{userId}")
     public ResponseEntity<List<AdminMessageResponse>> getMessagesByUser(@PathVariable Long userId) {
@@ -125,6 +137,36 @@ public class AdminController {
     @DeleteMapping("/messages/{messageId}")
     public ResponseEntity<String> deleteMessage(@PathVariable Long messageId) {
         adminService.deleteMessage(messageId);
+        return ResponseEntity.ok("Mesaj silindi.");
+    }
+
+    // ════════════════════════════════════════
+    //  İletişim Formu Mesajları (sadece görüntüleme, yanıt yok)
+    // ════════════════════════════════════════
+
+    /** İletişim formundan gelen doğrulanmış mesajları listele */
+    @GetMapping("/contact-messages")
+    public ResponseEntity<List<ContactUs>> getContactMessages() {
+        var response = contactUsService.getAllMessages();
+        if (!response.isSuccess() || !(response instanceof DataResponseMessage)) {
+            return ResponseEntity.badRequest().build();
+        }
+        @SuppressWarnings("unchecked")
+        var dataResponse = (DataResponseMessage<ContactUs>) response;
+        return ResponseEntity.ok(dataResponse.getData());
+    }
+
+    /** Tek iletişim mesajı detayı */
+    @GetMapping("/contact-messages/{id}")
+    public ResponseEntity<ContactUs> getContactMessage(@PathVariable Long id) {
+        Optional<ContactUs> contact = contactUsService.getById(id);
+        return contact.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    /** İletişim mesajı sil */
+    @DeleteMapping("/contact-messages/{id}")
+    public ResponseEntity<String> deleteContactMessage(@PathVariable Long id) {
+        contactUsService.deleteMessage(id);
         return ResponseEntity.ok("Mesaj silindi.");
     }
 
@@ -181,5 +223,23 @@ public class AdminController {
     @GetMapping("/cookies/preferences")
     public ResponseEntity<Page<CookiePreferenceItemResponse>> getCookiePreferences(Pageable pageable) {
         return ResponseEntity.ok(adminService.getCookiePreferences(pageable));
+    }
+
+    // ════════════════════════════════════════
+    //  Ödemeler
+    // ════════════════════════════════════════
+
+    /** Tüm ödemeleri listele (sayfalı). ?page=0&size=20&sort=createdAt,desc */
+    @GetMapping("/payments")
+    public ResponseEntity<Page<AdminPaymentResponse>> getPayments(Pageable pageable) {
+        return ResponseEntity.ok(adminService.getPayments(pageable));
+    }
+
+    /** Belirli kullanıcının ödemelerini listele (sayfalı) */
+    @GetMapping("/payments/user/{userId}")
+    public ResponseEntity<Page<AdminPaymentResponse>> getPaymentsByUser(
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return ResponseEntity.ok(adminService.getPaymentsByUser(userId, pageable));
     }
 }

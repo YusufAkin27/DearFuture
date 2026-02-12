@@ -4,6 +4,7 @@ import example.DearFuture.admin.dto.request.ContractCreateRequest;
 import example.DearFuture.admin.dto.request.ContractUpdateRequest;
 import example.DearFuture.admin.dto.request.UpdatePlanRequest;
 import example.DearFuture.admin.dto.response.AdminMessageResponse;
+import example.DearFuture.admin.dto.response.AdminPaymentResponse;
 import example.DearFuture.admin.dto.response.ContractAcceptanceItemResponse;
 import example.DearFuture.admin.dto.response.CookiePreferenceItemResponse;
 import example.DearFuture.admin.dto.response.DashboardStatsResponse;
@@ -13,6 +14,7 @@ import example.DearFuture.contract.ContractAcceptanceRepository;
 import example.DearFuture.contract.ContractRepository;
 import example.DearFuture.contract.ContractService;
 import example.DearFuture.cookie.repository.CookiePreferenceRepository;
+import example.DearFuture.exception.contract.ResourceNotFoundException;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.MessageStatus;
@@ -213,6 +215,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional(readOnly = true)
+    public AdminMessageResponse getMessage(Long messageId) {
+        FutureMessage message = messageRepository.findByIdWithContents(messageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesaj bulunamadı: " + messageId));
+        return AdminMessageResponse.fromEntity(message);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<AdminMessageResponse> getMessagesByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı: " + userId));
@@ -293,5 +303,25 @@ public class AdminServiceImpl implements AdminService {
     public Page<CookiePreferenceItemResponse> getCookiePreferences(Pageable pageable) {
         return cookiePreferenceRepository.findAll(pageable)
                 .map(CookiePreferenceItemResponse::fromEntity);
+    }
+
+    // ════════════════════════════════════════
+    //  Ödemeler
+    // ════════════════════════════════════════
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AdminPaymentResponse> getPayments(Pageable pageable) {
+        return paymentRepository.findAll(pageable)
+                .map(AdminPaymentResponse::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AdminPaymentResponse> getPaymentsByUser(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı: " + userId));
+        return paymentRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(AdminPaymentResponse::fromEntity);
     }
 }

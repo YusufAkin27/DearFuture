@@ -2,8 +2,11 @@ package example.DearFuture.user.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import example.DearFuture.contract.ContractAcceptanceRepository;
+import example.DearFuture.cookie.repository.CookiePreferenceRepository;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.repository.FutureMessageRepository;
+import example.DearFuture.message.repository.StarredPublicMessageRepository;
 import example.DearFuture.payment.repository.SubscriptionPaymentRepository;
 import example.DearFuture.user.dto.request.UpdateProfileRequest;
 import example.DearFuture.user.dto.request.UpdateSettingsRequest;
@@ -33,6 +36,9 @@ public class UserServiceImpl implements UserService {
     private final Cloudinary cloudinary;
     private final FutureMessageRepository futureMessageRepository;
     private final SubscriptionPaymentRepository subscriptionPaymentRepository;
+    private final StarredPublicMessageRepository starredPublicMessageRepository;
+    private final CookiePreferenceRepository cookiePreferenceRepository;
+    private final ContractAcceptanceRepository contractAcceptanceRepository;
 
     private static final String CLOUDINARY_PROFILE_FOLDER = "dearfuture/profiles";
 
@@ -47,18 +53,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ProfileResponse updateProfile(Long request, @Valid UpdateProfileRequest updateProfileRequest) {
-        Optional<User> optionalUser = userRepository.findById(request);
+    public ProfileResponse updateProfile(Long userId, @Valid UpdateProfileRequest request) {
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException("User not found: " + request);
+            throw new UserNotFoundException("User not found: " + userId);
         }
         User user = optionalUser.get();
-        if (updateProfileRequest.getFirstName() != null) {
-            user.setFirstName(updateProfileRequest.getFirstName());
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
         }
-        if (updateProfileRequest.getLastName() != null) {
-            user.setLastName(updateProfileRequest.getLastName());
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
         }
+        userRepository.save(user);
         return ProfileResponse.fromUser(user);
     }
 
@@ -102,14 +109,14 @@ public class UserServiceImpl implements UserService {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), opts);
             String secureUrl = (String) result.get("secure_url");
             if (secureUrl == null) {
-                throw new RuntimeException("Cloudinary secure_url alınamadı.");
+                throw new IllegalArgumentException("Profil fotoğrafı yüklenemedi.");
             }
             user.setProfilePictureUrl(secureUrl);
             userRepository.save(user);
             log.info("Profile photo uploaded to Cloudinary for user {}", userId);
         } catch (IOException e) {
             log.error("Profile photo upload failed", e);
-            throw new RuntimeException("Profil fotoğrafı yüklenemedi.");
+            throw new IllegalArgumentException("Profil fotoğrafı yüklenemedi.");
         }
     }
 
@@ -163,6 +170,11 @@ public class UserServiceImpl implements UserService {
     public void deleteAccount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
+        starredPublicMessageRepository.deleteByUserId(user.getId());
+        cookiePreferenceRepository.deleteAll(cookiePreferenceRepository.findAllByUserId(user.getId()));
+        var acceptances = contractAcceptanceRepository.findByUserOrderByAcceptedAtDesc(user);
+        acceptances.forEach(a -> a.setUser(null));
+        contractAcceptanceRepository.saveAll(acceptances);
         futureMessageRepository.deleteAll(futureMessageRepository.findAllByUser(user));
         subscriptionPaymentRepository.deleteAll(subscriptionPaymentRepository.findByUser(user));
         userRepository.delete(user);

@@ -21,6 +21,9 @@ public class MessageResponse {
     /** Mesajın görüntüleme token'ı (alıcı bu token ile mesajı açar) */
     private String viewToken;
 
+    /** Herkes okuyabilsin seçeneği (açıldıktan sonra public sayfada listelenir) */
+    private boolean isPublic;
+
     public static MessageResponse fromEntity(FutureMessage message) {
         String contentText = "";
         if (message.getContents() != null && !message.getContents().isEmpty()) {
@@ -35,6 +38,7 @@ public class MessageResponse {
                 .status(message.getStatus())
                 .recipientEmails(message.getRecipientEmails())
                 .viewToken(message.getViewToken())
+                .isPublic(message.isPublic())
                 .build();
     }
 }

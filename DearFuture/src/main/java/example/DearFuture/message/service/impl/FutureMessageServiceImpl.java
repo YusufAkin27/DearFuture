@@ -1,5 +1,6 @@
 package example.DearFuture.message.service.impl;
 
+import example.DearFuture.exception.contract.ResourceNotFoundException;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.exception.subscription.PlanLimitExceededException;
 import example.DearFuture.exception.ErrorCode;
@@ -16,6 +17,8 @@ import example.DearFuture.message.mapper.FutureMessageMapper;
 import example.DearFuture.message.repository.FutureMessageContentRepository;
 import example.DearFuture.message.repository.FutureMessageRepository;
 import example.DearFuture.message.service.FutureMessageService;
+import example.DearFuture.payment.entity.SubscriptionPayment;
+import example.DearFuture.payment.repository.SubscriptionPaymentRepository;
 import example.DearFuture.user.entity.SubscriptionPlan;
 import example.DearFuture.user.entity.User;
 import example.DearFuture.user.repository.SubscriptionPlanRepository;
@@ -24,6 +27,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +55,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     private final FutureMessageContentRepository futureMessageContentRepository;
     private final UserRepository userRepository;
     private final SubscriptionPlanRepository planRepository;
+    private final SubscriptionPaymentRepository paymentRepository;
     private final Cloudinary cloudinary;
 
     @Override
@@ -62,6 +69,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         message.setScheduledAt(request.getScheduledAt());
         message.setStatus(MessageStatus.SCHEDULED);
         message.setRecipientEmails(Collections.singletonList(user.getEmail()));
+        message.setPublic(request.getIsPublic() != null && request.getIsPublic());
         
         // Create Content (Defaulting to TEXT)
         FutureMessageContent content = new FutureMessageContent();
@@ -79,10 +87,10 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     public MessageResponse getMessage(Long id) {
         User user = getCurrentUser();
         FutureMessage message = futureMessageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Message not found")); // Should be custom exception
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
+
         if (!message.getUser().getId().equals(user.getId())) {
-             throw new RuntimeException("Not authorized to view this message");
+            throw new AccessDeniedException("Not authorized to view this message");
         }
         return MessageResponse.fromEntity(message);
     }
@@ -91,14 +99,14 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     public MessageResponse updateMessage(Long id, example.DearFuture.message.dto.request.UpdateMessageRequest request) {
         User user = getCurrentUser();
         FutureMessage message = futureMessageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         if (!message.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Not authorized to edit this message");
+            throw new AccessDeniedException("Not authorized to edit this message");
         }
 
         if (message.getStatus() != MessageStatus.SCHEDULED) {
-            throw new RuntimeException("Cannot edit a message that is not in SCHEDULED status");
+            throw new IllegalArgumentException("Cannot edit a message that is not in SCHEDULED status");
         }
 
         if (effectivePlan(user) != null && effectivePlan(user).isFree()) {
@@ -115,6 +123,9 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         if (request.getScheduledAt() != null) {
             message.setScheduledAt(request.getScheduledAt());
         }
+        if (request.getIsPublic() != null) {
+            message.setPublic(request.getIsPublic());
+        }
 
         return MessageResponse.fromEntity(futureMessageRepository.save(message));
     }
@@ -123,10 +134,10 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     public String deleteMessage(Long id) {
         User user = getCurrentUser();
         FutureMessage message = futureMessageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         if (!message.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Not authorized to delete this message");
+            throw new AccessDeniedException("Not authorized to delete this message");
         }
 
         if (message.getStatus() == MessageStatus.SCHEDULED && effectivePlan(user) != null && effectivePlan(user).isFree()) {
@@ -204,12 +215,30 @@ public class FutureMessageServiceImpl implements FutureMessageService {
                         "Ücretsiz hesapta bekleyen ve iletilen mesajların toplamı en fazla " + plan.getMaxMessages() + " olabilir. Yeni mesaj kaydedemezsiniz.");
             }
         } else {
-            long scheduledCount = futureMessageRepository.countByUserAndStatus(user, MessageStatus.SCHEDULED);
-            if (scheduledCount >= plan.getMaxMessages()) {
+            var period = getCurrentPeriodForUser(user);
+            long usedInPeriod = futureMessageRepository.countByUserIdAndScheduledAtBetween(user.getId(), period.start(), period.end());
+            if (usedInPeriod >= plan.getMaxMessages()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_MESSAGE_LIMIT_EXCEEDED,
-                        "Planınızda en fazla " + plan.getMaxMessages() + " zamanlanmış mesaj olabilir.");
+                        "Bu dönemde " + plan.getMaxMessages() + " mesaj hakkınızı doldurdunuz. Sonraki dönemde yenilenir.");
             }
         }
+    }
+
+    /** Ücretli plan kullanıcısı için mevcut dönem başlangıç ve bitiş (Instant). */
+    private record Period(Instant start, Instant end) {}
+
+    private Period getCurrentPeriodForUser(User user) {
+        var lastPayment = paymentRepository.findTopByUserIdAndStatusOrderByPaidAtDesc(user.getId(), SubscriptionPayment.PaymentStatus.SUCCESS);
+        if (lastPayment.isPresent() && lastPayment.get().getPeriodEnd() != null && lastPayment.get().getPeriodStart() != null
+                && LocalDateTime.now().isBefore(lastPayment.get().getPeriodEnd())) {
+            return new Period(
+                    lastPayment.get().getPeriodStart().atZone(ZoneId.systemDefault()).toInstant(),
+                    lastPayment.get().getPeriodEnd().atZone(ZoneId.systemDefault()).toInstant()
+            );
+        }
+        LocalDateTime endLdt = user.getSubscriptionEndsAt() != null ? user.getSubscriptionEndsAt() : LocalDateTime.now().plusMonths(1);
+        LocalDateTime startLdt = endLdt.minusMonths(1);
+        return new Period(startLdt.atZone(ZoneId.systemDefault()).toInstant(), endLdt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     private void validateAttachmentLimits(SubscriptionPlan plan, List<MessageContentRequest> contents) {
@@ -249,7 +278,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         if ("IMAGE".equals(typeUpper)) {
             if (!plan.isAllowPhoto()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Fotoğraf ekleme planınızda mevcut değil.");
+                        "Fotoğraf ekleme planınızda yok. Plus veya Premium'a yükseltin.");
             }
             if (file.getSize() > plan.getMaxPhotoSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
@@ -262,7 +291,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         } else if ("FILE".equals(typeUpper)) {
             if (!plan.isAllowFile()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Dosya ekleme planınızda mevcut değil.");
+                        "Dosya ekleme planınızda yok. Plus veya Premium'a yükseltin.");
             }
             if (file.getSize() > plan.getMaxFileSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
@@ -282,7 +311,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), opts);
             String secureUrl = (String) result.get("secure_url");
             if (secureUrl == null) {
-                throw new RuntimeException("Cloudinary secure_url alınamadı.");
+                throw new IllegalArgumentException("Dosya yüklenemedi.");
             }
             return MessageUploadResponse.builder()
                     .url(secureUrl)
@@ -290,7 +319,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
                     .fileSize(file.getSize())
                     .build();
         } catch (IOException e) {
-            throw new RuntimeException("Dosya yüklenemedi: " + e.getMessage());
+            throw new IllegalArgumentException("Dosya yüklenemedi: " + e.getMessage());
         }
     }
 

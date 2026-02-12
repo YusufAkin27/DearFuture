@@ -38,8 +38,8 @@ public class ProfileResponse {
                 .lastName(user.getLastName())
                 .profilePictureUrl(user.getProfilePictureUrl())
                 .emailVerified(user.isEmailVerified())
-                .subscriptionPlanCode(plan != null ? plan.getCode() : "FREE")
-                .subscriptionPlanName(plan != null ? plan.getName() : "Ücretsiz")
+                .subscriptionPlanCode(effective != null ? effective.getCode() : "FREE")
+                .subscriptionPlanName(effective != null ? effective.getName() : "Ücretsiz")
                 .subscriptionEndsAt(user.getSubscriptionEndsAt())
                 .maxMessagesPerPlan(effective != null ? effective.getMaxMessages() : 3)
                 .build();

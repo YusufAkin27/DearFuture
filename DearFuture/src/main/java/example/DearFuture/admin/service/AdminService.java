@@ -4,6 +4,7 @@ import example.DearFuture.admin.dto.request.ContractCreateRequest;
 import example.DearFuture.admin.dto.request.ContractUpdateRequest;
 import example.DearFuture.admin.dto.request.UpdatePlanRequest;
 import example.DearFuture.admin.dto.response.AdminMessageResponse;
+import example.DearFuture.admin.dto.response.AdminPaymentResponse;
 import example.DearFuture.admin.dto.response.ContractAcceptanceItemResponse;
 import example.DearFuture.admin.dto.response.CookiePreferenceItemResponse;
 import example.DearFuture.admin.dto.response.DashboardStatsResponse;
@@ -34,6 +35,7 @@ public interface AdminService {
 
     // ── Mesaj Yönetimi ──
     List<AdminMessageResponse> getAllMessages();
+    AdminMessageResponse getMessage(Long messageId);
     List<AdminMessageResponse> getMessagesByUser(Long userId);
     void deleteMessage(Long messageId);
 
@@ -47,4 +49,8 @@ public interface AdminService {
 
     // ── Çerez Tercihleri (kim onaylamış) ──
     Page<CookiePreferenceItemResponse> getCookiePreferences(Pageable pageable);
+
+    // ── Ödemeler ──
+    Page<AdminPaymentResponse> getPayments(Pageable pageable);
+    Page<AdminPaymentResponse> getPaymentsByUser(Long userId, Pageable pageable);
 }

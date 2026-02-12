@@ -38,5 +38,8 @@ public class CreateFutureMessageRequest {
     @NotEmpty(message = "Message contents cannot be empty")
     @Valid
     private List<MessageContentRequest> contents;
+
+    /** true = Herkes okuyabilsin (açıldıktan sonra public sayfada listelenir) */
+    private Boolean isPublic;
 }
 

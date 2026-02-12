@@ -101,8 +101,8 @@ public class GlobalExceptionHandler {
         Map<String, Object> details = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            String field = ((FieldError) error).getField();
-            details.put(field, error.getDefaultMessage());
+            String key = error instanceof FieldError fe ? fe.getField() : error.getObjectName();
+            details.put(key, error.getDefaultMessage());
         });
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -115,6 +115,29 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .errorCode(ErrorCode.VALIDATION_ERROR.getCode())
                 .details(details)
+                .build();
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    /* ===================== BAD REQUEST (İş kuralı / geçersiz argüman) ===================== */
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("Geçersiz istek: {} ({})", ex.getMessage(), request.getRequestURI());
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(ex.getMessage() != null ? ex.getMessage() : "Invalid request")
+                .path(request.getRequestURI())
+                .errorCode(ErrorCode.VALIDATION_ERROR.getCode())
                 .build();
 
         return ResponseEntity.status(status).body(response);

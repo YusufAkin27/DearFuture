@@ -16,4 +16,7 @@ public class CreateMessageRequest {
     @NotNull(message = "Scheduled date is required")
     @Future(message = "Date must be in the future")
     private Instant scheduledAt;
+
+    /** true = Herkes okuyabilsin (açıldıktan sonra public sayfada listelenir) */
+    private Boolean isPublic;
 }

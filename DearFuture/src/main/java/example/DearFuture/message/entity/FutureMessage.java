@@ -3,6 +3,7 @@ package example.DearFuture.message.entity;
 import example.DearFuture.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.Instant;
 import java.util.List;
@@ -45,6 +46,11 @@ public class FutureMessage {
     @Column(nullable = false)
     private MessageStatus status;
 
+    /** true ise mesaj açıldıktan sonra herkese açık sayfada listelenir */
+    @Builder.Default
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic = false;
+
     @PrePersist
     void onPersist() {
         if (viewToken == null) {
@@ -66,6 +72,7 @@ public class FutureMessage {
     /**
      * One FutureMessage -> Many Contents
      */
+    @BatchSize(size = 10)
     @OneToMany(
             mappedBy = "futureMessage",
             cascade = CascadeType.ALL,

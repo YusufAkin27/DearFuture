@@ -6,6 +6,7 @@ import example.DearFuture.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import jakarta.persistence.LockModeType;
 import java.time.Instant;
@@ -48,4 +49,22 @@ public interface FutureMessageRepository extends JpaRepository<FutureMessage, Lo
     @Query("SELECT DISTINCT fm FROM FutureMessage fm LEFT JOIN FETCH fm.contents WHERE fm.viewToken = :viewToken")
     Optional<FutureMessage> findByViewTokenWithContents(String viewToken);
 
+    /** Id ile mesajı bul (içerikleriyle birlikte, admin detay için) */
+    @Query("SELECT DISTINCT fm FROM FutureMessage fm LEFT JOIN FETCH fm.contents WHERE fm.id = :id")
+    Optional<FutureMessage> findByIdWithContents(@Param("id") Long id);
+
+    /** Kullanıcının belirli tarih aralığında scheduledAt değeri bu aralıkta olan mesaj sayısı (ücretli plan dönem kullanımı). */
+    @Query("SELECT COUNT(fm) FROM FutureMessage fm WHERE fm.user.id = :userId AND fm.scheduledAt >= :start AND fm.scheduledAt <= :end")
+    long countByUserIdAndScheduledAtBetween(@Param("userId") Long userId, @Param("start") Instant start, @Param("end") Instant end);
+
+    /** Açılmış ve herkese açık mesajlar (public sayfa için). QUEUED/SENT = gönderilmiş/açılmış. */
+    @Query("""
+            SELECT DISTINCT fm FROM FutureMessage fm
+            LEFT JOIN FETCH fm.contents
+            WHERE fm.status IN ('SENT', 'QUEUED')
+            AND fm.isPublic = true
+            AND fm.scheduledAt <= :now
+            ORDER BY fm.sentAt DESC, fm.scheduledAt DESC
+            """)
+    List<FutureMessage> findPublicMessagesUnlocked(Instant now);
 }

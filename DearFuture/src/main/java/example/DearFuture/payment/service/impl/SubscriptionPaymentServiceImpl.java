@@ -135,7 +135,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
         if (checkoutFormInitialize.getCheckoutFormContent() == null && checkoutFormInitialize.getPaymentPageUrl() == null) {
             log.warn("iyzico checkout initialize failed: {}", checkoutFormInitialize.getErrorMessage());
-            throw new RuntimeException("Ödeme sayfası oluşturulamadı: " + checkoutFormInitialize.getErrorMessage());
+            throw new IllegalArgumentException("Ödeme sayfası oluşturulamadı: " + checkoutFormInitialize.getErrorMessage());
         }
 
         payment.setCheckoutToken(checkoutFormInitialize.getToken());
