@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getProfile, updateSettings, deleteAccount, deactivateAccount } from '../api/profile';
+import { getProfile, updateSettings, deleteAccount } from '../api/profile';
 import { cancelSubscription } from '../api/subscription';
 import './SettingsPage.css';
 
@@ -16,7 +16,6 @@ const SettingsPage = () => {
         marketingEmails: false,
     });
     const [confirmDelete, setConfirmDelete] = useState('');
-    const [confirmDeactivate, setConfirmDeactivate] = useState(false);
     const [confirmCancelPlan, setConfirmCancelPlan] = useState(false);
 
     useEffect(() => {
@@ -83,21 +82,6 @@ const SettingsPage = () => {
             loadProfile();
         } catch (err) {
             toast.error(err.response?.data?.message || 'İptal işlemi başarısız.');
-        }
-    };
-
-    const handleDeactivate = async () => {
-        if (!confirmDeactivate) {
-            setConfirmDeactivate(true);
-            return;
-        }
-        try {
-            await deactivateAccount();
-            toast.info('Hesabınız devre dışı bırakıldı.');
-            localStorage.removeItem('token');
-            navigate('/login', { replace: true });
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'İşlem başarısız.');
         }
     };
 
@@ -249,36 +233,23 @@ const SettingsPage = () => {
                     )}
                 </div>
 
-                {/* Tehlikeli bölge */}
+                {/* Hesap silme */}
                 <div className="settings-card danger-zone">
-                    <h2>Tehlikeli bölge</h2>
-                    <p className="danger-desc">Hesabı devre dışı bırakırsanız giriş yapamazsınız; verileriniz saklanır. Hesabı silerseniz tüm verileriniz kalıcı olarak silinir.</p>
+                    <div className="danger-zone-header">
+                        <h2>Hesap silme</h2>
+                    </div>
 
                     <div className="danger-actions">
-                        <div className="danger-item">
-                            {confirmDeactivate ? (
-                                <>
-                                    <p className="confirm-text">Hesabınız devre dışı bırakılacak. Emin misiniz?</p>
-                                    <div className="form-actions">
-                                        <button type="button" className="secondary-btn" onClick={() => setConfirmDeactivate(false)}>Vazgeç</button>
-                                        <button type="button" className="deactivate-btn" onClick={handleDeactivate}>Devre dışı bırak</button>
-                                    </div>
-                                </>
-                            ) : (
-                                <button type="button" className="deactivate-btn" onClick={handleDeactivate}>
-                                    Hesabı devre dışı bırak
-                                </button>
-                            )}
-                        </div>
-
-                        <div className="danger-item">
-                            <p className="help-text">Kalıcı silmek için aşağıya <strong>SİL</strong> yazın.</p>
+                        <div className="danger-block danger-block-delete">
+                            <h3 className="danger-block-title">Hesabı kalıcı sil</h3>
+                            <label id="delete-hint" className="confirm-delete-label">Kalıcı silmek için <strong>SİL</strong> yazın</label>
                             <input
                                 type="text"
                                 className="confirm-delete-input"
-                                placeholder="SİL yazın"
+                                placeholder="SİL"
                                 value={confirmDelete}
                                 onChange={(e) => setConfirmDelete(e.target.value.toUpperCase())}
+                                aria-describedby="delete-hint"
                             />
                             <button
                                 type="button"

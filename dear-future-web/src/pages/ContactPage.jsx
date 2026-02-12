@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './ContactPage.css';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 
@@ -6,7 +6,7 @@ const ContactPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        message: ''
+        message: '',
     });
 
     const handleChange = (e) => {
@@ -15,81 +15,88 @@ const ContactPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert('Message sent! (Mock Action)');
+        alert('Mesajınız alındı. (Demo)');
     };
 
     return (
-        <div className="contact-container">
-            <div className="contact-header">
-                <h1>By All Means, Contact Us</h1>
-                <p>We'd love to hear from you. Here's how to reach us.</p>
-            </div>
+        <section className="contact-container">
+            <div className="contact-inner">
+                <header className="contact-hero">
+                    <span className="contact-pill">İletişim</span>
+                    <h1>Bizimle iletişime geçin</h1>
+                    <p>
+                        Sorularınız veya önerileriniz için aşağıdaki bilgilerden bize ulaşabilirsiniz.
+                    </p>
+                </header>
 
-            <div className="contact-grid">
-                <div className="contact-info">
-                    <div className="info-item">
-                        <FaEnvelope className="info-icon" />
-                        <div>
-                            <h3>Email Us</h3>
-                            <p>hello@dearfuture.com</p>
-                            <p>support@dearfuture.com</p>
+                <div className="contact-grid">
+                    <div className="contact-info">
+                        <div className="contact-info-item">
+                            <FaEnvelope className="contact-info-icon" />
+                            <div>
+                                <h3>E-posta</h3>
+                                <p>merhaba@dearfuture.com</p>
+                                <p>destek@dearfuture.com</p>
+                            </div>
+                        </div>
+                        <div className="contact-info-item">
+                            <FaMapMarkerAlt className="contact-info-icon" />
+                            <div>
+                                <h3>Adres</h3>
+                                <p>Örnek Mah. Gelecek Sok. No: 1</p>
+                                <p>34000 İstanbul</p>
+                            </div>
+                        </div>
+                        <div className="contact-info-item">
+                            <FaPhone className="contact-info-icon" />
+                            <div>
+                                <h3>Telefon</h3>
+                                <p>+90 (212) 000 00 00</p>
+                            </div>
                         </div>
                     </div>
-                    <div className="info-item">
-                        <FaMapMarkerAlt className="info-icon" />
-                        <div>
-                            <h3>Visit Us</h3>
-                            <p>123 Future Street</p>
-                            <p>Innovation City, 34000</p>
+
+                    <form className="contact-form" onSubmit={handleSubmit}>
+                        <div className="contact-form-group">
+                            <label htmlFor="contact-name">Ad Soyad</label>
+                            <input
+                                type="text"
+                                id="contact-name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
                         </div>
-                    </div>
-                    <div className="info-item">
-                        <FaPhone className="info-icon" />
-                        <div>
-                            <h3>Call Us</h3>
-                            <p>+1 (555) 123-4567</p>
+                        <div className="contact-form-group">
+                            <label htmlFor="contact-email">E-posta</label>
+                            <input
+                                type="email"
+                                id="contact-email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
                         </div>
-                    </div>
+                        <div className="contact-form-group">
+                            <label htmlFor="contact-message">Mesajınız</label>
+                            <textarea
+                                id="contact-message"
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                rows={5}
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="contact-submit-btn">
+                            Mesaj Gönder
+                        </button>
+                    </form>
                 </div>
-
-                <form className="contact-form" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="message">Message</label>
-                        <textarea
-                            id="message"
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            rows="5"
-                            required
-                        ></textarea>
-                    </div>
-                    <button type="submit" className="submit-btn">Send Message</button>
-                </form>
             </div>
-        </div>
+        </section>
     );
 };
 

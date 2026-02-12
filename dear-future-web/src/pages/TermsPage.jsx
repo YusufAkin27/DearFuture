@@ -1,51 +1,60 @@
-import React from 'react';
-import './PrivacyPage.css'; // Reusing legal styles
+import './LegalPage.css';
 
 const TermsPage = () => {
     return (
-        <div className="legal-container">
-            <div className="legal-content">
-                <h1>Terms of Service</h1>
-                <p className="last-updated">Last Updated: February 1, 2026</p>
+        <section className="legal-container">
+            <div className="legal-inner">
+                <header className="legal-hero">
+                    <span className="legal-pill">Yasal</span>
+                    <h1>Kullanım Şartları</h1>
+                    <p className="legal-updated">Son güncelleme: 1 Şubat 2026</p>
+                </header>
 
-                <section>
-                    <h2>1. Acceptance of Terms</h2>
-                    <p>
-                        By accessing or using DearFuture, you agree to be bound by these Terms of Service.
-                    </p>
-                </section>
+                <div className="legal-content">
+                    <section>
+                        <h2>1. Şartların Kabulü</h2>
+                        <p>
+                            Dear Future hizmetine erişerek veya kullanarak bu Kullanım Şartları ile bağlı
+                            kalmayı kabul etmiş olursunuz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>2. Use of Service</h2>
-                    <p>
-                        You agree to use DearFuture only for lawful purposes and in accordance with these Terms.
-                        You are responsible for maintaining the confidentiality of your account credentials.
-                    </p>
-                </section>
+                    <section>
+                        <h2>2. Hizmetin Kullanımı</h2>
+                        <p>
+                            Dear Future'ı yalnızca yasal amaçlarla ve bu Şartlara uygun biçimde kullanmayı
+                            kabul edersiniz. Hesap bilgilerinizin gizliliğinden siz sorumlusunuz. Hesabınızı
+                            yetkisiz kullanıma karşı korumak sizin yükümlülüğünüzdür.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>3. User Content</h2>
-                    <p>
-                        You retain ownership of the content you create. However, you grant us a license to store
-                        and deliver your content as per your instructions.
-                    </p>
-                </section>
+                    <section>
+                        <h2>3. Kullanıcı İçeriği</h2>
+                        <p>
+                            Oluşturduğunuz içeriğin mülkiyeti size aittir. Bununla birlikte, talimatlarınız
+                            doğrultusunda içeriğinizi saklamak ve iletmek için bize lisans verirsiniz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>4. Termination</h2>
-                    <p>
-                        We reserve the right to terminate or suspend your account if you violate these Terms.
-                    </p>
-                </section>
+                    <section>
+                        <h2>4. Hesabın Sona Ermesi</h2>
+                        <p>
+                            Bu Şartları ihlal etmeniz halinde hesabınızı askıya alma veya sonlandırma hakkımız
+                            saklıdır. Hesabınızı istediğiniz zaman kapatabilirsiniz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>5. Disclaimer</h2>
-                    <p>
-                        The service is provided "as is" without warranties of any kind.
-                    </p>
-                </section>
+                    <section>
+                        <h2>5. Sorumluluk Reddi</h2>
+                        <p>
+                            Hizmet "olduğu gibi" sunulmaktadır; açık veya zımni hiçbir garanti verilmemektedir.
+                            Yasal haklarınız saklı kalmak kaydıyla, hizmetten doğan zararlardan sorumluluk
+                            sınırlıdır.
+                        </p>
+                    </section>
+                </div>
             </div>
-        </div>
+        </section>
     );
 };
 

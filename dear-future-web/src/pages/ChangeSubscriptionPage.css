@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     padding: 4rem 2rem;
-    color: #fff;
+    color: var(--text-main);
     min-height: 80vh;
 }
 
@@ -15,37 +15,38 @@
 .subscription-header h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: var(--text-main);
 }
 
 .current-plan-badge {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
+    background: rgba(0, 168, 204, 0.15);
+    color: var(--primary-color);
     padding: 0.25rem 0.75rem;
     border-radius: 99px;
     font-weight: 600;
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    border: 1px solid rgba(0, 168, 204, 0.35);
 }
 
 .subscription-ends {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
 .plan-limit-info {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin-top: 0.5rem;
 }
 
 .subscription-loading {
-    color: #e2e8f0;
+    color: var(--text-secondary);
     padding: 3rem;
 }
 
 .subscription-info {
     max-width: 600px;
     text-align: center;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin-top: 2rem;
 }
@@ -53,40 +54,48 @@
 .price-label {
     font-size: 1rem;
     font-weight: 500;
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 .subscription-cards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
     width: 100%;
     max-width: 1200px;
     margin-bottom: 4rem;
 }
 
 .subscription-card {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    border-radius: 1rem;
+    background: var(--surface-color);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: var(--radius-card);
     padding: 2rem;
-    width: 100%;
-    max-width: 350px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-dark .subscription-card {
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .subscription-card.current {
-    border: 2px solid #34d399;
-    background: rgba(16, 185, 129, 0.05);
+    border: 2px solid var(--primary-color);
+    background: rgba(0, 168, 204, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 168, 204, 0.12);
+}
+
+.theme-dark .subscription-card.current {
+    background: rgba(0, 168, 204, 0.08);
 }
 
 .subscription-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 12px 32px -8px rgba(0, 168, 204, 0.15);
 }
 
 .badge {
@@ -94,29 +103,31 @@
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    background: #6366f1;
-    color: white;
+    background: var(--primary-gradient);
+    color: #fff;
     padding: 0.25rem 1rem;
     border-radius: 1rem;
     font-size: 0.875rem;
     font-weight: 600;
+    box-shadow: var(--shadow-button);
 }
 
 .badge.current {
-    background: #059669;
+    background: var(--primary-color);
+    color: #fff;
 }
 
 .subscription-card h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    color: #e2e8f0;
+    color: var(--text-main);
 }
 
 .price {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    color: #fff;
+    color: var(--text-main);
 }
 
 .features {
@@ -128,40 +139,48 @@
 
 .features li {
     margin-bottom: 0.75rem;
-    color: #cbd5e1;
+    color: var(--text-body);
     display: flex;
     align-items: center;
 }
 
 .features li::before {
     content: "✓";
-    color: #4ade80;
+    color: var(--primary-color);
     margin-right: 0.5rem;
+    font-weight: 700;
 }
 
 .action-btn {
     width: 100%;
     padding: 0.75rem;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-button);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .action-btn.upgrade {
-    background: #6366f1;
-    color: white;
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: var(--shadow-button);
 }
 
 .action-btn.upgrade:hover {
-    background: #4f46e5;
+    box-shadow: 0 6px 20px rgba(0, 168, 204, 0.35);
+    transform: translateY(-1px);
 }
 
 .action-btn.disabled {
-    background: rgba(148, 163, 184, 0.2);
-    color: #94a3b8;
+    background: var(--text-muted);
+    color: var(--text-secondary);
     cursor: default;
+    opacity: 0.8;
+}
+
+.theme-light .action-btn.disabled {
+    background: rgba(108, 122, 137, 0.2);
 }
 
 .cancel-zone {
@@ -170,17 +189,17 @@
     border: 1px solid rgba(239, 68, 68, 0.3);
     background: rgba(239, 68, 68, 0.05);
     padding: 2rem;
-    border-radius: 1rem;
+    border-radius: var(--radius-card);
     text-align: center;
 }
 
 .cancel-zone h3 {
-    color: #fca5a5;
+    color: #f87171;
     margin-bottom: 1rem;
 }
 
 .cancel-zone p {
-    color: #cbd5e1;
+    color: var(--text-body);
     margin-bottom: 1.5rem;
 }
 
@@ -198,4 +217,10 @@
 .cancel-btn:hover {
     background: #ef4444;
     color: white;
+}
+
+@media (max-width: 900px) {
+    .subscription-cards {
+        grid-template-columns: 1fr;
+    }
 }

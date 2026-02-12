@@ -1,53 +1,61 @@
-import React from 'react';
-import './PrivacyPage.css'; // Reusing legal styles
+import './LegalPage.css';
 
 const SecurityPage = () => {
     return (
-        <div className="legal-container">
-            <div className="legal-content">
-                <h1>Security</h1>
-                <p className="last-updated">Last Updated: February 1, 2026</p>
+        <section className="legal-container">
+            <div className="legal-inner">
+                <header className="legal-hero">
+                    <span className="legal-pill">Güvenlik</span>
+                    <h1>Güvenlik</h1>
+                    <p className="legal-updated">Son güncelleme: 1 Şubat 2026</p>
+                </header>
 
-                <section>
-                    <h2>Our Security Architecture</h2>
-                    <p>
-                        Security is not an afterthought at DearFuture; it is the foundation of our platform.
-                        We use industry-leading practices to ensure your digital legacy remains secure for decades.
-                    </p>
-                </section>
+                <div className="legal-content">
+                    <section>
+                        <h2>Güvenlik Mimarimiz</h2>
+                        <p>
+                            Dear Future’da güvenlik sonradan düşünülen bir özellik değil; platformumuzun
+                            temelidir. Dijital mirasınızın onlarca yıl güvende kalması için sektörde öncü
+                            uygulamalar kullanıyoruz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>Zero-Knowledge Encryption</h2>
-                    <p>
-                        All messages contents are encrypted using AES-256 GCM on the client side before being transmitted.
-                        Only the intended recipient possesses the decryption key. DearFuture staff cannot read your messages.
-                    </p>
-                </section>
+                    <section>
+                        <h2>Sıfır-Bilgi Şifreleme</h2>
+                        <p>
+                            Tüm mesaj içerikleri, iletilmeden önce istemci tarafında AES-256 GCM ile
+                            şifrelenir. Şifreyi çözmek için gerekli anahtara yalnızca belirlenen alıcı
+                            sahiptir. Dear Future çalışanları mesajlarınızı okuyamaz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>Infrastructure Security</h2>
-                    <p>
-                        Our servers are hosted in secure, ISO 27001 certified data centers. We employ strict access controls,
-                        firewalls, and regular security audits.
-                    </p>
-                </section>
+                    <section>
+                        <h2>Altyapı Güvenliği</h2>
+                        <p>
+                            Sunucularımız güvenli, ISO 27001 sertifikalı veri merkezlerinde barındırılmaktadır.
+                            Sıkı erişim kontrolleri, güvenlik duvarları ve düzenli güvenlik denetimleri
+                            uyguluyoruz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>Data Integrity</h2>
-                    <p>
-                        We use cryptographic hashing to ensure that your data has not been tampered with during storage or transit.
-                    </p>
-                </section>
+                    <section>
+                        <h2>Veri Bütünlüğü</h2>
+                        <p>
+                            Verilerinizin saklama veya aktarım sırasında değiştirilmediğinden emin olmak için
+                            kriptografik özet (hash) kullanıyoruz.
+                        </p>
+                    </section>
 
-                <section>
-                    <h2>Reporting Vulnerabilities</h2>
-                    <p>
-                        We maintain a bug bounty program. If you believe you have found a security vulnerability,
-                        please report it to security@dearfuture.com.
-                    </p>
-                </section>
+                    <section>
+                        <h2>Güvenlik Açığı Bildirimi</h2>
+                        <p>
+                            Bir güvenlik açığı bulduğunuzu düşünüyorsanız lütfen güvenlik@dearfuture.com
+                            adresine bildirin. Sorumlu açıklama kapsamında raporları değerlendiriyoruz.
+                        </p>
+                    </section>
+                </div>
             </div>
-        </div>
+        </section>
     );
 };
 

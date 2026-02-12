@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import {
-    FaUserCircle,
     FaCrown,
     FaEdit,
     FaSave,
@@ -11,6 +11,7 @@ import {
     FaCheck,
     FaEnvelope,
     FaCalendarAlt,
+    FaCog,
 } from 'react-icons/fa';
 import { getProfile, updateProfile, uploadProfilePhoto, deleteProfilePhoto } from '../api/profile';
 import './ProfilePage.css';
@@ -124,15 +125,17 @@ const ProfilePage = () => {
 
     return (
         <div className="profile-page">
-            <header className="profile-header">
-                <h1>Profilim</h1>
-                <p>Hesap bilgilerinizi ve aboneliğinizi yönetin.</p>
+            <header className="profile-page-header">
+                <h1 className="page-title">Profilim</h1>
+                <p className="page-subtitle">Hesap bilgilerinizi, aboneliğinizi ve kişisel verilerinizi buradan yönetin.</p>
             </header>
 
             <div className="profile-layout">
-                {/* Sol: Avatar + özet */}
+                {/* Sol: Profil özeti + Abonelik */}
                 <aside className="profile-sidebar">
                     <div className="profile-card profile-card-avatar">
+                        <h3 className="section-title">Profil bilgileri</h3>
+                        <p className="section-subtitle">Fotoğraf ve hesap özeti</p>
                         <div className="avatar-wrap">
                             {photoUrl ? (
                                 <img src={photoUrl} alt="Profil" className="avatar-img" />
@@ -175,7 +178,8 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="profile-card profile-card-plan">
-                        <h3><FaCrown /> Plan</h3>
+                        <h3 className="section-title"><FaCrown /> Abonelik</h3>
+                        <p className="section-subtitle">Planınız ve mesaj limitleri</p>
                         <p className="plan-name">{effectivePlan}</p>
                         {profile.subscriptionEndsAt && effectivePlan !== 'FREE' && (
                             <p className="plan-ends">Bitiş: {formatDate(profile.subscriptionEndsAt)}</p>
@@ -185,13 +189,22 @@ const ProfilePage = () => {
                             Aboneliği yönet
                         </button>
                     </div>
+
+                    <div className="profile-quick-links">
+                        <Link to="/settings" className="quick-link">
+                            <FaCog /> Ayarlar ve güvenlik
+                        </Link>
+                    </div>
                 </aside>
 
                 {/* Sağ: Kişisel bilgiler */}
                 <main className="profile-main">
                     <div className="profile-card content-card">
                         <div className="card-head">
-                            <h3>Kişisel bilgiler</h3>
+                            <div className="card-head-text">
+                                <h3>Kişisel bilgiler</h3>
+                                <p className="card-head-subtitle">Ad, soyad ve üyelik bilgileriniz</p>
+                            </div>
                             {!isEditing ? (
                                 <button type="button" className="btn-edit" onClick={() => setIsEditing(true)}>
                                     <FaEdit /> Düzenle

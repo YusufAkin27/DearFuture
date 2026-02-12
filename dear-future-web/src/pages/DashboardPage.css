@@ -68,13 +68,16 @@
 
 /* Tabs */
 .dashboard-tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    background: rgba(30, 41, 59, 0.5);
-    padding: 0.5rem;
-    border-radius: 16px;
     display: inline-flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: rgba(15, 23, 42, 0.06);
+    padding: 0.5rem;
+    border-radius: var(--radius-card);
+}
+
+.theme-dark .dashboard-tabs {
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .tab-btn {
@@ -83,8 +86,8 @@
     gap: 0.5rem;
     background: transparent;
     border: none;
-    color: #94a3b8;
-    padding: 0.6rem 1.25rem;
+    color: var(--text-secondary);
+    padding: 0.65rem 1.35rem;
     border-radius: 12px;
     font-size: 0.95rem;
     font-weight: 500;
@@ -92,15 +95,28 @@
     transition: all 0.2s ease;
 }
 
+.theme-dark .tab-btn {
+    color: #94a3b8;
+}
+
 .tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary-color);
+    background: rgba(0, 168, 204, 0.08);
+}
+
+.theme-dark .tab-btn:hover {
+    color: var(--accent-bright);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .tab-btn.active {
-    background: #4f46e5;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: var(--shadow-button);
+}
+
+.tab-btn.active:hover {
+    box-shadow: 0 6px 20px rgba(0, 168, 204, 0.35);
 }
 
 /* Message Grid */
@@ -243,31 +259,41 @@
 }
 
 .empty-state h3 {
-    color: #fff;
+    color: var(--text-secondary);
     margin: 0;
     font-size: 1.25rem;
 }
 
-.empty-state p {
+.theme-dark .empty-state h3 {
     color: #94a3b8;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
     max-width: 400px;
     margin: 0;
 }
 
+.theme-dark .empty-state p {
+    color: #94a3b8;
+}
+
 .empty-cta-btn {
     margin-top: 1rem;
-    background: #fff;
-    color: #0f172a;
+    background: var(--primary-gradient);
+    color: #fff;
     padding: 0.75rem 1.5rem;
-    border-radius: 99px;
+    border-radius: var(--radius-button);
     text-decoration: none;
     font-weight: 600;
     transition: all 0.2s;
+    box-shadow: var(--shadow-button);
+    border: none;
 }
 
 .empty-cta-btn:hover {
-    background: #f1f5f9;
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 168, 204, 0.35);
 }
 
 /* Loading */

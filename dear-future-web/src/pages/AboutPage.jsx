@@ -1,51 +1,55 @@
-import React from 'react';
 import './AboutPage.css';
 
 const AboutPage = () => {
     return (
-        <div className="about-container">
-            <div className="about-hero">
-                <h1>Our Mission is to Preserve Time</h1>
-                <p>We believe that every moment, every thought, and every feeling deserves to be remembered.</p>
-            </div>
-
-            <div className="about-section">
-                <div className="about-content">
-                    <h2>Who We Are</h2>
+        <section className="about-container">
+            <div className="about-inner">
+                <header className="about-hero">
+                    <span className="about-pill">Hakkımızda</span>
+                    <h1>Misyonumuz zamanı geleceğe taşımak</h1>
                     <p>
-                        DearFuture was born from a simple idea: What if you could talk to the future?
-                        We are a team of dreamers, engineers, and memory-keepers dedicated to building
-                        the most secure and intuitive digital time capsule platform in the world.
+                        Her anın, her düşüncenin ve her duygunun hatırlanmayı hak ettiğine inanıyoruz.
                     </p>
-                </div>
-                <div className="about-image placeholder-image"></div>
-            </div>
+                </header>
 
-            <div className="about-section reverse">
-                <div className="about-content">
-                    <h2>Why We Do It</h2>
-                    <p>
-                        In a fast-paced world where digital content disappears as quickly as it appears,
-                        we want to create a slow-moving sanctuary. A place where messages travel at the
-                        speed of life, arriving exactly when they are needed most.
-                    </p>
+                <div className="about-section">
+                    <div className="about-content">
+                        <h2>Biz Kimiz</h2>
+                        <p>
+                            Dear Future, basit bir fikirden doğdu: Gelecekle konuşabilseydiniz ne olurdu?
+                            Hayal kuranlar, mühendisler ve anı bekçilerinden oluşan ekibimiz, dünyanın en güvenli
+                            ve kullanımı kolay dijital zaman kapsülü platformunu inşa etmek için çalışıyor.
+                        </p>
+                    </div>
+                    <div className="about-image placeholder-image" aria-hidden="true" />
                 </div>
-                <div className="about-image placeholder-image"></div>
-            </div>
 
-            <div className="team-section">
-                <h2>Meet the Team</h2>
-                <div className="team-grid">
-                    {[1, 2, 3].map((member) => (
-                        <div key={member} className="team-member">
-                            <div className="member-avatar"></div>
-                            <h3>Team Member {member}</h3>
-                            <p>Co-Founder</p>
-                        </div>
-                    ))}
+                <div className="about-section about-section--reverse">
+                    <div className="about-content">
+                        <h2>Neden Yapıyoruz</h2>
+                        <p>
+                            Dijital içeriğin bir anda kaybolduğu hızlı bir dünyada, yavaş akan bir sığınak
+                            yaratmak istiyoruz. Mesajların hayatın hızında ilerlediği, tam da en çok ihtiyaç
+                            duyulduğu anda ulaştığı bir yer.
+                        </p>
+                    </div>
+                    <div className="about-image placeholder-image" aria-hidden="true" />
+                </div>
+
+                <div className="about-team">
+                    <h2>Ekibimiz</h2>
+                    <div className="about-team-grid">
+                        {[1, 2, 3].map((member) => (
+                            <div key={member} className="about-team-card">
+                                <div className="about-team-avatar" />
+                                <h3>Ekip Üyesi {member}</h3>
+                                <p>Kurucu Ortağı</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 

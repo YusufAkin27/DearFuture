@@ -83,6 +83,11 @@
     gap: 0.5rem;
 }
 
+.form-group label .label-hint {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
 .form-hint {
     color: var(--text-secondary);
     font-size: 0.9rem;
@@ -151,6 +156,15 @@ input.form-input[type="datetime-local"] {
 
 .recipient-input {
     flex: 1;
+}
+
+.recipient-readonly {
+    background: rgba(15, 23, 42, 0.04);
+    cursor: default;
+}
+
+.theme-dark .recipient-readonly {
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .recipient-remove {

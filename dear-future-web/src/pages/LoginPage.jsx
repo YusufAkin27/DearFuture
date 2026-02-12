@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaEnvelope, FaPaperPlane, FaLock, FaArrowLeft } from 'react-icons/fa';
+import { FaEnvelope, FaPaperPlane, FaLock, FaArrowLeft, FaGoogle } from 'react-icons/fa';
 import { login } from '../api/auth';
 import './LoginPage.css';
 
@@ -26,7 +26,7 @@ const LoginPage = () => {
             await login(email);
             toast.success('Doğrulama kodu yollandı!');
             setTimeout(() => {
-                navigate(`/verify?email=${encodeURIComponent(email)}`, { state: { from: returnTo } });
+                navigate('/verify', { state: { email, from: returnTo } });
             }, 1000);
         } catch (error) {
             console.error('Login error:', error);
@@ -40,59 +40,70 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="modern-login-container">
-            <div className="aurora-bg">
-                <div className="aurora-blob blob-1"></div>
-                <div className="aurora-blob blob-2"></div>
-                <div className="aurora-blob blob-3"></div>
-            </div>
-
-            <button className="back-nav-btn" onClick={() => navigate('/welcome')}>
+        <div className="login-page-wrap">
+            <button type="button" className="login-back-btn" onClick={() => navigate('/welcome')}>
                 <FaArrowLeft />
                 <span>Geri Dön</span>
             </button>
 
-            <div className="modern-login-card">
-                <div className="card-header">
-                    <img src="/logo.png" alt="Dear Future" className="card-header-logo" />
+            <div className="login-card">
+                <div className="login-card-header">
+                    <img src="/logo.png" alt="Dear Future" className="login-card-logo" />
                     <h1>Hoş Geldiniz</h1>
-                    <p>Yolculuğunuza devam etmek için giriş yapın.</p>
+                    <p className="login-card-tagline">Zamanın ötesine bir not bırakmaya hazır mısın?</p>
+                    <p className="login-card-subtitle">Yolculuğuna başlamak için e-postanı gir.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="modern-form">
-                    <div className={`modern-input-group ${isFocused || email ? 'active' : ''}`}>
-                        <label htmlFor="email">E-posta Adresi</label>
-                        <div className="input-field-wrapper">
-                            <FaEnvelope className="field-icon" />
-                            <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
-                                required
-                                disabled={isLoading}
-                            />
+                <div className="login-card-body">
+                    <form onSubmit={handleSubmit} className="login-form">
+                        <div className={`login-input-wrap ${isFocused || email ? 'active' : ''}`}>
+                            <label htmlFor="login-email">E-POSTA ADRESI</label>
+                            <div className="login-input-inner">
+                                <FaEnvelope className="login-input-icon" />
+                                <input
+                                    id="login-email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    onFocus={() => setIsFocused(true)}
+                                    onBlur={() => setIsFocused(false)}
+                                    placeholder=""
+                                    required
+                                    disabled={isLoading}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <button type="submit" className="modern-submit-btn" disabled={isLoading}>
-                        {isLoading ? (
-                            <div className="btn-loader"></div>
-                        ) : (
-                            <>
-                                <span>Sihirli Bağlantı Gönder</span>
-                                <FaPaperPlane />
-                            </>
-                        )}
-                    </button>
-                </form>
+                        <button type="submit" className="login-submit-btn" disabled={isLoading}>
+                            {isLoading ? (
+                                <div className="login-btn-loader" />
+                            ) : (
+                                <>
+                                    <span>Sihirli Bağlantı Gönder</span>
+                                    <FaPaperPlane />
+                                </>
+                            )}
+                        </button>
 
-                <div className="card-footer">
-                    <div className="secure-badge">
-                        <FaLock />
-                        <span>Uçtan Uca Şifreli & Güvenli</span>
+                        <div className="login-divider">
+                            <span>veya</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="login-google-btn"
+                            onClick={() => { window.location.href = '/api/auth/google'; }}
+                        >
+                            <FaGoogle className="login-google-icon" />
+                            <span>Google ile Giriş Yap</span>
+                        </button>
+                    </form>
+
+                    <div className="login-card-footer">
+                        <div className="login-secure-badge">
+                            <FaLock />
+                            <span>Uçtan Uca Şifreli & Güvenli</span>
+                        </div>
                     </div>
                 </div>
             </div>

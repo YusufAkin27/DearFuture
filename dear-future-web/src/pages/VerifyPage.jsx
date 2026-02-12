@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaInfinity, FaCheck, FaRedo, FaArrowLeft } from 'react-icons/fa';
+import { FaRedo, FaArrowLeft } from 'react-icons/fa';
 import { verifyCode, resendCode } from '../api/auth';
 import './VerifyPage.css';
 
@@ -9,10 +9,9 @@ const VerifyPage = () => {
     const [code, setCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
-    const [searchParams] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const email = searchParams.get('email');
+    const email = location.state?.email;
     const [timer, setTimer] = useState(60);
 
     useEffect(() => {
@@ -90,11 +89,8 @@ const VerifyPage = () => {
 
             <div className="modern-verify-card">
                 <div className="card-header">
-                    <div className="brand-logo">
-                        <FaInfinity />
-                    </div>
                     <h1>Doğrulama</h1>
-                    <p>Lütfen <strong>{email}</strong> adresine gönderilen 6 haneli kodu girin.</p>
+                    <p className="verify-instruction">E-posta adresinize gönderilen 6 haneli kodu girin.</p>
                 </div>
 
                 <form onSubmit={handleVerify} className="modern-form">
@@ -104,7 +100,6 @@ const VerifyPage = () => {
                             placeholder="000000"
                             value={code}
                             onChange={(e) => {
-                                // Only allow numbers and max 6 chars
                                 const val = e.target.value.replace(/\D/g, '').slice(0, 6);
                                 setCode(val);
                             }}
@@ -114,17 +109,6 @@ const VerifyPage = () => {
                             autoFocus
                         />
                     </div>
-
-                    <button type="submit" className="modern-submit-btn verify-btn" disabled={isLoading || code.length < 6}>
-                        {isLoading ? (
-                            <div className="btn-loader"></div>
-                        ) : (
-                            <>
-                                <span>Doğrula ve Giriş Yap</span>
-                                <FaCheck />
-                            </>
-                        )}
-                    </button>
                 </form>
 
                 <div className="resend-section">

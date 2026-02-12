@@ -4,6 +4,28 @@
     margin: 0 auto;
     padding: 0 1rem 3rem;
     position: relative;
+    width: 100%;
+    min-height: 0;
+}
+
+/* Sayfa başlık alanı – header ile çakışmayı önler */
+.profile-page-header {
+    margin-bottom: 2rem;
+    padding-top: 0.25rem;
+}
+
+.profile-page-header .page-title {
+    font-size: clamp(1.75rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.35rem 0;
+}
+
+.profile-page-header .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
 }
 
 .profile-bg-glow {
@@ -19,23 +41,22 @@
     pointer-events: none;
 }
 
-/* Header */
-.profile-header {
-    margin-bottom: 2.5rem;
-    text-align: center;
+/* Bölüm kartları için ortak başlık stili */
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0 0 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.profile-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 0.5rem 0;
-}
-
-.profile-header p {
-    color: #94a3b8;
-    font-size: 1rem;
-    margin: 0;
+.section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
 }
 
 /* Layout */
@@ -44,31 +65,53 @@
     grid-template-columns: 300px 1fr;
     gap: 2rem;
     align-items: start;
+    min-width: 0;
 }
 
-/* Cards */
+.profile-layout > * {
+    min-width: 0;
+}
+
+/* Sidebar tek blok sticky – profil + abonelik birlikte kayar, üst üste binmez */
+.profile-sidebar {
+    position: sticky;
+    top: calc(var(--header-height, 72px) + 1rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Cards – temaya uygun */
 .profile-card {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    background: var(--surface-color);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: var(--radius-card);
     padding: 1.75rem;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-dark .profile-card {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
 }
 
 .profile-card h3 {
     margin: 0 0 1rem 0;
-    color: #fff;
+    color: var(--text-main);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-/* Sidebar: Avatar */
+.profile-card .section-title {
+    margin: 0 0 0.25rem 0;
+}
+
+/* Sidebar: Avatar kartı */
 .profile-card-avatar {
     text-align: center;
-    position: sticky;
-    top: 100px;
 }
 
 .avatar-wrap {
@@ -82,21 +125,25 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid rgba(99, 102, 241, 0.3);
+    border: 4px solid rgba(0, 168, 204, 0.35);
 }
 
 .avatar-initials {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    background: var(--primary-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-size: 2.25rem;
     font-weight: 700;
-    border: 4px solid rgba(30, 41, 59, 0.8);
+    border: 4px solid rgba(0, 168, 204, 0.25);
+}
+
+.theme-dark .avatar-initials {
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .avatar-upload-btn {
@@ -106,8 +153,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #a855f7);
-    border: 2px solid rgba(30, 41, 59, 0.9);
+    background: var(--primary-gradient);
+    border: 2px solid var(--surface-color);
     color: #fff;
     cursor: pointer;
     display: flex;
@@ -118,7 +165,7 @@
 
 .avatar-upload-btn:hover:not(:disabled) {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    box-shadow: var(--shadow-button);
 }
 
 .avatar-upload-btn:disabled {
@@ -138,13 +185,17 @@
     display: block;
     margin: 0 auto 1rem auto;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #94a3b8;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    color: var(--text-secondary);
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
+}
+
+.theme-dark .avatar-remove-btn {
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .avatar-remove-btn:hover:not(:disabled) {
@@ -160,14 +211,14 @@
 
 .profile-name {
     margin: 0 0 0.5rem 0;
-    color: #fff;
+    color: var(--text-main);
     font-size: 1.2rem;
     font-weight: 600;
 }
 
 .profile-email {
     margin: 0 0 0.5rem 0;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     display: flex;
     align-items: center;
@@ -184,7 +235,7 @@
     margin-top: 0.25rem;
 }
 
-/* Sidebar: Plan */
+/* Sidebar: Plan kartı */
 .profile-card-plan .plan-name {
     font-size: 1rem;
     margin: 0 0 0.25rem 0;
@@ -192,7 +243,7 @@
 
 .profile-card-plan .plan-ends,
 .profile-card-plan .plan-limit {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     margin: 0 0 1rem 0;
 }
@@ -220,48 +271,50 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    background: var(--primary-gradient);
     color: #fff;
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.35);
+    box-shadow: var(--shadow-button);
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: #cbd5e1;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid rgba(0, 168, 204, 0.2);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.15);
+    filter: brightness(1.05);
 }
 
 .btn-outline {
     background: transparent;
-    color: #94a3b8;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+    border: 1px solid rgba(0, 168, 204, 0.3);
 }
 
 .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    background: rgba(0, 168, 204, 0.08);
+    color: var(--primary-color);
 }
 
 .btn-edit {
     background: transparent;
-    color: #818cf8;
+    color: var(--primary-color);
 }
 
 .btn-edit:hover {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(0, 168, 204, 0.1);
 }
 
 /* Main content */
+.profile-main {
+    min-width: 0;
+}
+
 .profile-main .content-card {
     padding: 2rem;
 }
@@ -269,11 +322,24 @@
 .card-head {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.card-head .card-head-text {
+    flex: 1;
+    min-width: 0;
 }
 
 .card-head h3 {
+    margin: 0 0 0.2rem 0;
+}
+
+.card-head .card-head-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -289,7 +355,11 @@
     grid-template-columns: 140px 1fr;
     align-items: baseline;
     padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.theme-dark .info-row {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
 .info-row:last-child {
@@ -297,17 +367,31 @@
 }
 
 .info-label {
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .info-value {
-    color: #e2e8f0;
+    color: var(--text-main);
     font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Açık temada kart içi metinlerin beyaz üzerinde okunaklı olması */
+.theme-light .content-card .info-label {
+    color: #6c7a89;
+}
+
+.theme-light .content-card .info-value {
+    color: #142850;
+}
+
+.theme-light .content-card .info-value svg {
+    color: #142850;
+    opacity: 0.9;
 }
 
 /* Form */
@@ -324,7 +408,7 @@
 }
 
 .profile-form .form-row label {
-    color: #cbd5e1;
+    color: var(--text-body);
     font-size: 0.9rem;
     font-weight: 500;
 }
@@ -332,19 +416,24 @@
 .profile-form input {
     width: 100%;
     max-width: 320px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: var(--background-color);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: var(--radius-card);
     padding: 0.7rem 1rem;
-    color: #fff;
+    color: var(--text-main);
     font-size: 1rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.theme-dark .profile-form input {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
 .profile-form input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.15);
 }
 
 .form-actions {
@@ -358,7 +447,7 @@
 .profile-error {
     text-align: center;
     padding: 4rem 2rem;
-    color: #94a3b8;
+    color: var(--text-secondary);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -368,14 +457,44 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #6366f1;
+    border: 3px solid rgba(15, 23, 42, 0.1);
+    border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
+.theme-dark .spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* Hızlı erişim / Ayarlar linki */
+.profile-quick-links {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.profile-quick-links .quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: color 0.2s;
+}
+
+.profile-quick-links .quick-link:hover {
+    color: var(--primary-color);
+}
+
+.theme-dark .profile-quick-links {
+    border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Responsive */
@@ -390,8 +509,18 @@
 }
 
 @media (max-width: 600px) {
-    .profile-header h1 {
+    .profile-page {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-bottom: 2rem;
+    }
+
+    .profile-page-header .page-title {
         font-size: 1.5rem;
+    }
+
+    .profile-main .content-card {
+        padding: 1.25rem;
     }
 
     .info-row {
@@ -401,5 +530,10 @@
 
     .form-actions {
         flex-wrap: wrap;
+    }
+
+    .card-head {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

@@ -241,38 +241,47 @@ const NewMessagePage = () => {
                     />
                 </div>
 
-                {effectivePlan !== 'FREE' && (
-                    <div className="form-group">
-                        <label>
-                            <FaUser /> Alıcılar (en fazla {limits.maxRecipients} e-posta)
-                        </label>
-                        {recipients.map((email, index) => (
-                            <div key={index} className="recipient-row">
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setRecipient(index, e.target.value)}
-                                    placeholder="ornek@email.com"
-                                    className="form-input recipient-input"
-                                />
-                                {recipients.length > 1 && (
-                                    <button type="button" className="recipient-remove" onClick={() => removeRecipient(index)} aria-label="Alıcıyı kaldır">
-                                        ×
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        {recipients.length < limits.maxRecipients && (
-                            <button type="button" className="recipient-add" onClick={addRecipient}>
-                                + Alıcı ekle
-                            </button>
+                <div className="form-group">
+                    <label>
+                        <FaUser /> Mesajı ileteceğim e-posta adresini girin
+                        {effectivePlan !== 'FREE' && (
+                            <span className="label-hint"> (en fazla {limits.maxRecipients} adres)</span>
                         )}
-                    </div>
-                )}
-
-                {effectivePlan === 'FREE' && (
-                    <p className="form-hint">Bu mesaj yalnızca size iletilecek (tek alıcı).</p>
-                )}
+                    </label>
+                    {effectivePlan === 'FREE' ? (
+                        <input
+                            type="email"
+                            value=""
+                            readOnly
+                            className="form-input recipient-input recipient-readonly"
+                            placeholder="E-posta adresi"
+                        />
+                    ) : (
+                        <>
+                            {recipients.map((email, index) => (
+                                <div key={index} className="recipient-row">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setRecipient(index, e.target.value)}
+                                        placeholder="ornek@email.com"
+                                        className="form-input recipient-input"
+                                    />
+                                    {recipients.length > 1 && (
+                                        <button type="button" className="recipient-remove" onClick={() => removeRecipient(index)} aria-label="Alıcıyı kaldır">
+                                            ×
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            {recipients.length < limits.maxRecipients && (
+                                <button type="button" className="recipient-add" onClick={addRecipient}>
+                                    + Alıcı ekle
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
 
                 <div className="form-group">
                     <label>İletim tarihi ve saati</label>

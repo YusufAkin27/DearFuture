@@ -1,85 +1,123 @@
 .features-container {
-    padding: 4rem 2rem;
-    color: #fff;
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  padding: 4.5rem 1.5rem 4rem;
+  background: radial-gradient(circle at top, rgba(0, 168, 204, 0.06), transparent 55%),
+    radial-gradient(circle at bottom, rgba(20, 40, 80, 0.04), transparent 55%),
+    var(--background-color);
+  color: var(--text-main);
+}
+
+.features-inner {
+  margin: 0 auto;
+  max-width: 1120px;
 }
 
 .features-hero {
-    text-align: center;
-    margin-bottom: 5rem;
-    max-width: 800px;
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.features-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  background: rgba(0, 168, 204, 0.08);
+  color: var(--primary-color);
+  margin-bottom: 1.25rem;
 }
 
 .features-hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  font-size: 2.4rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .features-hero p {
-    font-size: 1.25rem;
-    color: #94a3b8;
-    line-height: 1.6;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
 .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 3rem;
-    width: 100%;
-    max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
+}
+
+@media (max-width: 900px) {
+  .features-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .feature-card {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  background: var(--surface-color);
+  border-radius: var(--radius-card);
+  padding: 1.8rem 1.75rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .feature-card:hover {
-    transform: translateY(-5px);
-    background: rgba(30, 41, 59, 0.7);
-    border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(20, 40, 80, 0.16);
+  border-color: rgba(0, 168, 204, 0.26);
 }
 
 .feature-icon {
-    font-size: 2.5rem;
-    color: #6366f1;
-    margin-bottom: 1.5rem;
-    background: rgba(99, 102, 241, 0.1);
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 1rem;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+  background: rgba(0, 168, 204, 0.08);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
 }
 
 .feature-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
 }
 
 .feature-card p {
-    color: #94a3b8;
-    line-height: 1.6;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.7;
 }
 
 @media (max-width: 768px) {
-    .features-hero h1 {
-        font-size: 2.5rem;
-    }
+  .features-container {
+    padding: 3.5rem 1.25rem 3rem;
+  }
+
+  .features-hero h1 {
+    font-size: 2rem;
+  }
+
+  .features-hero p {
+    font-size: 0.98rem;
+  }
 }
