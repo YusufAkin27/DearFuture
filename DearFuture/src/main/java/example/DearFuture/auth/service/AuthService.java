@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -47,7 +47,7 @@ public class AuthService {
         if (user.isEmpty()) {
             User newUser = new User();
             newUser.setEmail(email);
-            newUser.setRoles(Set.of(Role.USER));
+            newUser.setRoles(EnumSet.of(Role.USER));
             userRepository.save(newUser);
         }
 

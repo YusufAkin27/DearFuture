@@ -65,7 +65,6 @@ const Header = () => {
                         {token ? (
                             <>
                                 <div className="header__nav-links">
-                                    <Link to="/" className={`header__link ${location.pathname === '/' ? 'header__link--active' : ''}`} onClick={closeMenu}>Panel</Link>
                                     <Link to="/new" className={`header__link ${location.pathname === '/new' ? 'header__link--active' : ''}`} onClick={closeMenu}>Yeni Mesaj</Link>
                                     <Link to="/change-subscription" className={`header__link ${location.pathname === '/change-subscription' ? 'header__link--active' : ''}`} onClick={closeMenu}>Abonelik</Link>
                                     <Link to="/settings" className={`header__link ${location.pathname === '/settings' ? 'header__link--active' : ''}`} onClick={closeMenu}>Ayarlar</Link>

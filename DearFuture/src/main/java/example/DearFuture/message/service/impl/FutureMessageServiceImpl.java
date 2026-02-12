@@ -68,7 +68,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         message.setUser(user);
         message.setScheduledAt(request.getScheduledAt());
         message.setStatus(MessageStatus.SCHEDULED);
-        message.setRecipientEmails(Collections.singletonList(user.getEmail()));
+        message.setRecipientEmails(new java.util.ArrayList<>(Collections.singletonList(user.getEmail())));
         message.setPublic(request.getIsPublic() != null && request.getIsPublic());
         
         // Create Content (Defaulting to TEXT)
@@ -77,7 +77,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         content.setTextContent(request.getContent());
         content.setFutureMessage(message);
         
-        message.setContents(Collections.singletonList(content));
+        message.setContents(new java.util.ArrayList<>(Collections.singletonList(content)));
         
         FutureMessage savedMessage = futureMessageRepository.save(message);
         
@@ -140,9 +140,9 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             throw new AccessDeniedException("Not authorized to delete this message");
         }
 
-        if (message.getStatus() == MessageStatus.SCHEDULED && effectivePlan(user) != null && effectivePlan(user).isFree()) {
+        if (effectivePlan(user) != null && effectivePlan(user).isFree()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                    "Ücretsiz hesaplar bekleyen mesajlarını silemez.");
+                    "Ücretsiz hesaplar mevcut mesajları (bekleyen veya iletilen) silemez.");
         }
 
         futureMessageRepository.delete(message);

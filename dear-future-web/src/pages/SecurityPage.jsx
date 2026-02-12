@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import './LegalPage.css';
+import './SecurityPage.css';
 
 const SecurityPage = () => {
     return (
@@ -9,6 +11,12 @@ const SecurityPage = () => {
                     <h1>Güvenlik</h1>
                     <p className="legal-updated">Son güncelleme: 1 Şubat 2026</p>
                 </header>
+
+                <div className="security-account-card">
+                    <h2>Hesap ve güvenlik ayarları</h2>
+                    <p>Hesabınızı dondurma, kalıcı silme, dil ve bildirim tercihleri için ayarlar sayfasını kullanın.</p>
+                    <Link to="/settings" className="security-settings-link">Ayarlara git</Link>
+                </div>
 
                 <div className="legal-content">
                     <section>

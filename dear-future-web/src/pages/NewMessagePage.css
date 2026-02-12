@@ -53,6 +53,45 @@
     margin-top: 0.25rem;
 }
 
+.new-message-allow-hint {
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.plan-features-summary {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.08);
+    border-radius: var(--radius-card);
+    text-align: left;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.theme-dark .plan-features-summary {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.plan-features-summary ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.plan-features-summary li {
+    margin-bottom: 0.35rem;
+}
+
+.recipient-free-hint {
+    margin-bottom: 0.5rem;
+}
+
 .new-message-form {
     background: var(--surface-color);
     border: 1px solid rgba(20, 40, 80, 0.08);
@@ -92,6 +131,71 @@
     color: var(--text-secondary);
     font-size: 0.9rem;
     margin: -0.25rem 0 0 0;
+}
+
+/* Toggle for isPublic */
+.new-message-form .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.new-message-form .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.new-message-form .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.new-message-form .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #475569;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.new-message-form .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.new-message-form input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+.new-message-form input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.new-message-form .toggle-label span {
+    display: block;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.new-message-form .toggle-label p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .form-textarea {

@@ -17,7 +17,9 @@ public class FutureMessageMapper {
         message.setStatus(MessageStatus.SCHEDULED);
         message.setScheduledAt(request.getScheduledAt());
         message.setSentAt(null);
-        message.setRecipientEmails(request.getRecipientEmails());
+        message.setRecipientEmails(request.getRecipientEmails() != null
+                ? new ArrayList<>(request.getRecipientEmails())
+                : new ArrayList<>());
         message.setPublic(request.getIsPublic() != null && request.getIsPublic());
 
         List<FutureMessageContent> contents =

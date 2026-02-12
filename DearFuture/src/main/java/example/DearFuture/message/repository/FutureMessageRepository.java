@@ -3,6 +3,8 @@ package example.DearFuture.message.repository;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.MessageStatus;
 import example.DearFuture.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -67,4 +69,21 @@ public interface FutureMessageRepository extends JpaRepository<FutureMessage, Lo
             ORDER BY fm.sentAt DESC, fm.scheduledAt DESC
             """)
     List<FutureMessage> findPublicMessagesUnlocked(Instant now);
+
+    /** Sayfalı: açılmış ve herkese açık mesajlar. */
+    @Query(value = """
+            SELECT DISTINCT fm FROM FutureMessage fm
+            LEFT JOIN FETCH fm.contents
+            WHERE fm.status IN ('SENT', 'QUEUED')
+            AND fm.isPublic = true
+            AND fm.scheduledAt <= :now
+            ORDER BY fm.sentAt DESC, fm.scheduledAt DESC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT fm) FROM FutureMessage fm
+            WHERE fm.status IN ('SENT', 'QUEUED')
+            AND fm.isPublic = true
+            AND fm.scheduledAt <= :now
+            """)
+    org.springframework.data.domain.Page<FutureMessage> findPublicMessagesUnlocked(Instant now, Pageable pageable);
 }

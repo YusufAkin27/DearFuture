@@ -1,0 +1,40 @@
+.security-account-card {
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.08);
+    border-radius: var(--radius-card, 12px);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.06));
+}
+
+.theme-dark .security-account-card {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.security-account-card h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-main);
+}
+
+.security-account-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.security-settings-link {
+    display: inline-block;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter 0.2s, transform 0.1s;
+}
+
+.security-settings-link:hover {
+    filter: brightness(1.1);
+}

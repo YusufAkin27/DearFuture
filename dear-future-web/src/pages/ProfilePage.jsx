@@ -12,6 +12,7 @@ import {
     FaEnvelope,
     FaCalendarAlt,
     FaCog,
+    FaStar,
 } from 'react-icons/fa';
 import { getProfile, updateProfile, uploadProfilePhoto, deleteProfilePhoto } from '../api/profile';
 import './ProfilePage.css';
@@ -191,6 +192,9 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="profile-quick-links">
+                        <Link to="/public-messages?tab=starred" className="quick-link">
+                            <FaStar /> Yıldızlı mesajlarım
+                        </Link>
                         <Link to="/settings" className="quick-link">
                             <FaCog /> Ayarlar ve güvenlik
                         </Link>

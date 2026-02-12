@@ -22,6 +22,284 @@
     color: var(--text-secondary);
 }
 
+.settings-messages-wrap {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 2rem;
+}
+
+.settings-messages-card {
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.08);
+    border-radius: var(--radius-card);
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-dark .settings-messages-card {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.settings-messages-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.settings-messages-head h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+.settings-new-msg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary-gradient, linear-gradient(135deg, #0ea5e9, #06b6d4));
+    color: #fff;
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius-button);
+    font-size: 0.95rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.settings-new-msg-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35);
+}
+
+.settings-messages-tabs {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: rgba(20, 40, 80, 0.06);
+    padding: 0.5rem;
+    border-radius: var(--radius-card);
+}
+
+.theme-dark .settings-messages-tabs {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-tab-btn:hover {
+    color: var(--primary-color);
+    background: rgba(14, 165, 233, 0.08);
+}
+
+.settings-tab-btn.active {
+    background: var(--primary-gradient, linear-gradient(135deg, #0ea5e9, #06b6d4));
+    color: #fff;
+}
+
+.settings-message-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.settings-message-card {
+    background: var(--background-color);
+    border: 1px solid rgba(20, 40, 80, 0.1);
+    border-radius: var(--radius-card);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.theme-dark .settings-message-card {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.settings-message-card:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.settings-message-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.settings-message-date {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.settings-status-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 99px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.settings-status-badge.pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+
+.settings-status-badge.delivered {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.settings-message-preview {
+    flex: 1;
+    color: var(--text-body);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.settings-message-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(20, 40, 80, 0.08);
+    flex-wrap: wrap;
+}
+
+.theme-dark .settings-message-actions {
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.settings-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.settings-action-btn.edit {
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+}
+
+.settings-action-btn.edit:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.settings-action-btn.delete {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+.settings-action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.settings-action-btn.view-link {
+    background: rgba(0, 168, 204, 0.12);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.settings-action-btn.view-link:hover {
+    background: rgba(0, 168, 204, 0.2);
+}
+
+.settings-free-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.settings-messages-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(20, 40, 80, 0.04);
+    border: 2px dashed rgba(20, 40, 80, 0.12);
+    border-radius: var(--radius-card);
+}
+
+.theme-dark .settings-messages-empty {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.settings-messages-empty-icon {
+    font-size: 2.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.settings-messages-empty h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.settings-messages-empty p {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.settings-empty-cta {
+    display: inline-block;
+    background: var(--primary-gradient, linear-gradient(135deg, #0ea5e9, #06b6d4));
+    color: #fff;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-button);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.settings-empty-cta:hover {
+    transform: translateY(-1px);
+}
+
+.settings-messages-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
 .settings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -242,8 +520,46 @@ input:checked+.slider:before {
     border-bottom: 1px solid rgba(239, 68, 68, 0.15);
 }
 
+.danger-zone-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0;
+    line-height: 1.5;
+}
+
 .theme-dark .danger-zone-header h2 {
     color: #fca5a5;
+}
+
+.danger-zone-warn {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.04);
+}
+
+.danger-zone-warn .danger-zone-header h2 {
+    border-bottom-color: rgba(245, 158, 11, 0.2);
+}
+
+.deactivate-btn {
+    background: rgba(245, 158, 11, 0.9);
+    border: 1px solid #d97706;
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s, filter 0.2s;
+}
+
+.deactivate-btn:hover:not(:disabled) {
+    background: #d97706;
+    filter: brightness(1.05);
+}
+
+.deactivate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .settings-loading,

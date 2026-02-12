@@ -13,6 +13,9 @@ import example.DearFuture.message.service.PublicMessageService;
 import example.DearFuture.user.entity.User;
 import example.DearFuture.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
@@ -46,6 +49,21 @@ public class PublicMessageServiceImpl implements PublicMessageService {
         return messages.stream()
                 .map(m -> toPublicItem(m, starredIds.contains(m.getId())))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PublicMessageItemResponse> getPublicMessages(Long currentUserId, Pageable pageable) {
+        Instant now = Instant.now();
+        Page<FutureMessage> page = futureMessageRepository.findPublicMessagesUnlocked(now, pageable);
+        Set<Long> starredIds = currentUserId != null
+                ? starredRepository.findFutureMessageIdsByUserId(currentUserId).stream()
+                .collect(Collectors.toSet())
+                : Set.of();
+        List<PublicMessageItemResponse> content = page.getContent().stream()
+                .map(m -> toPublicItem(m, starredIds.contains(m.getId())))
+                .collect(Collectors.toList());
+        return new PageImpl<>(content, page.getPageable(), page.getTotalElements());
     }
 
     @Override

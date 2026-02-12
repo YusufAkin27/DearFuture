@@ -92,7 +92,13 @@ const LoginPage = () => {
                         <button
                             type="button"
                             className="login-google-btn"
-                            onClick={() => { window.location.href = '/api/auth/google'; }}
+                            onClick={() => {
+                                // OAuth2 session backend'de tutulduğu için tarayıcı doğrudan backend'e gitmeli (proxy ile cookie/8080 uyuşmaz).
+                                const base = import.meta.env.VITE_BACKEND_URL
+                                    || (import.meta.env.DEV ? 'http://localhost:8080' : '');
+                                const url = base ? `${base.replace(/\/$/, '')}/oauth2/authorization/google` : '/oauth2/authorization/google';
+                                window.location.href = url;
+                            }}
                         >
                             <FaGoogle className="login-google-icon" />
                             <span>Google ile Giriş Yap</span>

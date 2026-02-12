@@ -10,8 +10,8 @@ const WelcomePage = () => {
         navigate('/login');
     };
 
-    const handleDashboard = () => {
-        navigate('/');
+    const handleGoSettings = () => {
+        navigate('/settings');
     };
 
     return (
@@ -34,8 +34,8 @@ const WelcomePage = () => {
                     </p>
 
                     {isLoggedIn ? (
-                        <button className="cta-button" onClick={handleDashboard}>
-                            <span>Panele Git</span>
+                        <button className="cta-button" onClick={handleGoSettings}>
+                            <span>Ayarlara Git</span>
                             <FaThLarge className="button-icon" />
                         </button>
                     ) : (

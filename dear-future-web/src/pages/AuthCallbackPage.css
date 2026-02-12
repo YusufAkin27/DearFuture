@@ -1,0 +1,22 @@
+.auth-callback-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+.auth-callback-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 168, 204, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: auth-callback-spin 0.8s linear infinite;
+}
+
+@keyframes auth-callback-spin {
+    to { transform: rotate(360deg); }
+}

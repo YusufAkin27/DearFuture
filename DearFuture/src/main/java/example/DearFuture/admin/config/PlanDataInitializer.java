@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(0L)
                 .maxFilesPerMessage(0)
                 .maxFileSizeBytes(0L)
-                .features(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj"))
+                .features(new ArrayList<>(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj")))
                 .recommended(false)
                 .active(true)
                 .displayOrder(0)
@@ -78,7 +79,7 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(5L * 1024 * 1024)
                 .maxFilesPerMessage(2)
                 .maxFileSizeBytes(10L * 1024 * 1024)
-                .features(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler"))
+                .features(new ArrayList<>(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler")))
                 .recommended(true)
                 .active(true)
                 .displayOrder(1)
@@ -99,7 +100,7 @@ public class PlanDataInitializer implements CommandLineRunner {
                 .maxPhotoSizeBytes(10L * 1024 * 1024)
                 .maxFilesPerMessage(5)
                 .maxFileSizeBytes(20L * 1024 * 1024)
-                .features(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler"))
+                .features(new ArrayList<>(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler")))
                 .recommended(false)
                 .active(true)
                 .displayOrder(2)
@@ -120,7 +121,7 @@ public class PlanDataInitializer implements CommandLineRunner {
             plan.setMaxPhotoSizeBytes(0L);
             plan.setMaxFilesPerMessage(0);
             plan.setMaxFileSizeBytes(0L);
-            plan.setFeatures(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj"));
+            plan.setFeatures(new ArrayList<>(List.of("3 mesaj hakkı (toplam)", "Her ay yenilenmez", "Fotoğraf/dosya yüklenemez", "Sadece metin", "1 alıcı / mesaj")));
             planRepository.save(plan);
             log.info("Updated plan FREE to default limits");
         });
@@ -133,7 +134,7 @@ public class PlanDataInitializer implements CommandLineRunner {
             plan.setMaxPhotoSizeBytes(5L * 1024 * 1024);
             plan.setMaxFilesPerMessage(2);
             plan.setMaxFileSizeBytes(10L * 1024 * 1024);
-            plan.setFeatures(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler"));
+            plan.setFeatures(new ArrayList<>(List.of("15 mesaj/ay", "Her ay yenilenir", "Fotoğraf & dosya", "5 alıcı / mesaj", "Öncelikli özellikler")));
             planRepository.save(plan);
             log.info("Updated plan PLUS to default limits");
         });
@@ -146,7 +147,7 @@ public class PlanDataInitializer implements CommandLineRunner {
             plan.setMaxPhotoSizeBytes(10L * 1024 * 1024);
             plan.setMaxFilesPerMessage(5);
             plan.setMaxFileSizeBytes(20L * 1024 * 1024);
-            plan.setFeatures(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler"));
+            plan.setFeatures(new ArrayList<>(List.of("20 mesaj/ay", "Her ay yenilenir", "Fotoğraf, dosya & ses kaydı", "20 alıcı / mesaj", "Tüm özellikler")));
             planRepository.save(plan);
             log.info("Updated plan PREMIUM to default limits");
         });

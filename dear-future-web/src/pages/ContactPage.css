@@ -165,6 +165,65 @@
   box-shadow: 0 6px 20px rgba(0, 168, 204, 0.35);
 }
 
+.contact-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.contact-field-error {
+  display: block;
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: 0.35rem;
+}
+
+.contact-input-error {
+  border-color: #dc2626 !important;
+}
+
+.contact-char-count {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  text-align: right;
+}
+
+.contact-verify-wrap {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.contact-verify-form .contact-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.contact-code-input {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+}
+
+.contact-done {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.contact-done h1 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.contact-done p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
 @media (max-width: 900px) {
   .contact-grid {
     grid-template-columns: 1fr;

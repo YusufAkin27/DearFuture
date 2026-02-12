@@ -26,6 +26,7 @@ const NewMessagePage = () => {
     const [files, setFiles] = useState([]);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const [uploadingFile, setUploadingFile] = useState(false);
+    const [isPublic, setIsPublic] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -39,7 +40,7 @@ const NewMessagePage = () => {
                 if (cancelled) return;
                 const user = profileRes.data;
                 const isExpired = user.subscriptionEndsAt && new Date(user.subscriptionEndsAt) < new Date();
-                const plan = isExpired ? 'FREE' : (user.subscriptionPlan || 'FREE');
+                const plan = isExpired ? 'FREE' : (user.subscriptionPlanCode ?? user.subscriptionPlan ?? 'FREE');
                 setProfile({ ...user, effectivePlan: plan });
                 const pendingList = Array.isArray(pendingRes.data) ? pendingRes.data : [];
                 const deliveredList = Array.isArray(deliveredRes.data) ? deliveredRes.data : [];
@@ -164,7 +165,7 @@ const NewMessagePage = () => {
         try {
             const scheduledAtISO = at.toISOString();
             if (effectivePlan === 'FREE') {
-                await createMessage({ content: content.trim(), scheduledAt: scheduledAtISO });
+                await createMessage({ content: content.trim(), scheduledAt: scheduledAtISO, isPublic });
                 toast.success('Mesajınız zamanlandı.');
             } else {
                 const emails = recipients.map((e) => e.trim()).filter(Boolean);
@@ -187,6 +188,7 @@ const NewMessagePage = () => {
                     recipientEmails: emails,
                     scheduledAt: scheduledAtISO,
                     contents,
+                    isPublic,
                 });
                 toast.success('Mesajınız zamanlandı.');
             }
@@ -222,8 +224,40 @@ const NewMessagePage = () => {
                             ? `${totalCount} / ${limits.maxMessages} mesaj`
                             : `${pendingCount} / ${limits.maxMessages} zamanlanmış mesaj`}
                     </span>
-                    {!canAddMore && (
+                    {effectivePlan === 'FREE' && canAddMore && (
+                        <span className="new-message-allow-hint">Ücretsiz hesapta toplam 3 mesaj (bekleyen + iletilen) hakkınız var. Şu an {totalCount}/3 kullanıyorsunuz.</span>
+                    )}
+                    {effectivePlan === 'FREE' && !canAddMore && (
+                        <span className="plan-limit-warn">Ücretsiz hesapta toplam 3 mesaj limitine ulaştınız. Yeni mesaj eklemek için planı yükseltin veya mevcut bir mesajı silin.</span>
+                    )}
+                    {effectivePlan !== 'FREE' && !canAddMore && (
                         <span className="plan-limit-warn">Limit doldu. Yeni mesaj için planınızı yükseltin veya mevcut bir mesajı silin.</span>
+                    )}
+                </div>
+                <div className="plan-features-summary">
+                    {effectivePlan === 'FREE' && (
+                        <ul>
+                            <li>Toplam 3 mesaj (bekleyen + iletilen)</li>
+                            <li>Sadece metin</li>
+                            <li>Tek alıcı (size iletilecek)</li>
+                            <li>Herkese açık seçeneği</li>
+                        </ul>
+                    )}
+                    {effectivePlan === 'PLUS' && (
+                        <ul>
+                            <li>20 zamanlanmış mesaj</li>
+                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB)</li>
+                            <li>5 alıcı</li>
+                            <li>Herkese açık seçeneği</li>
+                        </ul>
+                    )}
+                    {effectivePlan === 'PREMIUM' && (
+                        <ul>
+                            <li>100 zamanlanmış mesaj</li>
+                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB) + ses (yakında)</li>
+                            <li>20 alıcı</li>
+                            <li>Herkese açık seçeneği</li>
+                        </ul>
                     )}
                 </div>
             </header>
@@ -249,13 +283,16 @@ const NewMessagePage = () => {
                         )}
                     </label>
                     {effectivePlan === 'FREE' ? (
-                        <input
-                            type="email"
-                            value=""
-                            readOnly
-                            className="form-input recipient-input recipient-readonly"
-                            placeholder="E-posta adresi"
-                        />
+                        <>
+                            <p className="form-hint recipient-free-hint">Bu mesaj size iletilecek (e-posta: {profile?.email || '—'})</p>
+                            <input
+                                type="email"
+                                value={profile?.email || ''}
+                                readOnly
+                                className="form-input recipient-input recipient-readonly"
+                                placeholder="E-posta adresi"
+                            />
+                        </>
                     ) : (
                         <>
                             {recipients.map((email, index) => (
@@ -292,6 +329,21 @@ const NewMessagePage = () => {
                         className="form-input"
                         required
                     />
+                </div>
+
+                <div className="form-group checkbox-group">
+                    <label className="toggle-switch">
+                        <input
+                            type="checkbox"
+                            checked={isPublic}
+                            onChange={(e) => setIsPublic(e.target.checked)}
+                        />
+                        <span className="slider round" />
+                    </label>
+                    <div className="toggle-label">
+                        <span>Herkese açık</span>
+                        <p>Mesaj iletildikten sonra herkese açık sayfada listelensin.</p>
+                    </div>
                 </div>
 
                 {limits.photo && maxPhotos > 0 && (

@@ -1,8 +1,8 @@
 package example.DearFuture.auth.handler;
 
 import example.DearFuture.auth.jwt.JwtUtil;
+import example.DearFuture.auth.service.CustomOAuth2UserService;
 import example.DearFuture.user.entity.User;
-import example.DearFuture.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final UserRepository userRepository;
+    private final CustomOAuth2UserService oauth2UserService;
     private final JwtUtil jwtUtil;
 
     @Value("${app.frontend-url:http://localhost:5173}")
@@ -41,12 +41,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             return;
         }
 
-        User user = userRepository.findByEmail(email.trim().toLowerCase()).orElse(null);
-        if (user == null) {
-            redirectWithError(request, response, "Kullanıcı bulunamadı.");
-            return;
-        }
-
+        User user = oauth2UserService.getOrCreateUserFromOAuth2(oauth2User);
         String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRoles());
         String redirectUrl = buildRedirectUrl(token, null);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);

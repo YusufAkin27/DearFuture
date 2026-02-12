@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import LoginPage from './pages/LoginPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
 import WelcomePage from './pages/WelcomePage';
 import VerifyPage from './pages/VerifyPage';
-import DashboardPage from './pages/DashboardPage';
 import NewMessagePage from './pages/NewMessagePage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
@@ -19,6 +19,9 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SecurityPage from './pages/SecurityPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import PublicMessagesPage from './pages/PublicMessagesPage';
+import MessageViewPage from './pages/MessageViewPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -52,6 +55,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/welcome" element={<WelcomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/pricing" element={<PricingPage />} />
 
@@ -63,12 +67,15 @@ function App() {
 
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/cookie-policy" element={<CookiePolicyPage />} />
           <Route path="/security" element={<SecurityPage />} />
+          <Route path="/public-messages" element={<PublicMessagesPage />} />
+          <Route path="/message/view/:viewToken" element={<MessageViewPage />} />
 
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
             <Route element={<ProtectedLayout />}>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/" element={<Navigate to="/settings" replace />} />
               <Route path="/new" element={<NewMessagePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/change-subscription" element={<ChangeSubscriptionPage />} />

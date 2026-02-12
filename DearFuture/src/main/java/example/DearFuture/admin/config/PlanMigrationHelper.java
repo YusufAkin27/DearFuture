@@ -31,7 +31,7 @@ public class PlanMigrationHelper {
                 log.info("Migrated {} existing users to new plan entity references.", updated);
             }
         } catch (Exception e) {
-            log.warn("User migration skipped (old subscription_plan column may not exist): {}", e.getMessage());
+            log.debug("User plan migration skipped (table may not have old subscription_plan column): {}", e.getMessage());
             throw e;
         }
     }

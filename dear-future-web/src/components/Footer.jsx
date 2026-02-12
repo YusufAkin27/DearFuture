@@ -23,6 +23,12 @@ const Footer = () => {
 
                     <div className="footer-links-grid">
                         <div className="link-column">
+                            <h3>Keşfet</h3>
+                            <ul>
+                                <li><Link to="/public-messages">Herkese Açık Mesajlar</Link></li>
+                            </ul>
+                        </div>
+                        <div className="link-column">
                             <h3>Kurumsal</h3>
                             <ul>
                                 <li><Link to="/about">Hakkımızda</Link></li>
@@ -34,6 +40,7 @@ const Footer = () => {
                             <ul>
                                 <li><Link to="/privacy">Gizlilik Politikası</Link></li>
                                 <li><Link to="/terms">Kullanım Şartları</Link></li>
+                                <li><Link to="/cookie-policy">Çerez Politikası</Link></li>
                                 <li><Link to="/security">Güvenlik</Link></li>
                             </ul>
                         </div>

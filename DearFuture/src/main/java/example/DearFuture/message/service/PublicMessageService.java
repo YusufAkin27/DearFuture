@@ -1,6 +1,8 @@
 package example.DearFuture.message.service;
 
 import example.DearFuture.message.dto.response.PublicMessageItemResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,6 +16,11 @@ public interface PublicMessageService {
      * @param currentUserId giriş yapan kullanıcı id (null ise misafir)
      */
     List<PublicMessageItemResponse> getPublicMessages(Long currentUserId);
+
+    /**
+     * Açılmış ve public olan mesajları sayfalı listeler.
+     */
+    Page<PublicMessageItemResponse> getPublicMessages(Long currentUserId, Pageable pageable);
 
     /**
      * Giriş yapan kullanıcının yıldızladığı mesajları listeler.
