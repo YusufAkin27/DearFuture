@@ -24,6 +24,7 @@ const CardNav = ({
   themeDark = false,
   onThemeToggle,
   themeToggleAriaLabel,
+  isOnGalaxy = false,
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -175,7 +176,7 @@ const CardNav = ({
   };
 
   return (
-    <div className={`card-nav-container ${className}`}>
+    <div className={`card-nav-container${isOnGalaxy ? ' card-nav-container--on-galaxy' : ''}${className ? ` ${className}` : ''}`}>
       <nav
         ref={navRef}
         className={`card-nav ${isExpanded ? 'open' : ''}`}

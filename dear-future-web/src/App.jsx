@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
@@ -25,15 +25,19 @@ import MessageViewPage from './pages/MessageViewPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Layout = () => (
-  <div className="app-layout">
-    <Header />
-    <main className="app-main">
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
+const Layout = () => {
+  const location = useLocation();
+  const isWelcome = location.pathname === '/welcome';
+  return (
+    <div className={`app-layout${isWelcome ? ' app-layout--welcome' : ''}`}>
+      <Header />
+      <main className="app-main">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 const ProtectedLayout = () => (
   <div className="app-protected">

@@ -28,6 +28,11 @@ body {
   --header-height: 72px;
 }
 
+/* Welcome: header bölgesi de galaksiyle aynı koyu arka plan (siyah galaxy) */
+.app-layout--welcome {
+  background-color: #050508;
+}
+
 .app-main {
   flex: 1;
   display: flex;

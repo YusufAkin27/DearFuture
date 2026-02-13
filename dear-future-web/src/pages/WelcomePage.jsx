@@ -19,8 +19,7 @@ const WelcomePage = () => {
         <div className="welcome-page">
             <div className="welcome-galaxy-wrap">
                 <Galaxy
-                    mouseRepulsion
-                    mouseInteraction
+                    mouseInteraction={false}
                     density={1}
                     glowIntensity={0.3}
                     saturation={0}
@@ -35,9 +34,7 @@ const WelcomePage = () => {
             </div>
             <div className="welcome-container">
                 <div className="hero-content">
-                <div className="welcome-logo-block">
-                    <img src="/mektup.gif" alt="" className="welcome-envelope-gif" aria-hidden="true" />
-                </div>
+         
              
 
                     <h1 className="welcome-title">

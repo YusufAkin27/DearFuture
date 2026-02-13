@@ -1,4 +1,4 @@
-/* CardNav – Dear Future header, tema uyumlu */
+/* CardNav – Dear Future header, tek font + dark theme */
 .card-nav-container {
   position: sticky;
   top: 0;
@@ -11,34 +11,33 @@
   padding: 1rem 0 0;
 }
 
-/* Welcome sayfasında: header en üste, galaxy üzerinde cam efekti */
-.header--on-galaxy .card-nav-container {
+/* Welcome/galaxy sayfasında üst boşluk az */
+.card-nav-container--on-galaxy {
   padding: 0.35rem 0 0;
 }
 
-.header--on-galaxy .card-nav {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+/* Tamamen şeffaf bar; border ve gölge yok */
+.card-nav {
+  font-family: inherit;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .card-nav {
   display: block;
   height: 60px;
   padding: 0;
-  background-color: var(--card-nav-bg, #fff);
-  border: 1px solid rgba(20, 40, 80, 0.08);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
   will-change: height;
 }
 
 .theme-dark .card-nav {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .card-nav-top {

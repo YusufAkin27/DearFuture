@@ -93,35 +93,33 @@ const Header = () => {
   const items = isLoggedIn ? PRIVATE_ITEMS : PUBLIC_ITEMS;
   const isWelcomePage = location.pathname === '/welcome';
 
-  const baseColor = isWelcomePage
-    ? 'rgba(5, 8, 18, 0.4)'
-    : (dark ? 'var(--surface-color)' : '#fff');
-  const menuColor = isWelcomePage ? 'rgba(255,255,255,0.9)' : (dark ? 'rgba(255,255,255,0.9)' : '#111');
-  const buttonBg = isWelcomePage ? 'rgba(0, 168, 204, 0.85)' : (dark ? 'var(--primary-color)' : '#111');
+  /* Tamamen şeffaf bar; arka plan (galaksi) görünsün */
+  const baseColor = 'transparent';
+  const menuColor = 'rgba(255, 255, 255, 0.92)';
+  const buttonBg = 'var(--primary-color)';
   const buttonText = '#fff';
 
   return (
-    <header className={`header header--card-nav ${isWelcomePage ? 'header--on-galaxy' : ''}`} role="banner">
-      <CardNav
-        logo="/logo.png"
-        logoAlt="Dear Future"
-        logoText="Dear Future"
-        logoTo={isLoggedIn ? '/' : '/welcome'}
-        items={items}
-        baseColor={baseColor}
-        menuColor={menuColor}
-        buttonBgColor={buttonBg}
-        buttonTextColor={buttonText}
-        ctaLabel={isLoggedIn ? 'Çıkış Yap' : 'Giriş Yap'}
-        ctaTo={isLoggedIn ? undefined : '/login'}
-        onCtaClick={isLoggedIn ? handleLogout : undefined}
-        showThemeToggle={!isWelcomePage}
-        themeDark={dark}
-        onThemeToggle={handleThemeToggle}
-        themeToggleAriaLabel={dark ? 'Açık tema' : 'Koyu tema'}
-        ease="power3.out"
-      />
-    </header>
+    <CardNav
+      logo="/logo.png"
+      logoAlt="Dear Future"
+      logoText="Dear Future"
+      logoTo={isLoggedIn ? '/' : '/welcome'}
+      items={items}
+      baseColor={baseColor}
+      menuColor={menuColor}
+      buttonBgColor={buttonBg}
+      buttonTextColor={buttonText}
+      ctaLabel={isLoggedIn ? 'Çıkış Yap' : 'Giriş Yap'}
+      ctaTo={isLoggedIn ? undefined : '/login'}
+      onCtaClick={isLoggedIn ? handleLogout : undefined}
+      showThemeToggle={!isWelcomePage}
+      themeDark={dark}
+      onThemeToggle={handleThemeToggle}
+      themeToggleAriaLabel={dark ? 'Açık tema' : 'Koyu tema'}
+      ease="power3.out"
+      isOnGalaxy={isWelcomePage}
+    />
   );
 };
 
