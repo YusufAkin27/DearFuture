@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getPlans } from '../api/subscription';
+import AnimatedContent from '../components/AnimatedContent';
 import './PricingPage.css';
 
 const PricingPage = () => {
@@ -74,27 +75,44 @@ const PricingPage = () => {
             </header>
 
             <div className="pricing-cards">
-                {plans.map((plan) => (
-                    <div key={plan.id} className={`pricing-card ${plan.recommended ? 'recommended' : ''}`}>
-                        {plan.recommended && <span className="pricing-badge">Önerilen</span>}
-                        <h2 className="pricing-plan-name">{plan.name}</h2>
-                        <div className="pricing-price-block">
-                            <span className="pricing-price">{plan.price === 0 ? 'Ücretsiz' : plan.price}</span>
-                            {plan.price > 0 && <span className="pricing-price-label">{plan.priceLabel}</span>}
+                {plans.map((plan, index) => (
+                    <AnimatedContent
+                        key={plan.id}
+                        distance={100}
+                        direction="vertical"
+                        reverse={false}
+                        duration={0.8}
+                        ease="power3.out"
+                        initialOpacity={0}
+                        animateOpacity
+                        scale={1}
+                        threshold={0.1}
+                        delay={index * 0.15}
+                    >
+                        <div className={`pricing-card ${plan.recommended ? 'recommended' : ''}`}>
+                            {plan.recommended && <span className="pricing-badge">Önerilen</span>}
+                            <h2 className="pricing-plan-name">{plan.name}</h2>
+                            {plan.description && (
+                                <p className="pricing-plan-description">{plan.description}</p>
+                            )}
+                            <div className="pricing-price-block">
+                                <span className="pricing-price">{plan.price === 0 ? 'Ücretsiz' : plan.price}</span>
+                                {plan.price > 0 && <span className="pricing-price-label">{plan.priceLabel}</span>}
+                            </div>
+                            <ul className="pricing-features">
+                                {plan.features?.map((feature, i) => (
+                                    <li key={i}>{feature}</li>
+                                ))}
+                            </ul>
+                            <button
+                                type="button"
+                                className="pricing-cta"
+                                onClick={() => handleSelectPlan(plan.id)}
+                            >
+                                {plan.id === 'FREE' ? 'Ücretsiz Başla' : 'Planı Seç'}
+                            </button>
                         </div>
-                        <ul className="pricing-features">
-                            {plan.features?.map((feature, index) => (
-                                <li key={index}>{feature}</li>
-                            ))}
-                        </ul>
-                        <button
-                            type="button"
-                            className="pricing-cta"
-                            onClick={() => handleSelectPlan(plan.id)}
-                        >
-                            {plan.id === 'FREE' ? 'Ücretsiz Başla' : 'Planı Seç'}
-                        </button>
-                    </div>
+                    </AnimatedContent>
                 ))}
             </div>
         </div>

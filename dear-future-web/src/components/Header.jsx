@@ -1,98 +1,128 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
+import CardNav from './CardNav';
 import { getTheme, toggleTheme } from '../theme';
-import './Header.css';
+
+const PUBLIC_ITEMS = [
+  {
+    label: 'Keşfet',
+    bgColor: '#0D0716',
+    textColor: '#fff',
+    links: [
+      { label: 'Ana Sayfa', to: '/welcome', ariaLabel: 'Ana sayfa' },
+      { label: 'Özellikler', to: '/features', ariaLabel: 'Özellikler' },
+      { label: 'Blog', to: '/blog', ariaLabel: 'Blog' },
+      { label: 'Fiyatlandırma', to: '/pricing', ariaLabel: 'Fiyatlandırma' }
+    ]
+  },
+  {
+    label: 'Hakkında',
+    bgColor: '#170D27',
+    textColor: '#fff',
+    links: [
+      { label: 'Hakkımızda', to: '/about', ariaLabel: 'Hakkımızda' },
+      { label: 'İletişim', to: '/contact', ariaLabel: 'İletişim' }
+    ]
+  },
+  {
+    label: 'Yasal',
+    bgColor: '#271E37',
+    textColor: '#fff',
+    links: [
+      { label: 'Gizlilik', to: '/privacy', ariaLabel: 'Gizlilik politikası' },
+      { label: 'Kullanım Şartları', to: '/terms', ariaLabel: 'Kullanım şartları' },
+      { label: 'Çerez Politikası', to: '/cookie-policy', ariaLabel: 'Çerez politikası' }
+    ]
+  }
+];
+
+const PRIVATE_ITEMS = [
+  {
+    label: 'Mesajlar',
+    bgColor: '#0D0716',
+    textColor: '#fff',
+    links: [
+      { label: 'Yeni Mesaj', to: '/new', ariaLabel: 'Yeni mesaj yaz' }
+    ]
+  },
+  {
+    label: 'Hesabım',
+    bgColor: '#170D27',
+    textColor: '#fff',
+    links: [
+      { label: 'Profil', to: '/profile', ariaLabel: 'Profil' },
+      { label: 'Ayarlar', to: '/settings', ariaLabel: 'Ayarlar' }
+    ]
+  },
+  {
+    label: 'Plan',
+    bgColor: '#271E37',
+    textColor: '#fff',
+    links: [
+      { label: 'Abonelik', to: '/change-subscription', ariaLabel: 'Abonelik planı' }
+    ]
+  }
+];
 
 const Header = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [dark, setDark] = useState(() => getTheme() === 'dark');
-    const [scrolled, setScrolled] = useState(false);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const token = localStorage.getItem('token');
+  const [dark, setDark] = useState(() => getTheme() === 'dark');
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 8);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+  useEffect(() => {
+    setToken(localStorage.getItem('token'));
+  }, [location.pathname]);
 
-    useEffect(() => {
-        if (isOpen) document.body.classList.add('header-menu-open');
-        else document.body.classList.remove('header-menu-open');
-        return () => document.body.classList.remove('header-menu-open');
-    }, [isOpen]);
+  useEffect(() => {
+    setDark(getTheme() === 'dark');
+  }, []);
 
-    const handleLogout = () => {
-        setIsOpen(false);
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    navigate('/login');
+  };
 
-    const handleThemeToggle = () => {
-        const next = toggleTheme();
-        setDark(next === 'dark');
-    };
+  const handleThemeToggle = () => {
+    const next = toggleTheme();
+    setDark(next === 'dark');
+  };
 
-    const toggleMenu = () => setIsOpen((prev) => !prev);
-    const closeMenu = () => setIsOpen(false);
+  const isLoggedIn = !!token;
+  const items = isLoggedIn ? PRIVATE_ITEMS : PUBLIC_ITEMS;
+  const isWelcomePage = location.pathname === '/welcome';
 
-    return (
-        <header className={`header ${scrolled ? 'header--scrolled' : ''}`} role="banner">
-            <div className="header__backdrop" aria-hidden="true" onClick={closeMenu} data-open={isOpen} />
-            <div className="header__container">
-                <Link to="/" className="header__logo" onClick={closeMenu} aria-label="Dear Future Ana Sayfa">
-                    <img src="/logo.png" alt="" className="header__logo-img" />
-                    <span className="header__logo-text">Dear Future</span>
-                </Link>
+  const baseColor = isWelcomePage
+    ? 'rgba(5, 8, 18, 0.4)'
+    : (dark ? 'var(--surface-color)' : '#fff');
+  const menuColor = isWelcomePage ? 'rgba(255,255,255,0.9)' : (dark ? 'rgba(255,255,255,0.9)' : '#111');
+  const buttonBg = isWelcomePage ? 'rgba(0, 168, 204, 0.85)' : (dark ? 'var(--primary-color)' : '#111');
+  const buttonText = '#fff';
 
-                <button
-                    type="button"
-                    className="header__burger"
-                    onClick={toggleMenu}
-                    aria-expanded={isOpen}
-                    aria-controls="header-nav"
-                    aria-label={isOpen ? 'Menüyü kapat' : 'Menüyü aç'}
-                >
-                    <span className="header__burger-bar" data-open={isOpen} />
-                    <span className="header__burger-bar" data-open={isOpen} />
-                    <span className="header__burger-bar" data-open={isOpen} />
-                </button>
-
-                <nav id="header-nav" className={`header__nav ${isOpen ? 'header__nav--open' : ''}`} aria-label="Ana navigasyon">
-                    <div className="header__nav-inner">
-                        {token ? (
-                            <>
-                                <div className="header__nav-links">
-                                    <Link to="/new" className={`header__link ${location.pathname === '/new' ? 'header__link--active' : ''}`} onClick={closeMenu}>Yeni Mesaj</Link>
-                                    <Link to="/change-subscription" className={`header__link ${location.pathname === '/change-subscription' ? 'header__link--active' : ''}`} onClick={closeMenu}>Abonelik</Link>
-                                    <Link to="/settings" className={`header__link ${location.pathname === '/settings' ? 'header__link--active' : ''}`} onClick={closeMenu}>Ayarlar</Link>
-                                    <Link to="/profile" className={`header__link ${location.pathname === '/profile' ? 'header__link--active' : ''}`} onClick={closeMenu}>Profil</Link>
-                                </div>
-                                <div className="header__actions">
-                                    <button type="button" className="header__theme" onClick={handleThemeToggle} title={dark ? 'Açık tema' : 'Koyu tema'} aria-label="Tema değiştir">
-                                        {dark ? <FaSun /> : <FaMoon />}
-                                    </button>
-                                    <button type="button" onClick={handleLogout} className="header__logout">Çıkış Yap</button>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="header__nav-links">
-                                    <Link to="/welcome" className={`header__link ${location.pathname === '/welcome' ? 'header__link--active' : ''}`} onClick={closeMenu}>Ana Sayfa</Link>
-                                    <Link to="/features" className={`header__link ${location.pathname === '/features' ? 'header__link--active' : ''}`} onClick={closeMenu}>Özellikler</Link>
-                                    <Link to="/blog" className={`header__link ${location.pathname === '/blog' ? 'header__link--active' : ''}`} onClick={closeMenu}>Blog</Link>
-                                    <Link to="/pricing" className={`header__link ${location.pathname === '/pricing' ? 'header__link--active' : ''}`} onClick={closeMenu}>Fiyatlandırma</Link>
-                                </div>
-                                <Link to="/login" className="header__cta" onClick={closeMenu}>Giriş Yap</Link>
-                            </>
-                        )}
-                    </div>
-                </nav>
-            </div>
-        </header>
-    );
+  return (
+    <header className={`header header--card-nav ${isWelcomePage ? 'header--on-galaxy' : ''}`} role="banner">
+      <CardNav
+        logo="/logo.png"
+        logoAlt="Dear Future"
+        logoText="Dear Future"
+        logoTo={isLoggedIn ? '/' : '/welcome'}
+        items={items}
+        baseColor={baseColor}
+        menuColor={menuColor}
+        buttonBgColor={buttonBg}
+        buttonTextColor={buttonText}
+        ctaLabel={isLoggedIn ? 'Çıkış Yap' : 'Giriş Yap'}
+        ctaTo={isLoggedIn ? undefined : '/login'}
+        onCtaClick={isLoggedIn ? handleLogout : undefined}
+        showThemeToggle={!isWelcomePage}
+        themeDark={dark}
+        onThemeToggle={handleThemeToggle}
+        themeToggleAriaLabel={dark ? 'Açık tema' : 'Koyu tema'}
+        ease="power3.out"
+      />
+    </header>
+  );
 };
 
 export default Header;

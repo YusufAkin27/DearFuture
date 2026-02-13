@@ -8,10 +8,10 @@ export const getPlans = async () => {
 
 /**
  * Üyelik ödemesi başlat (iyzico checkout). Yanıtta paymentPageUrl döner; kullanıcı bu URL'e yönlendirilir.
- * @param {'PLUS'|'PREMIUM'} plan
+ * @param {'PLUS'|'PREMIUM'} planCode
  */
-export const initializeCheckout = async (plan) => {
-    const response = await api.post('/subscription/checkout/initialize', { plan });
+export const initializeCheckout = async (planCode) => {
+    const response = await api.post('/subscription/checkout/initialize', { planCode });
     return response.data;
 };
 

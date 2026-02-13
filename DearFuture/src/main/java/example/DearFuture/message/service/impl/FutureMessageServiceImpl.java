@@ -51,6 +51,16 @@ public class FutureMessageServiceImpl implements FutureMessageService {
 
     private static final String CLOUDINARY_MESSAGES_FOLDER = "dearfuture/messages";
 
+    /** İzin verilen dosya uzantıları (FILE yüklemeleri): belge, arşiv, veri vb. */
+    private static final Set<String> ALLOWED_FILE_EXTENSIONS = Set.of(
+            "pdf", "doc", "docx", "docm", "xls", "xlsx", "xlsm", "ppt", "pptx", "pptm",
+            "odt", "ods", "odp", "odg", "odf", "odm", "odb",
+            "txt", "rtf", "csv", "md", "tex",
+            "zip", "rar", "7z", "tar", "gz", "bz2", "xz",
+            "json", "xml", "yaml", "yml",
+            "epub", "ics"
+    );
+
     private final FutureMessageRepository futureMessageRepository;
     private final FutureMessageContentRepository futureMessageContentRepository;
     private final UserRepository userRepository;
@@ -297,6 +307,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                         "Dosya boyutu en fazla " + (plan.getMaxFileSizeBytes() / (1024 * 1024)) + " MB olabilir.");
             }
+            String ext = getFileExtension(file.getOriginalFilename());
+            if (ext == null || !ALLOWED_FILE_EXTENSIONS.contains(ext.toLowerCase())) {
+                throw new IllegalArgumentException(
+                        "Desteklenmeyen dosya türü. İzin verilenler: PDF, Word, Excel, PowerPoint, " +
+                        "OpenDocument, TXT, RTF, CSV, MD, ZIP, RAR, 7Z, TAR, GZ, JSON, XML, EPUB vb.");
+            }
         } else {
             throw new IllegalArgumentException("type IMAGE veya FILE olmalıdır.");
         }
@@ -321,6 +337,13 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         } catch (IOException e) {
             throw new IllegalArgumentException("Dosya yüklenemedi: " + e.getMessage());
         }
+    }
+
+    private static String getFileExtension(String filename) {
+        if (filename == null || filename.isBlank()) return null;
+        int lastDot = filename.lastIndexOf('.');
+        if (lastDot < 0 || lastDot == filename.length() - 1) return null;
+        return filename.substring(lastDot + 1).trim();
     }
 
     private User getCurrentUser() {

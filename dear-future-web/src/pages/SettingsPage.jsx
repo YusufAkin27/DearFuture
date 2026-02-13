@@ -103,9 +103,9 @@ const SettingsPage = () => {
 
     const planCode = profile?.subscriptionPlanCode ?? profile?.subscriptionPlan ?? 'FREE';
     const planName = profile?.subscriptionPlanName ?? planCode;
-    const effectivePlan = profile?.subscriptionEndsAt && new Date(profile.subscriptionEndsAt) < new Date()
-        ? 'FREE'
-        : (profile?.subscriptionPlan || 'FREE');
+    const subscriptionExpired = profile?.subscriptionEndsAt && new Date(profile.subscriptionEndsAt) < new Date();
+    const effectivePlan = subscriptionExpired ? 'FREE' : (planCode || 'FREE');
+    const canEditDeleteMessages = effectivePlan !== 'FREE';
 
     const hasActiveSubscription = () => {
         if (!planCode || planCode === 'FREE') return false;
@@ -196,6 +196,12 @@ const SettingsPage = () => {
                             <FaPlus /> Yeni Mesaj
                         </Link>
                     </div>
+                    <p className="settings-plan-badge">
+                        Planınız: <strong>{planName}</strong>
+                        {subscriptionExpired && planCode !== 'FREE' && (
+                            <span className="settings-plan-expired"> (süre doldu, Ücretsiz geçerli)</span>
+                        )}
+                    </p>
                     <div className="settings-messages-tabs">
                         <button
                             type="button"
@@ -257,7 +263,7 @@ const SettingsPage = () => {
                                             {msg.content && msg.content.length > 150 && '...'}
                                         </div>
                                         <div className="settings-message-actions">
-                                            {msgTab === 'pending' && effectivePlan !== 'FREE' && (
+                                            {msgTab === 'pending' && canEditDeleteMessages && (
                                                 <>
                                                     <button
                                                         type="button"
@@ -277,17 +283,34 @@ const SettingsPage = () => {
                                                     </button>
                                                 </>
                                             )}
-                                            {msgTab === 'pending' && effectivePlan === 'FREE' && (
-                                                <span className="settings-free-hint">Ücretsiz hesapta bekleyen mesajlar düzenlenemez veya silinemez.</span>
+                                            {msgTab === 'pending' && !canEditDeleteMessages && (
+                                                <span className="settings-free-hint">Ücretsiz planda bekleyen mesajlar düzenlenemez veya silinemez. Planı yükselterek düzenleme ve silme yetkisi kazanırsınız.</span>
                                             )}
-                                            {msgTab === 'delivered' && msg.viewToken && (
-                                                <Link
-                                                    to={`/message/view/${msg.viewToken}`}
-                                                    className="settings-action-btn view-link"
-                                                    title="Mesajın sayfasına git"
-                                                >
-                                                    <FaExternalLinkAlt /> Mesajı görüntüle
-                                                </Link>
+                                            {msgTab === 'delivered' && (
+                                                <>
+                                                    {msg.viewToken && (
+                                                        <Link
+                                                            to={`/message/view/${msg.viewToken}`}
+                                                            className="settings-action-btn view-link"
+                                                            title="Mesajın sayfasına git"
+                                                        >
+                                                            <FaExternalLinkAlt /> Mesajı görüntüle
+                                                        </Link>
+                                                    )}
+                                                    {canEditDeleteMessages && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteMessage(msg.id)}
+                                                            className="settings-action-btn delete"
+                                                            title="Sil"
+                                                        >
+                                                            <FaTrash /> Sil
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                            {msgTab === 'delivered' && !canEditDeleteMessages && !msg.viewToken && (
+                                                <span className="settings-free-hint">Ücretsiz planda iletilen mesajlar silinemez.</span>
                                             )}
                                         </div>
                                     </div>

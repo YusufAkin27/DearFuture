@@ -1,13 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMessageByViewToken } from '../api/message';
+import Stack from '../components/Stack';
+import Folder from '../components/Folder';
 import './MessageViewPage.css';
+
+/** Dosya/fotoğrafı blob olarak indirir; sayfaya yönlendirmez. */
+const downloadBlob = async (url, fileName) => {
+    const res = await fetch(url, { credentials: 'include', mode: 'cors' });
+    if (!res.ok) throw new Error('İndirilemedi');
+    const blob = await res.blob();
+    const name = fileName || res.headers.get('content-disposition')?.match(/filename="?([^";]+)"?/)?.[1] || url.split('/').pop() || 'download';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+};
 
 const MessageViewPage = () => {
     const { viewToken } = useParams();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [downloading, setDownloading] = useState(null);
+
+    const handleDownload = useCallback(async (e, fileUrl, fileName) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!fileUrl || downloading) return;
+        const key = `${fileUrl}-${fileName || ''}`;
+        setDownloading(key);
+        try {
+            await downloadBlob(fileUrl, fileName || 'dosya');
+        } catch (err) {
+            console.error(err);
+            window.open(fileUrl, '_blank');
+        } finally {
+            setDownloading(null);
+        }
+    }, [downloading]);
 
     useEffect(() => {
         if (!viewToken) {
@@ -71,6 +106,27 @@ const MessageViewPage = () => {
     };
 
     const contents = data?.contents ?? [];
+    const textContents = contents.filter((c) => c.type === 'TEXT' && c.textContent);
+    const imageContents = contents.filter((c) => c.type === 'IMAGE' && c.fileUrl);
+    const fileContents = contents.filter((c) => (c.type === 'FILE' || c.type === 'VIDEO' || c.type === 'AUDIO') && c.fileUrl);
+
+    const stackCards = imageContents.map((item, i) => (
+        <div key={i} className="message-view-stack-card-inner">
+            <img
+                src={item.fileUrl}
+                alt={item.fileName || 'Fotoğraf'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <button
+                type="button"
+                className="stack-card-download"
+                onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                disabled={!!downloading}
+            >
+                {downloading === `${item.fileUrl}-${item.fileName || ''}` ? 'İndiriliyor…' : 'İndir'}
+            </button>
+        </div>
+    ));
 
     return (
         <div className="message-view-container">
@@ -86,33 +142,72 @@ const MessageViewPage = () => {
                     {contents.length === 0 ? (
                         <p className="message-view-empty">Bu mesajda görüntülenecek içerik yok.</p>
                     ) : (
-                        contents.map((item, index) => {
-                            if (item.type === 'TEXT' && item.textContent) {
-                                return (
-                                    <div key={index} className="message-view-block message-view-text">
-                                        <div className="message-view-text-content">{item.textContent}</div>
+                        <>
+                            {textContents.map((item, index) => (
+                                <div key={`t-${index}`} className="message-view-block message-view-text">
+                                    <div className="message-view-text-content">{item.textContent}</div>
+                                </div>
+                            ))}
+
+                            {imageContents.length > 0 && (
+                                <div className="message-view-block message-view-section message-view-photos-section">
+                                    <p className="message-view-section-label">Fotoğraflar</p>
+                                    <div className="message-view-stack-wrap">
+                                        <div className="message-view-stack-size" style={{ width: 280, height: 280 }}>
+                                            <Stack
+                                                key={viewToken}
+                                                randomRotation={false}
+                                                sensitivity={200}
+                                                sendToBackOnClick
+                                                cards={stackCards}
+                                                autoplay={false}
+                                            />
+                                        </div>
                                     </div>
-                                );
-                            }
-                            if (item.type === 'IMAGE' && item.fileUrl) {
-                                return (
-                                    <div key={index} className="message-view-block message-view-image">
-                                        <img src={item.fileUrl} alt={item.fileName || 'Ek'} className="message-view-img" />
-                                        {item.fileName && <p className="message-view-caption">{item.fileName}</p>}
+                                </div>
+                            )}
+
+                            {fileContents.length > 0 && (
+                                <div className="message-view-block message-view-section message-view-files-section">
+                                    <p className="message-view-section-label">Dosyalar</p>
+                                    <div className="message-view-folder-wrap">
+                                        <Folder
+                                            size={2}
+                                            color="#5227FF"
+                                            className="message-view-folder"
+                                            items={fileContents.slice(0, 3).map((item, index) => (
+                                                <button
+                                                    key={index}
+                                                    type="button"
+                                                    className="message-view-folder-paper-link"
+                                                    onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                    disabled={!!downloading}
+                                                >
+                                                    {item.fileName || 'Dosya'}
+                                                </button>
+                                            ))}
+                                        />
+                                        {fileContents.length > 3 && (
+                                            <div className="message-view-files-extra">
+                                                <p className="message-view-files-label">Diğer dosyalar</p>
+                                                {fileContents.slice(3).map((item, index) => (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="message-view-file-link"
+                                                        onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                        disabled={!!downloading}
+                                                    >
+                                                        {item.fileName || 'Dosyayı indir'}
+                                                        <span className="message-view-file-download-badge">İndir</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                );
-                            }
-                            if ((item.type === 'FILE' || item.type === 'VIDEO' || item.type === 'AUDIO') && item.fileUrl) {
-                                return (
-                                    <div key={index} className="message-view-block message-view-file">
-                                        <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="message-view-file-link">
-                                            {item.fileName || 'Dosyayı indir'}
-                                        </a>
-                                    </div>
-                                );
-                            }
-                            return null;
-                        })
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 

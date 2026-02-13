@@ -74,6 +74,7 @@ public class SubscriptionController {
                 .map(p -> PlanResponse.builder()
                         .id(p.getCode())
                         .name(p.getName())
+                        .description(p.getDescription())
                         .price(p.getMonthlyPrice().intValue())
                         .priceLabel(p.getPriceLabel() != null ? p.getPriceLabel() : "₺/ay")
                         .features(p.getFeatures())

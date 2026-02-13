@@ -2,53 +2,47 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getProfile } from '../api/profile';
-import { initializeCheckout } from '../api/subscription';
+import { getPlans, initializeCheckout } from '../api/subscription';
+import AnimatedContent from '../components/AnimatedContent';
+import './PricingPage.css';
 import './ChangeSubscriptionPage.css';
-
-const PLANS = [
-    {
-        id: 'FREE',
-        name: 'Ücretsiz',
-        price: '0',
-        priceLabel: '₺/ay',
-        features: ['3 zamanlanmış mesaj', 'Sadece metin', '1 alıcı / mesaj'],
-        recommended: false,
-    },
-    {
-        id: 'PLUS',
-        name: 'Plus',
-        price: '100',
-        priceLabel: '₺/ay',
-        features: ['20 zamanlanmış mesaj', 'Fotoğraf & dosya', '5 alıcı / mesaj', 'Öncelikli özellikler'],
-        recommended: true,
-    },
-    {
-        id: 'PREMIUM',
-        name: 'Premium',
-        price: '150',
-        priceLabel: '₺/ay',
-        features: ['100 zamanlanmış mesaj', 'Fotoğraf, dosya & ses kaydı', '20 alıcı / mesaj', 'Tüm özellikler'],
-        recommended: false,
-    },
-];
 
 const ChangeSubscriptionPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [payLoading, setPayLoading] = useState(null);
 
     useEffect(() => {
-        fetchProfile();
-    }, []);
+        const load = async () => {
+            setLoading(true);
+            try {
+                const [profileRes, plansData] = await Promise.all([
+                    getProfile(),
+                    getPlans()
+                ]);
+                setProfile(profileRes.data);
+                setPlans(Array.isArray(plansData) ? plansData : []);
+            } catch (err) {
+                console.error(err);
+                toast.error('Bilgiler yüklenemedi. Lütfen tekrar giriş yapın.');
+                localStorage.removeItem('token');
+                navigate('/login', { replace: true });
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, [navigate]);
 
     useEffect(() => {
         const success = searchParams.get('success');
         const message = searchParams.get('message');
         if (success === '1') {
             toast.success('Ödeme başarılı! Aboneliğiniz aktif.');
-            fetchProfile();
+            getProfile().then((res) => setProfile(res.data)).catch(() => {});
             window.history.replaceState({}, '', '/change-subscription');
         } else if (success === '0') {
             toast.error(message ? decodeURIComponent(message) : 'Ödeme tamamlanamadı.');
@@ -56,22 +50,7 @@ const ChangeSubscriptionPage = () => {
         }
     }, [searchParams]);
 
-    const fetchProfile = async () => {
-        setLoading(true);
-        try {
-            const res = await getProfile();
-            setProfile(res.data);
-        } catch (err) {
-            console.error(err);
-            toast.error('Profil yüklenemedi. Lütfen tekrar giriş yapın.');
-            localStorage.removeItem('token');
-            navigate('/login', { replace: true });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const currentPlan = profile?.subscriptionPlan || 'FREE';
+    const currentPlan = profile?.subscriptionPlanCode || 'FREE';
     const subscriptionEndsAt = profile?.subscriptionEndsAt;
     const isExpired = subscriptionEndsAt && new Date(subscriptionEndsAt) < new Date();
     const effectivePlan = isExpired ? 'FREE' : currentPlan;
@@ -106,77 +85,98 @@ const ChangeSubscriptionPage = () => {
 
     if (loading) {
         return (
-            <div className="subscription-container">
-                <div className="subscription-loading">Yükleniyor...</div>
+            <div className="pricing-container">
+                <div className="pricing-loading">
+                    <div className="pricing-spinner" />
+                    <p>Yükleniyor...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (plans.length === 0) {
+        return (
+            <div className="pricing-container">
+                <div className="pricing-error">
+                    <p>Planlar şu an gösterilemiyor.</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="subscription-container">
-            <div className="subscription-header">
+        <div className="pricing-container">
+            <header className="pricing-header">
                 <h1>Aboneliği Yönet</h1>
                 <p>
-                    Mevcut plan:{' '}
-                    <span className="current-plan-badge">{effectivePlan}</span>
+                    Mevcut planınız:{' '}
+                    <span className="change-sub-current-badge">{effectivePlan}</span>
                     {subscriptionEndsAt && !isExpired && (
-                        <span className="subscription-ends">
+                        <span className="change-sub-ends">
                             {' '}({formatDate(subscriptionEndsAt)} tarihine kadar)
                         </span>
                     )}
                 </p>
-                {profile?.maxMessagesPerPlan != null && (
-                    <p className="plan-limit-info">
-                        Plan limiti: {profile.maxMessagesPerPlan} zamanlanmış mesaj
-                    </p>
-                )}
-            </div>
+            </header>
 
-            <div className="subscription-cards">
-                {PLANS.map((plan) => {
+            <div className="pricing-cards">
+                {plans.map((plan, index) => {
                     const isCurrent = effectivePlan === plan.id;
                     const canUpgrade = plan.id !== 'FREE' && !isCurrent;
                     return (
-                        <div
+                        <AnimatedContent
                             key={plan.id}
-                            className={`subscription-card ${isCurrent ? 'current' : ''}`}
+                            distance={100}
+                            direction="vertical"
+                            reverse={false}
+                            duration={0.8}
+                            ease="power3.out"
+                            initialOpacity={0}
+                            animateOpacity
+                            scale={1}
+                            threshold={0.1}
+                            delay={index * 0.15}
                         >
-                            {isCurrent && <div className="badge current">Mevcut Plan</div>}
-                            {plan.recommended && !isCurrent && <div className="badge">Önerilen</div>}
-
-                            <h2>{plan.name}</h2>
-                            <div className="price">
-                                {plan.price} <span className="price-label">{plan.priceLabel}</span>
+                            <div className={`pricing-card ${plan.recommended ? 'recommended' : ''} ${isCurrent ? 'current-plan' : ''}`}>
+                                {isCurrent && <span className="pricing-badge pricing-badge--current">Mevcut Plan</span>}
+                                {plan.recommended && !isCurrent && <span className="pricing-badge">Önerilen</span>}
+                                <h2 className="pricing-plan-name">{plan.name}</h2>
+                                {plan.description && (
+                                    <p className="pricing-plan-description">{plan.description}</p>
+                                )}
+                                <div className="pricing-price-block">
+                                    <span className="pricing-price">{plan.price === 0 ? 'Ücretsiz' : plan.price}</span>
+                                    {plan.price > 0 && <span className="pricing-price-label">{plan.priceLabel}</span>}
+                                </div>
+                                <ul className="pricing-features">
+                                    {plan.features?.map((feature, i) => (
+                                        <li key={i}>{feature}</li>
+                                    ))}
+                                </ul>
+                                <button
+                                    type="button"
+                                    className="pricing-cta"
+                                    onClick={() => handleUpgrade(plan.id)}
+                                    disabled={isCurrent || (plan.id === 'FREE' && !isCurrent) || payLoading !== null}
+                                >
+                                    {isCurrent
+                                        ? 'Aktif'
+                                        : plan.id === 'FREE'
+                                        ? 'Ücretsiz'
+                                        : payLoading === plan.id
+                                        ? 'Yönlendiriliyor...'
+                                        : 'Satın Al'}
+                                </button>
                             </div>
-
-                            <ul className="features">
-                                {plan.features.map((feature, index) => (
-                                    <li key={index}>{feature}</li>
-                                ))}
-                            </ul>
-
-                            <button
-                                className={`action-btn ${isCurrent ? 'disabled' : 'upgrade'}`}
-                                onClick={() => handleUpgrade(plan.id)}
-                                disabled={isCurrent || payLoading !== null}
-                            >
-                                {isCurrent
-                                    ? 'Aktif'
-                                    : plan.id === 'FREE'
-                                    ? 'Ücretsiz'
-                                    : payLoading === plan.id
-                                    ? 'Yönlendiriliyor...'
-                                    : 'Satın Al'}
-                            </button>
-                        </div>
+                        </AnimatedContent>
                     );
                 })}
             </div>
 
-            <div className="subscription-info">
+            <div className="change-sub-info">
                 <p>
                     Ödeme iyzico güvencesiyle alınır. Abonelik her ay otomatik yenilenir; süre sonunda
-                    yenileme yapılmazsa plan Ücretsiz’e döner.
+                    yenileme yapılmazsa plan Ücretsiz'e döner.
                 </p>
             </div>
         </div>

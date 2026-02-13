@@ -8,6 +8,7 @@ import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.repository.FutureMessageRepository;
 import example.DearFuture.message.repository.StarredPublicMessageRepository;
 import example.DearFuture.payment.repository.SubscriptionPaymentRepository;
+import example.DearFuture.payment.service.SubscriptionPaymentService;
 import example.DearFuture.user.dto.request.UpdateProfileRequest;
 import example.DearFuture.user.dto.request.UpdateSettingsRequest;
 import example.DearFuture.user.dto.response.ProfileResponse;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final Cloudinary cloudinary;
     private final FutureMessageRepository futureMessageRepository;
     private final SubscriptionPaymentRepository subscriptionPaymentRepository;
+    private final SubscriptionPaymentService subscriptionPaymentService;
     private final StarredPublicMessageRepository starredPublicMessageRepository;
     private final CookiePreferenceRepository cookiePreferenceRepository;
     private final ContractAcceptanceRepository contractAcceptanceRepository;
@@ -165,11 +167,13 @@ public class UserServiceImpl implements UserService {
         return user.getProfilePictureUrl() != null ? user.getProfilePictureUrl() : "";
     }
 
+    /** Hesap silme: abonelik iptal edilir, tüm mesajlar ve ilgili veriler silinir. */
     @Override
     @Transactional
     public void deleteAccount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
+        subscriptionPaymentService.cancelSubscription(userId);
         starredPublicMessageRepository.deleteByUserId(user.getId());
         cookiePreferenceRepository.deleteAll(cookiePreferenceRepository.findAllByUserId(user.getId()));
         var acceptances = contractAcceptanceRepository.findByUserOrderByAcceptedAtDesc(user);
@@ -181,6 +185,7 @@ public class UserServiceImpl implements UserService {
         log.info("Account deleted: userId={}", userId);
     }
 
+    /** Hesap dondurma: sadece giriş engellenir. Abonelik iptal edilmez, mesajlar silinmez. */
     @Override
     @Transactional
     public void deactivateAccount(Long userId) {

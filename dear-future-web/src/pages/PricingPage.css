@@ -97,8 +97,15 @@
     font-size: 1.35rem;
     font-weight: 700;
     color: var(--text-main);
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     padding-top: 0.5rem;
+}
+
+.pricing-plan-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
 }
 
 .pricing-price-block {

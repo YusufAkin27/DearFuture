@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaThLarge } from 'react-icons/fa';
+import Galaxy from '../components/Galaxy';
 import './WelcomePage.css';
 
 const WelcomePage = () => {
@@ -16,6 +17,22 @@ const WelcomePage = () => {
 
     return (
         <div className="welcome-page">
+            <div className="welcome-galaxy-wrap">
+                <Galaxy
+                    mouseRepulsion
+                    mouseInteraction
+                    density={1}
+                    glowIntensity={0.3}
+                    saturation={0}
+                    hueShift={140}
+                    twinkleIntensity={0.3}
+                    rotationSpeed={0.1}
+                    repulsionStrength={2}
+                    autoCenterRepulsion={0}
+                    starSpeed={0.5}
+                    speed={1}
+                />
+            </div>
             <div className="welcome-container">
                 <div className="hero-content">
                 <div className="welcome-logo-block">

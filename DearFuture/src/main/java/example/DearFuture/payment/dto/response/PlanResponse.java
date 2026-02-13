@@ -21,6 +21,9 @@ public class PlanResponse {
     /** Türkçe plan adı */
     private String name;
 
+    /** Plan açıklaması (fiyatlandırma sayfasında gösterilir) */
+    private String description;
+
     /** Aylık fiyat (TL); FREE için 0 */
     private int price;
 
