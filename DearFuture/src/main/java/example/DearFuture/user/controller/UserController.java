@@ -3,6 +3,7 @@ package example.DearFuture.user.controller;
 import example.DearFuture.user.dto.request.UpdateProfileRequest;
 import example.DearFuture.user.dto.request.UpdateSettingsRequest;
 import example.DearFuture.user.dto.response.ProfileResponse;
+import example.DearFuture.user.dto.response.UsageResponse;
 import example.DearFuture.user.dto.response.UserResponse;
 import example.DearFuture.user.service.UsageService;
 import example.DearFuture.user.service.UserService;

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaPaperPlane, FaUser, FaImage, FaFile, FaMicrophone } from 'react-icons/fa';
+import { FaPaperPlane, FaUser, FaImage, FaFile, FaMicrophone, FaTrash } from 'react-icons/fa';
+import { PiFilesThin } from 'react-icons/pi';
 import { getProfile } from '../api/profile';
 import { getPendingMessages, getDeliveredMessages, createMessage, scheduleMessage, uploadMessageAttachment } from '../api/message';
 import './NewMessagePage.css';
@@ -14,6 +15,8 @@ const PLAN_LIMITS = {
 
 const NewMessagePage = () => {
     const navigate = useNavigate();
+    const photoInputRef = useRef(null);
+    const fileInputRef = useRef(null);
     const [profile, setProfile] = useState(null);
     const [pendingCount, setPendingCount] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
@@ -347,51 +350,124 @@ const NewMessagePage = () => {
                 </div>
 
                 {limits.photo && maxPhotos > 0 && (
-                    <div className="form-group">
-                        <label><FaImage /> Fotoğraf ekle (en fazla {maxPhotos} adet, her biri max {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB)</label>
+                    <div className="form-group file-input-block">
+                        <label className="file-input-label"><FaImage /> Fotoğraf ekle (en fazla {maxPhotos} adet, her biri max {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB)</label>
                         <input
+                            ref={photoInputRef}
                             type="file"
                             accept="image/*"
                             multiple
                             onChange={handlePhotoSelect}
                             disabled={uploadingPhoto || photos.length >= maxPhotos}
-                            className="form-input file-input"
+                            className="file-input-hidden"
+                            aria-hidden="true"
                         />
-                        {photos.length > 0 && (
-                            <ul className="attachment-list">
-                                {photos.map((p, i) => (
-                                    <li key={i} className="attachment-item">
-                                        <img src={p.url} alt="" className="attachment-thumb" />
-                                        <span className="attachment-name">{p.fileName}</span>
-                                        <button type="button" className="attachment-remove" onClick={() => removePhoto(i)} aria-label="Kaldır">×</button>
-                                    </li>
-                                ))}
-                            </ul>
+                        {photos.length === 0 ? (
+                            <div
+                                className={`file-upload-zone ${uploadingPhoto || photos.length >= maxPhotos ? 'file-upload-zone--disabled' : ''}`}
+                                onClick={() => { if (!uploadingPhoto && photos.length < maxPhotos) photoInputRef.current?.click(); }}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !uploadingPhoto && photos.length < maxPhotos) photoInputRef.current?.click(); }}
+                            >
+                                <h3 className="file-upload-title">Dosyalarınızı yükleyin</h3>
+                                <p className="file-upload-subtitle">JPG, PNG, JPEG</p>
+                                <div className="file-upload-zone-inner">
+                                    <PiFilesThin className="file-upload-icon" aria-hidden />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="file-upload-previews-wrap">
+                                <div className="file-upload-previews file-upload-previews--photos">
+                                    {photos.map((p, i) => (
+                                        <div key={i} className="file-upload-preview-item">
+                                            <img src={p.url} alt="" className="file-upload-preview-img" />
+                                            <button
+                                                type="button"
+                                                className="file-upload-delete"
+                                                onClick={(e) => { e.stopPropagation(); removePhoto(i); }}
+                                                aria-label="Kaldır"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                {photos.length < maxPhotos && (
+                                    <>
+                                        <div
+                                            className={`file-upload-zone file-upload-zone--small ${uploadingPhoto ? 'file-upload-zone--disabled' : ''}`}
+                                            onClick={() => { if (!uploadingPhoto) photoInputRef.current?.click(); }}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !uploadingPhoto) photoInputRef.current?.click(); }}
+                                        >
+                                            <PiFilesThin className="file-upload-icon file-upload-icon--small" aria-hidden />
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         )}
                         {uploadingPhoto && <p className="uploading-hint">Yükleniyor...</p>}
                     </div>
                 )}
 
                 {limits.file && maxFiles > 0 && (
-                    <div className="form-group">
-                        <label><FaFile /> Dosya ekle (en fazla {maxFiles} adet, her biri max {Math.round(maxFileSizeBytes / (1024 * 1024))} MB)</label>
+                    <div className="form-group file-input-block">
+                        <label className="file-input-label"><FaFile /> Dosya ekle (en fazla {maxFiles} adet, her biri max {Math.round(maxFileSizeBytes / (1024 * 1024))} MB)</label>
                         <input
+                            ref={fileInputRef}
                             type="file"
                             multiple
                             onChange={handleFileSelect}
                             disabled={uploadingFile || files.length >= maxFiles}
-                            className="form-input file-input"
+                            className="file-input-hidden"
+                            aria-hidden="true"
                         />
-                        {files.length > 0 && (
-                            <ul className="attachment-list">
-                                {files.map((f, i) => (
-                                    <li key={i} className="attachment-item">
-                                        <FaFile className="attachment-icon" />
-                                        <span className="attachment-name">{f.fileName}</span>
-                                        <button type="button" className="attachment-remove" onClick={() => removeFile(i)} aria-label="Kaldır">×</button>
-                                    </li>
-                                ))}
-                            </ul>
+                        {files.length === 0 ? (
+                            <div
+                                className={`file-upload-zone ${uploadingFile || files.length >= maxFiles ? 'file-upload-zone--disabled' : ''}`}
+                                onClick={() => { if (!uploadingFile && files.length < maxFiles) fileInputRef.current?.click(); }}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !uploadingFile && files.length < maxFiles) fileInputRef.current?.click(); }}
+                            >
+                                <h3 className="file-upload-title">Dosyalarınızı yükleyin</h3>
+                                <p className="file-upload-subtitle">PDF, DOC, ZIP vb.</p>
+                                <div className="file-upload-zone-inner">
+                                    <PiFilesThin className="file-upload-icon" aria-hidden />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="file-upload-previews-wrap">
+                                <ul className="file-upload-list">
+                                    {files.map((f, i) => (
+                                        <li key={i} className="file-upload-list-item">
+                                            <FaFile className="file-upload-list-icon" />
+                                            <span className="file-upload-list-name">{f.fileName}</span>
+                                            <button
+                                                type="button"
+                                                className="file-upload-delete file-upload-delete--list"
+                                                onClick={() => removeFile(i)}
+                                                aria-label="Kaldır"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {files.length < maxFiles && (
+                                    <div
+                                        className={`file-upload-zone file-upload-zone--small ${uploadingFile ? 'file-upload-zone--disabled' : ''}`}
+                                        onClick={() => { if (!uploadingFile) fileInputRef.current?.click(); }}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !uploadingFile) fileInputRef.current?.click(); }}
+                                    >
+                                        <PiFilesThin className="file-upload-icon file-upload-icon--small" aria-hidden />
+                                    </div>
+                                )}
+                            </div>
                         )}
                         {uploadingFile && <p className="uploading-hint">Yükleniyor...</p>}
                     </div>

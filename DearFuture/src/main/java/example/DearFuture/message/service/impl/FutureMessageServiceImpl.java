@@ -24,7 +24,6 @@ import example.DearFuture.user.entity.User;
 import example.DearFuture.user.repository.SubscriptionPlanRepository;
 import example.DearFuture.user.repository.UserRepository;
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -319,11 +318,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         try {
             String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
             String publicId = "msg-" + user.getId() + "-" + UUID.randomUUID().toString().substring(0, 8);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> opts = ObjectUtils.asMap(
-                    "folder", CLOUDINARY_MESSAGES_FOLDER,
-                    "public_id", publicId
-            );
+            Map<String, Object> opts = new java.util.HashMap<>();
+            opts.put("folder", CLOUDINARY_MESSAGES_FOLDER);
+            opts.put("public_id", publicId);
+            if ("FILE".equals(typeUpper)) {
+                opts.put("resource_type", "raw");
+            }
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), opts);
             String secureUrl = (String) result.get("secure_url");
             if (secureUrl == null) {
