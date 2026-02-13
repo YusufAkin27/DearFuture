@@ -40,16 +40,6 @@ public class FutureMessageController {
         return ResponseEntity.ok(futureMessageService.getMessage(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MessageResponse> updateMessage(@PathVariable Long id, @Valid @RequestBody example.DearFuture.message.dto.request.UpdateMessageRequest request) {
-        return ResponseEntity.ok(futureMessageService.updateMessage(id, request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMessage(@PathVariable Long id) {
-       return ResponseEntity.ok(futureMessageService.deleteMessage(id)) ;
-    }
-
     @PostMapping("/schedule")
     public ResponseEntity scheduleFutureMessage(@Valid @RequestBody CreateFutureMessageRequest request) {
         return futureMessageService.scheduleMessage(request);

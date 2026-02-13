@@ -1,6 +1,7 @@
 package example.DearFuture.message.controller;
 
 import example.DearFuture.message.dto.response.PublicMessageItemResponse;
+import example.DearFuture.message.dto.response.PublicPhotoItemResponse;
 import example.DearFuture.message.service.PublicMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,20 @@ public class PublicMessageController {
         Long currentUserId = getCurrentUserIdOrNull();
         Pageable pageable = PageRequest.of(page, Math.min(Math.max(size, 1), 50));
         Page<PublicMessageItemResponse> result = publicMessageService.getPublicMessages(currentUserId, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Açılmış ve herkese açık mesajlardaki sadece fotoğrafları sayfalı listeler. Giriş gerekmez.
+     * @param page 0 tabanlı sayfa (varsayılan 0)
+     * @param size Sayfa boyutu (varsayılan 12)
+     */
+    @GetMapping("/photos")
+    public ResponseEntity<Page<PublicPhotoItemResponse>> listPublicPhotos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(Math.max(size, 1), 50));
+        Page<PublicPhotoItemResponse> result = publicMessageService.getPublicPhotos(pageable);
         return ResponseEntity.ok(result);
     }
 

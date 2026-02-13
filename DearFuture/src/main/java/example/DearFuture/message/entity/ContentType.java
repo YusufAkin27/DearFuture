@@ -5,6 +5,5 @@ public enum ContentType {
     IMAGE,
     VIDEO,
     FILE,
-    /** Ses kaydı (geleceğe sesli mesaj) */
     AUDIO
 }

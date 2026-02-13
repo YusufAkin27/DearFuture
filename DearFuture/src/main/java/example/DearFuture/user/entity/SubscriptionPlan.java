@@ -83,6 +83,14 @@ public class SubscriptionPlan {
     @Column(name = "max_file_size_bytes", nullable = false)
     private long maxFileSizeBytes;
 
+    /** Mesaj başına maksimum ses kaydı sayısı (allowVoice true ise kullanılır) */
+    @Column(name = "max_audio_per_message", nullable = false)
+    private int maxAudioPerMessage;
+
+    /** Ses kaydı başına maksimum boyut (byte). 0 ise maxFileSizeBytes kullanılır. */
+    @Column(name = "max_audio_size_bytes", nullable = false)
+    private long maxAudioSizeBytes;
+
     // ── UI / Admin ──
 
     /** Özellik listesi (fiyatlandırma sayfasında gösterilir) */

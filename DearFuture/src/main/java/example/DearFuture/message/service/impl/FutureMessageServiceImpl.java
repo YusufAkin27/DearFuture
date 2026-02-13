@@ -9,12 +9,12 @@ import example.DearFuture.message.dto.request.CreateMessageRequest;
 import example.DearFuture.message.dto.request.MessageContentRequest;
 import example.DearFuture.message.dto.response.MessageResponse;
 import example.DearFuture.message.dto.response.MessageUploadResponse;
+import example.DearFuture.user.dto.response.MessageQuotaResponse;
 import example.DearFuture.message.entity.ContentType;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.FutureMessageContent;
 import example.DearFuture.message.entity.MessageStatus;
 import example.DearFuture.message.mapper.FutureMessageMapper;
-import example.DearFuture.message.repository.FutureMessageContentRepository;
 import example.DearFuture.message.repository.FutureMessageRepository;
 import example.DearFuture.message.service.FutureMessageService;
 import example.DearFuture.payment.entity.SubscriptionPayment;
@@ -50,7 +50,18 @@ public class FutureMessageServiceImpl implements FutureMessageService {
 
     private static final String CLOUDINARY_MESSAGES_FOLDER = "dearfuture/messages";
 
-    /** İzin verilen dosya uzantıları (FILE yüklemeleri): belge, arşiv, veri vb. */
+    /**
+     * İzin verilen ses formatları (AUDIO yüklemeleri).
+     */
+    private static final Set<String> ALLOWED_AUDIO_EXTENSIONS = Set.of("mp3", "wav", "ogg", "m4a", "aac", "webm", "opus");
+    private static final Set<String> ALLOWED_AUDIO_CONTENT_TYPE_PREFIXES = Set.of("audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm", "audio/mp4", "audio/aac", "audio/x-m4a", "audio/opus");
+
+    /** İzin verilen video uzantıları (VIDEO yüklemeleri). */
+    private static final Set<String> ALLOWED_VIDEO_EXTENSIONS = Set.of("mp4", "webm", "mov", "avi", "mkv", "m4v");
+
+    /**
+     * İzin verilen dosya uzantıları (FILE yüklemeleri): belge, arşiv, veri vb.
+     */
     private static final Set<String> ALLOWED_FILE_EXTENSIONS = Set.of(
             "pdf", "doc", "docx", "docm", "xls", "xlsx", "xlsm", "ppt", "pptx", "pptm",
             "odt", "ods", "odp", "odg", "odf", "odm", "odb",
@@ -61,7 +72,6 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     );
 
     private final FutureMessageRepository futureMessageRepository;
-    private final FutureMessageContentRepository futureMessageContentRepository;
     private final UserRepository userRepository;
     private final SubscriptionPlanRepository planRepository;
     private final SubscriptionPaymentRepository paymentRepository;
@@ -71,7 +81,10 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     @Transactional
     public MessageResponse createMessage(CreateMessageRequest request) {
         User user = getCurrentUser();
-        SubscriptionPlan plan = effectivePlan(user);
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        if (plan == null) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE, "Abonelik planı yüklenemedi.");
+        }
         validateMessageLimit(user, plan);
         FutureMessage message = new FutureMessage();
         message.setUser(user);
@@ -79,23 +92,25 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         message.setStatus(MessageStatus.SCHEDULED);
         message.setRecipientEmails(new java.util.ArrayList<>(Collections.singletonList(user.getEmail())));
         message.setPublic(request.getIsPublic() != null && request.getIsPublic());
-        
+
         // Create Content (Defaulting to TEXT)
         FutureMessageContent content = new FutureMessageContent();
         content.setType(ContentType.TEXT);
         content.setTextContent(request.getContent());
         content.setFutureMessage(message);
-        
+
         message.setContents(new java.util.ArrayList<>(Collections.singletonList(content)));
-        
+
         FutureMessage savedMessage = futureMessageRepository.save(message);
-        
+
         return MessageResponse.fromEntity(savedMessage);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public MessageResponse getMessage(Long id) {
         User user = getCurrentUser();
-        FutureMessage message = futureMessageRepository.findById(id)
+        FutureMessage message = futureMessageRepository.findByIdWithContents(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         if (!message.getUser().getId().equals(user.getId())) {
@@ -107,7 +122,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     @Transactional
     public MessageResponse updateMessage(Long id, example.DearFuture.message.dto.request.UpdateMessageRequest request) {
         User user = getCurrentUser();
-        FutureMessage message = futureMessageRepository.findById(id)
+        FutureMessage message = futureMessageRepository.findByIdWithContents(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         if (!message.getUser().getId().equals(user.getId())) {
@@ -118,7 +133,8 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             throw new IllegalArgumentException("Cannot edit a message that is not in SCHEDULED status");
         }
 
-        if (effectivePlan(user) != null && effectivePlan(user).isFree()) {
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        if (plan != null && plan.isFree()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                     "Ücretsiz hesaplar bekleyen mesajlarını düzenleyemez.");
         }
@@ -142,14 +158,15 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     @Transactional
     public String deleteMessage(Long id) {
         User user = getCurrentUser();
-        FutureMessage message = futureMessageRepository.findById(id)
+        FutureMessage message = futureMessageRepository.findByIdWithContents(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         if (!message.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Not authorized to delete this message");
         }
 
-        if (effectivePlan(user) != null && effectivePlan(user).isFree()) {
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        if (plan != null && plan.isFree()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                     "Ücretsiz hesaplar mevcut mesajları (bekleyen veya iletilen) silemez.");
         }
@@ -157,7 +174,6 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         futureMessageRepository.delete(message);
         return "Message deleted";
     }
-
 
 
     @Override
@@ -183,8 +199,14 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     @Override
     @Transactional
     public ResponseEntity<String> scheduleMessage(CreateFutureMessageRequest request) {
+        if (request.getContents() == null || request.getContents().isEmpty()) {
+            throw new IllegalArgumentException("Mesaj içeriği boş olamaz.");
+        }
         User user = getCurrentUser();
-        SubscriptionPlan plan = effectivePlan(user);
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        if (plan == null) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE, "Abonelik planı yüklenemedi.");
+        }
         validateMessageLimit(user, plan);
         if (request.getRecipientEmails() != null && request.getRecipientEmails().size() > plan.getMaxRecipientsPerMessage()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_RECIPIENT_LIMIT_EXCEEDED,
@@ -215,26 +237,55 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         return planRepository.findByCode("FREE").orElse(null);
     }
 
-    private void validateMessageLimit(User user, SubscriptionPlan plan) {
-        if (plan != null && plan.isFree()) {
-            long totalCount = futureMessageRepository.countByUserAndStatusIn(user,
-                    Set.of(MessageStatus.SCHEDULED, MessageStatus.QUEUED, MessageStatus.SENT));
-            if (totalCount >= plan.getMaxMessages()) {
-                throw new PlanLimitExceededException(ErrorCode.PLAN_MESSAGE_LIMIT_EXCEEDED,
-                        "Ücretsiz hesapta bekleyen ve iletilen mesajların toplamı en fazla " + plan.getMaxMessages() + " olabilir. Yeni mesaj kaydedemezsiniz.");
-            }
-        } else {
-            var period = getCurrentPeriodForUser(user);
-            long usedInPeriod = futureMessageRepository.countByUserIdAndScheduledAtBetween(user.getId(), period.start(), period.end());
-            if (usedInPeriod >= plan.getMaxMessages()) {
-                throw new PlanLimitExceededException(ErrorCode.PLAN_MESSAGE_LIMIT_EXCEEDED,
-                        "Bu dönemde " + plan.getMaxMessages() + " mesaj hakkınızı doldurdunuz. Sonraki dönemde yenilenir.");
-            }
-        }
+    /**
+     * Abonelik planı null ise FREE planı döndürür (dinamik kontrol için).
+     */
+    private SubscriptionPlan ensurePlan(SubscriptionPlan plan) {
+        return plan != null ? plan : getFreePlan();
     }
 
-    /** Ücretli plan kullanıcısı için mevcut dönem başlangıç ve bitiş (Instant). */
-    private record Period(Instant start, Instant end) {}
+    /**
+     * Kullanıcının planına göre kalan mesaj hakkını döndürür (long).
+     * FREE: toplam (SCHEDULED+QUEUED+SENT) sayıya göre limit - used.
+     * PLUS/PREMIUM: dönem içi scheduledAt sayımına göre limit - usedInPeriod.
+     */
+    private long getRemainingMessageCount(User user, SubscriptionPlan plan) {
+        if (plan == null) return 0L;
+        int limit = plan.getMaxMessages();
+        long used;
+        if (plan.isFree()) {
+            used = futureMessageRepository.countByUserAndStatusIn(user,
+                    Set.of(MessageStatus.SCHEDULED, MessageStatus.QUEUED, MessageStatus.SENT));
+        } else {
+            var period = getCurrentPeriodForUser(user);
+            used = futureMessageRepository.countByUserIdAndScheduledAtBetween(user.getId(), period.start(), period.end());
+        }
+        return Math.max(0L, limit - used);
+    }
+
+    /**
+     * Mesaj kaydetme hakkı kontrolü. Kalan hak 0 veya negatifse exception fırlatır.
+     * @return Kalan mesaj hakkı (long)
+     */
+    private long validateMessageLimit(User user, SubscriptionPlan plan) {
+        long remaining = getRemainingMessageCount(user, plan);
+        if (remaining <= 0) {
+            if (plan != null && plan.isFree()) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_MESSAGE_LIMIT_EXCEEDED,
+                        "Ücretsiz hesapta bekleyen ve iletilen mesajların toplamı en fazla " + plan.getMaxMessages() + " olabilir. Yeni mesaj kaydedemezsiniz.");
+            } else {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_MESSAGE_LIMIT_EXCEEDED,
+                        "Bu dönemde " + (plan != null ? plan.getMaxMessages() : 0) + " mesaj hakkınızı doldurdunuz. Sonraki dönemde yenilenir.");
+            }
+        }
+        return remaining;
+    }
+
+    /**
+     * Ücretli plan kullanıcısı için mevcut dönem başlangıç ve bitiş (Instant).
+     */
+    private record Period(Instant start, Instant end) {
+    }
 
     private Period getCurrentPeriodForUser(User user) {
         var lastPayment = paymentRepository.findTopByUserIdAndStatusOrderByPaidAtDesc(user.getId(), SubscriptionPayment.PaymentStatus.SUCCESS);
@@ -250,27 +301,60 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         return new Period(startLdt.atZone(ZoneId.systemDefault()).toInstant(), endLdt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    /**
+     * Mesaj eklerini plan verisine göre dinamik kontrol eder.
+     * Fotoğraf + video aynı kotada (maxPhotosPerMessage, maxPhotoSizeBytes). Dosya ve ses ayrı plan alanlarından.
+     */
     private void validateAttachmentLimits(SubscriptionPlan plan, List<MessageContentRequest> contents) {
+        if (plan == null) return;
         long imageCount = contents.stream().filter(c -> c.getType() == ContentType.IMAGE).count();
+        long videoCount = contents.stream().filter(c -> c.getType() == ContentType.VIDEO).count();
         long fileCount = contents.stream().filter(c -> c.getType() == ContentType.FILE).count();
-        if (plan.getMaxPhotosPerMessage() > 0 && imageCount > plan.getMaxPhotosPerMessage()) {
+        long audioCount = contents.stream().filter(c -> c.getType() == ContentType.AUDIO).count();
+        long visualCount = imageCount + videoCount;
+
+        if (visualCount > 0 && !plan.isAllowPhoto()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                    "Planınızda mesaj başına en fazla " + plan.getMaxPhotosPerMessage() + " fotoğraf ekleyebilirsiniz.");
+                    "Planınızda fotoğraf/video ekleme yok. Plus veya Premium'a yükseltin.");
+        }
+        if (fileCount > 0 && !plan.isAllowFile()) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                    "Planınızda dosya ekleme yok. Plus veya Premium'a yükseltin.");
+        }
+        if (audioCount > 0 && !plan.isAllowVoice()) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                    "Planınızda ses kaydı ekleme yok. Plus veya Premium'a yükseltin.");
+        }
+
+        if (plan.getMaxPhotosPerMessage() > 0 && visualCount > plan.getMaxPhotosPerMessage()) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                    "Planınızda mesaj başına en fazla " + plan.getMaxPhotosPerMessage() + " fotoğraf/video ekleyebilirsiniz.");
         }
         if (plan.getMaxFilesPerMessage() > 0 && fileCount > plan.getMaxFilesPerMessage()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                     "Planınızda mesaj başına en fazla " + plan.getMaxFilesPerMessage() + " dosya ekleyebilirsiniz.");
         }
+        if (plan.getMaxAudioPerMessage() > 0 && audioCount > plan.getMaxAudioPerMessage()) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                    "Planınızda mesaj başına en fazla " + plan.getMaxAudioPerMessage() + " ses kaydı ekleyebilirsiniz.");
+        }
+
+        long maxAudioSizeBytes = plan.getMaxAudioSizeBytes() > 0 ? plan.getMaxAudioSizeBytes() : plan.getMaxFileSizeBytes();
         for (MessageContentRequest c : contents) {
-            if (c.getType() == ContentType.IMAGE && c.getFileSize() != null && plan.getMaxPhotoSizeBytes() > 0
-                    && c.getFileSize() > plan.getMaxPhotoSizeBytes()) {
+            if ((c.getType() == ContentType.IMAGE || c.getType() == ContentType.VIDEO) && c.getFileSize() != null
+                    && plan.getMaxPhotoSizeBytes() > 0 && c.getFileSize() > plan.getMaxPhotoSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Fotoğraf boyutu " + (plan.getMaxPhotoSizeBytes() / (1024 * 1024)) + " MB'dan küçük olmalıdır.");
+                        "Fotoğraf/video boyutu en fazla " + (plan.getMaxPhotoSizeBytes() / (1024 * 1024)) + " MB olabilir.");
             }
             if (c.getType() == ContentType.FILE && c.getFileSize() != null && plan.getMaxFileSizeBytes() > 0
                     && c.getFileSize() > plan.getMaxFileSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Dosya boyutu " + (plan.getMaxFileSizeBytes() / (1024 * 1024)) + " MB'dan küçük olmalıdır.");
+                        "Dosya boyutu en fazla " + (plan.getMaxFileSizeBytes() / (1024 * 1024)) + " MB olabilir.");
+            }
+            if (c.getType() == ContentType.AUDIO && c.getFileSize() != null && maxAudioSizeBytes > 0
+                    && c.getFileSize() > maxAudioSizeBytes) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                        "Ses kaydı boyutu en fazla " + (maxAudioSizeBytes / (1024 * 1024)) + " MB olabilir.");
             }
         }
     }
@@ -282,27 +366,48 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             throw new IllegalArgumentException("Dosya seçiniz.");
         }
         User user = getCurrentUser();
-        SubscriptionPlan plan = effectivePlan(user);
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        if (plan == null) {
+            throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE, "Abonelik planı yüklenemedi.");
+        }
         String typeUpper = type != null ? type.toUpperCase() : "";
         if ("IMAGE".equals(typeUpper)) {
             if (!plan.isAllowPhoto()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Fotoğraf ekleme planınızda yok. Plus veya Premium'a yükseltin.");
+                        "Fotoğraf/video ekleme planınızda yok. Plus veya Premium'a yükseltin.");
             }
-            if (file.getSize() > plan.getMaxPhotoSizeBytes()) {
+            if (plan.getMaxPhotoSizeBytes() > 0 && file.getSize() > plan.getMaxPhotoSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                         "Fotoğraf boyutu en fazla " + (plan.getMaxPhotoSizeBytes() / (1024 * 1024)) + " MB olabilir.");
             }
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
-                throw new IllegalArgumentException("Sadece görsel dosyaları yükleyebilirsiniz.");
+                throw new IllegalArgumentException("Sadece görsel dosyaları (resim) yükleyebilirsiniz.");
+            }
+        } else if ("VIDEO".equals(typeUpper)) {
+            if (!plan.isAllowPhoto()) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                        "Fotoğraf/video ekleme planınızda yok. Plus veya Premium'a yükseltin.");
+            }
+            if (plan.getMaxPhotoSizeBytes() > 0 && file.getSize() > plan.getMaxPhotoSizeBytes()) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                        "Video boyutu en fazla " + (plan.getMaxPhotoSizeBytes() / (1024 * 1024)) + " MB olabilir.");
+            }
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("video/")) {
+                throw new IllegalArgumentException("Sadece video dosyaları yükleyebilirsiniz (MP4, WebM, MOV vb.).");
+            }
+            String videoExt = getFileExtension(file.getOriginalFilename());
+            if (videoExt == null || !ALLOWED_VIDEO_EXTENSIONS.contains(videoExt.toLowerCase())) {
+                throw new IllegalArgumentException(
+                        "Desteklenmeyen video formatı. İzin verilenler: MP4, WebM, MOV, AVI, MKV, M4V.");
             }
         } else if ("FILE".equals(typeUpper)) {
             if (!plan.isAllowFile()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                         "Dosya ekleme planınızda yok. Plus veya Premium'a yükseltin.");
             }
-            if (file.getSize() > plan.getMaxFileSizeBytes()) {
+            if (plan.getMaxFileSizeBytes() > 0 && file.getSize() > plan.getMaxFileSizeBytes()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
                         "Dosya boyutu en fazla " + (plan.getMaxFileSizeBytes() / (1024 * 1024)) + " MB olabilir.");
             }
@@ -310,10 +415,30 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             if (ext == null || !ALLOWED_FILE_EXTENSIONS.contains(ext.toLowerCase())) {
                 throw new IllegalArgumentException(
                         "Desteklenmeyen dosya türü. İzin verilenler: PDF, Word, Excel, PowerPoint, " +
-                        "OpenDocument, TXT, RTF, CSV, MD, ZIP, RAR, 7Z, TAR, GZ, JSON, XML, EPUB vb.");
+                                "OpenDocument, TXT, RTF, CSV, MD, ZIP, RAR, 7Z, TAR, GZ, JSON, XML, EPUB vb.");
+            }
+        } else if ("AUDIO".equals(typeUpper)) {
+            if (!plan.isAllowVoice()) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                        "Ses kaydı ekleme planınızda yok. Plus veya Premium'a yükseltin.");
+            }
+            long maxAudioSize = plan.getMaxAudioSizeBytes() > 0 ? plan.getMaxAudioSizeBytes() : plan.getMaxFileSizeBytes();
+            if (maxAudioSize > 0 && file.getSize() > maxAudioSize) {
+                throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
+                        "Ses kaydı boyutu en fazla " + (maxAudioSize / (1024 * 1024)) + " MB olabilir.");
+            }
+            String contentType = file.getContentType();
+            if (contentType == null || !isAllowedAudioContentType(contentType)) {
+                throw new IllegalArgumentException(
+                        "Sadece ses dosyaları yükleyebilirsiniz (MP3, WAV, OGG, M4A, AAC, WebM, Opus).");
+            }
+            String audioExt = getFileExtension(file.getOriginalFilename());
+            if (audioExt == null || !ALLOWED_AUDIO_EXTENSIONS.contains(audioExt.toLowerCase())) {
+                throw new IllegalArgumentException(
+                        "Desteklenmeyen ses formatı. İzin verilenler: MP3, WAV, OGG, M4A, AAC, WebM, Opus.");
             }
         } else {
-            throw new IllegalArgumentException("type IMAGE veya FILE olmalıdır.");
+            throw new IllegalArgumentException("type IMAGE, VIDEO, FILE veya AUDIO olmalıdır.");
         }
         try {
             String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
@@ -321,7 +446,9 @@ public class FutureMessageServiceImpl implements FutureMessageService {
             Map<String, Object> opts = new java.util.HashMap<>();
             opts.put("folder", CLOUDINARY_MESSAGES_FOLDER);
             opts.put("public_id", publicId);
-            if ("FILE".equals(typeUpper)) {
+            if ("VIDEO".equals(typeUpper)) {
+                opts.put("resource_type", "video");
+            } else if ("FILE".equals(typeUpper) || "AUDIO".equals(typeUpper)) {
                 opts.put("resource_type", "raw");
             }
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), opts);
@@ -339,6 +466,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         }
     }
 
+    private static boolean isAllowedAudioContentType(String contentType) {
+        if (contentType == null || contentType.isBlank()) return false;
+        String ct = contentType.toLowerCase().split(";")[0].trim();
+        return ALLOWED_AUDIO_CONTENT_TYPE_PREFIXES.contains(ct) || ct.startsWith("audio/");
+    }
+
     private static String getFileExtension(String filename) {
         if (filename == null || filename.isBlank()) return null;
         int lastDot = filename.lastIndexOf('.');
@@ -346,9 +479,27 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         return filename.substring(lastDot + 1).trim();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MessageQuotaResponse getMessageQuota(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı: " + userId));
+        SubscriptionPlan plan = ensurePlan(effectivePlan(user));
+        int limit = plan != null ? plan.getMaxMessages() : 0;
+        long remaining = getRemainingMessageCount(user, plan);
+        long used = Math.max(0L, limit - remaining);
+        return MessageQuotaResponse.builder()
+                .limit(limit)
+                .used(used)
+                .remaining(remaining)
+                .planCode(plan != null ? plan.getCode() : "FREE")
+                .planName(plan != null ? plan.getName() : "Ücretsiz")
+                .build();
+    }
+
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal(); 
+        Long userId = (Long) authentication.getPrincipal();
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }

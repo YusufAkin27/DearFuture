@@ -1,6 +1,7 @@
 package example.DearFuture.message.service;
 
 import example.DearFuture.message.dto.response.PublicMessageItemResponse;
+import example.DearFuture.message.dto.response.PublicPhotoItemResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,4 +37,9 @@ public interface PublicMessageService {
      * Yıldızı kaldır (giriş gerekli).
      */
     void unstarMessage(Long messageId);
+
+    /**
+     * Açılmış ve herkese açık mesajlardaki sadece fotoğrafları sayfalı listeler. Giriş gerekmez.
+     */
+    Page<PublicPhotoItemResponse> getPublicPhotos(Pageable pageable);
 }

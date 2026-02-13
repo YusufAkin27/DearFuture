@@ -1,7 +1,9 @@
 package example.DearFuture.user.controller;
 
+import example.DearFuture.message.service.FutureMessageService;
 import example.DearFuture.user.dto.request.UpdateProfileRequest;
 import example.DearFuture.user.dto.request.UpdateSettingsRequest;
+import example.DearFuture.user.dto.response.MessageQuotaResponse;
 import example.DearFuture.user.dto.response.ProfileResponse;
 import example.DearFuture.user.dto.response.UsageResponse;
 import example.DearFuture.user.dto.response.UserResponse;
@@ -21,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
     private final UsageService usageService;
+    private final FutureMessageService futureMessageService;
 
     /* ===================== PROFILE ===================== */
 
@@ -53,6 +56,26 @@ public class UserController {
     public ResponseEntity<UsageResponse> getUsage(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         return ResponseEntity.ok(usageService.getUsage(userId));
+    }
+
+    /**
+     * Kullanıcı alanları: bu ay/dönem toplam atılan mesaj (bekleyen+iletilen),
+     * kalan hak, plan bilgisi (PLUS/PREMIUM). Hesaplama abonelik dönemine göre yapılır.
+     */
+    @GetMapping("/fields")
+    public ResponseEntity<UsageResponse> getFields(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(usageService.getUsage(userId));
+    }
+
+    /**
+     * Planına göre mesaj kotası: toplam gönderilen mesaj sayısı ve kalan mesaj hakkı (long).
+     * FREE: bekleyen+iletilen toplam; PLUS/PREMIUM: dönem içi kullanım.
+     */
+    @GetMapping("/message-quota")
+    public ResponseEntity<MessageQuotaResponse> getMessageQuota(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(futureMessageService.getMessageQuota(userId));
     }
 
     /* ===================== SETTINGS ===================== */

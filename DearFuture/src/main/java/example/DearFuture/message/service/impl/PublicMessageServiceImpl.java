@@ -3,10 +3,13 @@ package example.DearFuture.message.service.impl;
 import example.DearFuture.exception.contract.ResourceNotFoundException;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.dto.response.PublicMessageItemResponse;
+import example.DearFuture.message.dto.response.PublicPhotoItemResponse;
 import example.DearFuture.message.entity.ContentType;
 import example.DearFuture.message.entity.FutureMessage;
+import example.DearFuture.message.entity.FutureMessageContent;
 import example.DearFuture.message.entity.MessageStatus;
 import example.DearFuture.message.entity.StarredPublicMessage;
+import example.DearFuture.message.repository.FutureMessageContentRepository;
 import example.DearFuture.message.repository.FutureMessageRepository;
 import example.DearFuture.message.repository.StarredPublicMessageRepository;
 import example.DearFuture.message.service.PublicMessageService;
@@ -33,6 +36,7 @@ public class PublicMessageServiceImpl implements PublicMessageService {
     private static final int TEXT_PREVIEW_MAX_LENGTH = 200;
 
     private final FutureMessageRepository futureMessageRepository;
+    private final FutureMessageContentRepository futureMessageContentRepository;
     private final StarredPublicMessageRepository starredRepository;
     private final UserRepository userRepository;
 
@@ -106,6 +110,42 @@ public class PublicMessageServiceImpl implements PublicMessageService {
     public void unstarMessage(Long messageId) {
         User user = getCurrentUser();
         starredRepository.deleteByUserIdAndFutureMessageId(user.getId(), messageId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PublicPhotoItemResponse> getPublicPhotos(Pageable pageable) {
+        Instant now = Instant.now();
+        Page<FutureMessageContent> page = futureMessageContentRepository.findPublicPhotoContents(now, ContentType.IMAGE, pageable);
+        List<PublicPhotoItemResponse> content = page.getContent().stream()
+                .map(this::toPublicPhotoItem)
+                .collect(Collectors.toList());
+        return new PageImpl<>(content, page.getPageable(), page.getTotalElements());
+    }
+
+    private PublicPhotoItemResponse toPublicPhotoItem(FutureMessageContent c) {
+        FutureMessage fm = c.getFutureMessage();
+        String senderName = null;
+        if (fm != null && fm.getUser() != null) {
+            String first = fm.getUser().getFirstName();
+            String last = fm.getUser().getLastName();
+            if (first != null && !first.isBlank()) {
+                senderName = first.trim();
+                if (last != null && !last.isBlank()) {
+                    senderName += " " + last.trim();
+                }
+            }
+        }
+        return PublicPhotoItemResponse.builder()
+                .contentId(c.getId())
+                .messageId(fm != null ? fm.getId() : null)
+                .viewToken(fm != null ? fm.getViewToken() : null)
+                .fileUrl(c.getFileUrl())
+                .fileName(c.getFileName())
+                .fileSize(c.getFileSize())
+                .sentAt(fm != null ? fm.getSentAt() : null)
+                .senderName(senderName)
+                .build();
     }
 
     private PublicMessageItemResponse toPublicItem(FutureMessage m, boolean starredByMe) {
