@@ -24,7 +24,6 @@ const CardNav = ({
   themeDark = false,
   onThemeToggle,
   themeToggleAriaLabel,
-  isOnGalaxy = false,
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -91,6 +90,15 @@ const CardNav = ({
     if (isExpanded) document.body.classList.add('card-nav-open');
     else document.body.classList.remove('card-nav-open');
     return () => document.body.classList.remove('card-nav-open');
+  }, [isExpanded]);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') toggleMenu();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
   }, [isExpanded]);
 
   useLayoutEffect(() => {
@@ -176,7 +184,14 @@ const CardNav = ({
   };
 
   return (
-    <div className={`card-nav-container${isOnGalaxy ? ' card-nav-container--on-galaxy' : ''}${className ? ` ${className}` : ''}`}>
+    <div className={`card-nav-container${isExpanded ? ' card-nav-container--open' : ''}${className ? ` ${className}` : ''}`}>
+      {isExpanded && (
+        <div
+          className="card-nav-backdrop"
+          onClick={toggleMenu}
+          aria-hidden="true"
+        />
+      )}
       <nav
         ref={navRef}
         className={`card-nav ${isExpanded ? 'open' : ''}`}

@@ -93,7 +93,6 @@ const Header = () => {
   const items = isLoggedIn ? PRIVATE_ITEMS : PUBLIC_ITEMS;
   const isWelcomePage = location.pathname === '/welcome';
 
-  /* Tamamen şeffaf bar; arka plan (galaksi) görünsün */
   const baseColor = 'transparent';
   const menuColor = 'rgba(255, 255, 255, 0.92)';
   const buttonBg = 'var(--primary-color)';
@@ -118,7 +117,6 @@ const Header = () => {
       onThemeToggle={handleThemeToggle}
       themeToggleAriaLabel={dark ? 'Açık tema' : 'Koyu tema'}
       ease="power3.out"
-      isOnGalaxy={isWelcomePage}
     />
   );
 };

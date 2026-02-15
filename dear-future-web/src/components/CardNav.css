@@ -9,11 +9,9 @@
   z-index: 1000;
   box-sizing: border-box;
   padding: 1rem 0 0;
-}
-
-/* Welcome/galaxy sayfasında üst boşluk az */
-.card-nav-container--on-galaxy {
-  padding: 0.35rem 0 0;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+  padding-right: max(0.5rem, env(safe-area-inset-right));
 }
 
 /* Tamamen şeffaf bar; border ve gölge yok */
@@ -46,9 +44,11 @@
   left: 0;
   right: 0;
   height: 60px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   padding: 0.5rem 0.45rem 0.55rem 1.1rem;
   z-index: 2;
 }
@@ -56,6 +56,7 @@
 .hamburger-menu {
   height: 100%;
   min-width: 44px;
+  min-height: 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,6 +64,7 @@
   cursor: pointer;
   gap: 6px;
   -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .hamburger-menu:hover .hamburger-line {
@@ -103,6 +105,7 @@
   transform: translate(-50%, -50%);
   text-decoration: none;
   color: inherit;
+  min-width: 0;
 }
 
 .logo-container:hover {
@@ -113,6 +116,7 @@
   height: 28px;
   width: auto;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .card-nav-logo-text {
@@ -120,15 +124,17 @@
   font-size: 1.1rem;
   letter-spacing: -0.03em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .card-nav-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
-
-
 
 .card-nav-cta-button {
   background-color: var(--primary-color);
@@ -137,6 +143,7 @@
   border-radius: calc(0.75rem - 0.35rem);
   padding: 0 1rem;
   height: 38px;
+  min-height: 44px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -146,6 +153,7 @@
   justify-content: center;
   text-decoration: none;
   font-family: inherit;
+  white-space: nowrap;
 }
 
 .card-nav-cta-button:hover {
@@ -215,57 +223,200 @@
   opacity: 1;
 }
 
+/* Mobil: tam genişlik bar, full-screen overlay menü, backdrop */
 @media (max-width: 768px) {
   .card-nav-container {
-    width: 92%;
-    padding: 0.75rem 0 0;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    border-radius: 0;
+  }
+
+  /* Menü açıkken tam ekran overlay */
+  .card-nav-container--open {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+    background: transparent;
+  }
+
+  .card-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card-nav-container--open .card-nav {
+    position: relative;
+    z-index: 1;
+    height: min(92dvh, 92vh) !important;
+    max-height: min(92dvh, 92vh);
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 0 1rem 1rem;
+    background: var(--background-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-nav-container--open .card-nav .card-nav-top {
+    flex-shrink: 0;
+  }
+
+  .card-nav-container--open .card-nav .card-nav-content {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    max-height: none;
+    padding-top: 0.75rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    border-top: 1px solid rgba(20, 40, 80, 0.08);
+  }
+
+  .theme-dark .card-nav-container--open .card-nav .card-nav-content {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Kapalıyken bar görünümü – mobilde okunaklı arka plan */
+  .card-nav:not(.open) {
+    background: var(--surface-color) !important;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(20, 40, 80, 0.06);
+  }
+
+  .theme-dark .card-nav:not(.open) {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
   }
 
   .card-nav-top {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
     justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
   }
 
   .hamburger-menu {
-    order: 2;
+    order: 1;
+    min-width: 48px;
+    width: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
   }
 
   .logo-container {
     position: static;
     transform: none;
-    order: 1;
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 120px);
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .card-nav-logo-img {
+    height: 26px;
+    flex-shrink: 0;
+  }
+
+  .card-nav-logo-text {
+    font-size: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .card-nav-actions {
     order: 3;
+    flex-shrink: 0;
+    min-width: 0;
   }
 
   .card-nav-cta-button {
-    min-height: 40px;
+    min-height: 48px;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
   }
 
   .card-nav-content {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-    padding: 0.5rem;
-    bottom: 0;
+    gap: 10px;
+    padding: 1rem 0.75rem;
     justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .nav-card {
     height: auto;
-    min-height: 60px;
-    flex: 1 1 auto;
+    min-height: auto;
+    flex: none;
     max-height: none;
+    padding: 14px 16px;
+    border-radius: 12px;
   }
 
   .nav-card-label {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .nav-card-links {
+    gap: 2px;
   }
 
   .nav-card-link {
+    font-size: 0.95rem;
+    min-height: 48px;
+    padding: 0.5rem 0;
+    align-items: center;
+    border-radius: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+/* Çok dar ekranlar – logo kısalsın, buton yer kalsın */
+@media (max-width: 400px) {
+  .logo-container {
+    max-width: calc(100% - 130px);
+  }
+
+  .card-nav-logo-text {
     font-size: 0.9rem;
+  }
+
+  .card-nav-cta-button {
+    padding: 0 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  .card-nav-top {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+    gap: 0.25rem;
   }
 }
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
-import Header from './components/Header';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from './components/Sidebar';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import LoginPage from './pages/LoginPage';
@@ -22,6 +22,7 @@ import SecurityPage from './pages/SecurityPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import PublicMessagesPage from './pages/PublicMessagesPage';
 import MessageViewPage from './pages/MessageViewPage';
+import CookieConsent from './components/CookieConsent';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -30,11 +31,16 @@ const Layout = () => {
   const isWelcome = location.pathname === '/welcome';
   return (
     <div className={`app-layout${isWelcome ? ' app-layout--welcome' : ''}`}>
-      <Header />
-      <main className="app-main">
-        <Outlet />
-      </main>
-      <Footer />
+      <SidebarProvider>
+        <Sidebar />
+        <SidebarInset>
+         
+          <main className="app-main">
+            <Outlet />
+          </main>
+          <Footer />
+        </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 };
@@ -54,6 +60,7 @@ function App() {
 
   return (
     <Router>
+      <CookieConsent />
       <Routes>
         <Route element={<Layout />}>
           {/* Public Routes */}

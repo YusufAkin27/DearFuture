@@ -28,7 +28,6 @@ body {
   --header-height: 72px;
 }
 
-/* Welcome: header bölgesi de galaksiyle aynı koyu arka plan (siyah galaxy) */
 .app-layout--welcome {
   background-color: #050508;
 }
@@ -46,6 +45,12 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .app-protected {
+    padding: 1rem max(1rem, env(safe-area-inset-left)) 2rem max(1rem, env(safe-area-inset-right));
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
