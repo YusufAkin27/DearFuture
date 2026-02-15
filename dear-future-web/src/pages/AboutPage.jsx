@@ -1,4 +1,25 @@
+import {
+    Accordion,
+    AccordionItem,
+    AccordionTrigger,
+    AccordionPanel,
+} from '../components/Accordion';
 import './AboutPage.css';
+
+const ABOUT_FAQ = [
+    {
+        title: 'Dear Future nedir?',
+        content: 'Dear Future, kendinize veya sevdiklerinize gelecekte ulaşacak dijital mektuplar, fotoğraflar ve videolar göndermenizi sağlayan bir zaman kapsülü platformudur. Mesajlarınız güvenle saklanır ve belirlediğiniz tarihte ulaştırılır.',
+    },
+    {
+        title: 'Nasıl çalışır?',
+        content: 'Kayıt olun, bir mesaj oluşturun ve teslim tarihini seçin. Mesajınız şifrelenir ve güvenle saklanır. Tarih geldiğinde alıcı e-posta ile bilgilendirilir ve mesajına erişebilir.',
+    },
+    {
+        title: 'Ücretsiz mi kullanılır?',
+        content: 'Evet. Dear Future belirli bir kotaya kadar ücretsiz kullanım sunar. Daha fazla mesaj veya depolama için ücretli planlarımız mevcuttur. Detaylar için Fiyatlandırma sayfamıza bakabilirsiniz.',
+    },
+];
 
 const AboutPage = () => {
     return (
@@ -11,6 +32,21 @@ const AboutPage = () => {
                         Her anın, her düşüncenin ve her duygunun hatırlanmayı hak ettiğine inanıyoruz.
                     </p>
                 </header>
+
+                <div className="about-accordion-wrap">
+                    <Accordion className="about-accordion">
+                        {ABOUT_FAQ.map((item, index) => (
+                            <AccordionItem key={index} value={`about-${index + 1}`}>
+                                <AccordionTrigger showArrow={true}>
+                                    {item.title}
+                                </AccordionTrigger>
+                                <AccordionPanel>
+                                    <p>{item.content}</p>
+                                </AccordionPanel>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
 
                 <div className="about-section">
                     <div className="about-content">
@@ -39,11 +75,18 @@ const AboutPage = () => {
                 <div className="about-team">
                     <h2>Ekibimiz</h2>
                     <div className="about-team-grid">
-                        {[1, 2, 3].map((member) => (
-                            <div key={member} className="about-team-card">
-                                <div className="about-team-avatar" />
-                                <h3>Ekip Üyesi {member}</h3>
-                                <p>Kurucu Ortağı</p>
+                        {[
+                            { id: 1, name: 'Yusuf Akin', role: 'Kurucu Ortağı', image: '/uye1.avif' },
+                            { id: 2, name: 'Melisa Çiçek Soyubey', role: 'Kurucu Ortağı', image: '/uye2.avif' },
+                        ].map((member) => (
+                            <div key={member.id} className="about-team-card">
+                                <img
+                                    src={member.image}
+                                    alt={member.name}
+                                    className="about-team-avatar"
+                                />
+                                <h3>{member.name}</h3>
+                                <p>{member.role}</p>
                             </div>
                         ))}
                     </div>

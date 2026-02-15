@@ -131,14 +131,14 @@ const PublicMessagesPage = () => {
                     <span>{msg.starredByMe ? 'Yıldızlı' : 'Yıldızla'}</span>
                 </button>
                 {msg.viewToken && (
-                    <a
-                        href={`/api/messages/view/${msg.viewToken}`}
+                    <Link
+                        to={`/message/view/${msg.viewToken}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="view-link"
                     >
                         Mesajı görüntüle
-                    </a>
+                    </Link>
                 )}
             </div>
         </div>

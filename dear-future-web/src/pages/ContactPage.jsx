@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 import { sendContactMessage, verifyContactEmail } from '../api/contact';
+import { PinInput } from '../components/base/pin-input';
 import './ContactPage.css';
 
 const NAME_MIN = 2;
@@ -91,7 +92,7 @@ const ContactPage = () => {
 
     const handleVerify = async (e) => {
         e.preventDefault();
-        const code = (verifyCode || '').trim();
+        const code = (verifyCode || '').replace(/\D/g, '').replace(/\s/g, '');
         if (code.length !== 6 || !/^\d{6}$/.test(code)) {
             toast.error('Doğrulama kodu 6 haneli sayı olmalıdır.');
             return;
@@ -142,18 +143,19 @@ const ContactPage = () => {
                     <div className="contact-verify-wrap">
                         <form className="contact-form contact-verify-form" onSubmit={handleVerify}>
                             <div className="contact-form-group">
-                                <label htmlFor="contact-code">Doğrulama kodu</label>
-                                <input
-                                    type="text"
-                                    id="contact-code"
-                                    inputMode="numeric"
-                                    maxLength={6}
-                                    placeholder="000000"
-                                    value={verifyCode}
-                                    onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
-                                    className="contact-code-input"
-                                    autoFocus
-                                />
+                                <PinInput value={verifyCode} onChange={setVerifyCode} size="md">
+                                    <PinInput.Label>Doğrulama kodu</PinInput.Label>
+                                    <PinInput.Group maxLength={6}>
+                                        <PinInput.Slot index={0} />
+                                        <PinInput.Slot index={1} />
+                                        <PinInput.Slot index={2} />
+                                        <PinInput.Separator />
+                                        <PinInput.Slot index={3} />
+                                        <PinInput.Slot index={4} />
+                                        <PinInput.Slot index={5} />
+                                    </PinInput.Group>
+                                    <PinInput.Description>E-postanıza gelen 6 haneli kodu girin. (Kod 15 dakika geçerlidir)</PinInput.Description>
+                                </PinInput>
                             </div>
                             <button type="submit" className="contact-submit-btn" disabled={loading}>
                                 {loading ? 'Doğrulanıyor...' : 'Doğrula'}

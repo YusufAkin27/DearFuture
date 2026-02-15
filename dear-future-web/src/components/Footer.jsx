@@ -1,13 +1,10 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 import './Footer.css';
 
 const Footer = () => {
-    const location = useLocation();
-    const isWelcomePage = location.pathname === '/welcome';
-
     return (
-        <footer className={`footer ${isWelcomePage ? 'footer--on-galaxy' : ''}`} role="contentinfo">
+        <footer className="footer" role="contentinfo">
             <div className="footer-bar">
                 <div className="footer-bar-inner">
                     <div className="footer-brand-block">

@@ -5,15 +5,72 @@ import Stack from '../components/Stack';
 import Folder from '../components/Folder';
 import './MessageViewPage.css';
 
-/** Dosya/fotoğrafı blob olarak indirir; sayfaya yönlendirmez. */
+/** Uzantıya göre MIME tipi döndürür (yüklenen tipte indirme için). */
+const getMimeFromExtension = (fileName) => {
+    if (!fileName || typeof fileName !== 'string') return null;
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    const map = {
+        // Görsel
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        gif: 'image/gif',
+        webp: 'image/webp',
+        avif: 'image/avif',
+        svg: 'image/svg+xml',
+        ico: 'image/x-icon',
+        bmp: 'image/bmp',
+        // Video
+        mp4: 'video/mp4',
+        webm: 'video/webm',
+        mov: 'video/quicktime',
+        avi: 'video/x-msvideo',
+        mkv: 'video/x-matroska',
+        m4v: 'video/x-m4v',
+        // Ses
+        mp3: 'audio/mpeg',
+        wav: 'audio/wav',
+        ogg: 'audio/ogg',
+        m4a: 'audio/mp4',
+        aac: 'audio/aac',
+        webm: 'audio/webm',
+        opus: 'audio/opus',
+        // Dosya
+        pdf: 'application/pdf',
+        doc: 'application/msword',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        xls: 'application/vnd.ms-excel',
+        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ppt: 'application/vnd.ms-powerpoint',
+        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        zip: 'application/zip',
+        rar: 'application/vnd.rar',
+        '7z': 'application/x-7z-compressed',
+        txt: 'text/plain',
+        rtf: 'application/rtf',
+        csv: 'text/csv',
+        md: 'text/markdown',
+        json: 'application/json',
+        xml: 'application/xml',
+        epub: 'application/epub+zip',
+    };
+    return map[ext] || null;
+};
+
+/** İndirilen dosyayı orijinal tipinde kaydeder (fotoğraf, video, ses, dosya). */
 const downloadBlob = async (url, fileName) => {
     const res = await fetch(url, { credentials: 'include', mode: 'cors' });
     if (!res.ok) throw new Error('İndirilemedi');
-    const blob = await res.blob();
-    const name = fileName || res.headers.get('content-disposition')?.match(/filename="?([^";]+)"?/)?.[1] || url.split('/').pop() || 'download';
+    const data = await res.arrayBuffer();
+    const responseType = res.headers.get('content-type')?.split(';')[0]?.trim();
+    const inferredType = getMimeFromExtension(fileName);
+    const mimeType = (responseType && responseType !== 'application/octet-stream') ? responseType : (inferredType || 'application/octet-stream');
+    const blob = new Blob([data], { type: mimeType });
+    const name = fileName || res.headers.get('content-disposition')?.match(/filename="?([^";]+)"?/)?.[1] || url.split('/').pop()?.split('?')[0] || 'download';
+    const safeName = name.includes('.') ? name : `${name}.${mimeType.split('/')[1] || 'bin'}`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = name;
+    a.download = safeName;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
@@ -108,7 +165,8 @@ const MessageViewPage = () => {
     const contents = data?.contents ?? [];
     const textContents = contents.filter((c) => c.type === 'TEXT' && c.textContent);
     const imageContents = contents.filter((c) => c.type === 'IMAGE' && c.fileUrl);
-    const fileContents = contents.filter((c) => (c.type === 'FILE' || c.type === 'VIDEO' || c.type === 'AUDIO') && c.fileUrl);
+    const audioContents = contents.filter((c) => c.type === 'AUDIO' && c.fileUrl);
+    const fileContents = contents.filter((c) => (c.type === 'FILE' || c.type === 'VIDEO') && c.fileUrl);
 
     const stackCards = imageContents.map((item, i) => (
         <div key={i} className="message-view-stack-card-inner">
@@ -163,6 +221,35 @@ const MessageViewPage = () => {
                                                 autoplay={false}
                                             />
                                         </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {audioContents.length > 0 && (
+                                <div className="message-view-block message-view-section message-view-audio-section">
+                                    <p className="message-view-section-label">Ses kaydı</p>
+                                    <div className="message-view-audio-list">
+                                        {audioContents.map((item, index) => (
+                                            <div key={index} className="message-view-audio-item">
+                                                <audio
+                                                    src={item.fileUrl}
+                                                    controls
+                                                    className="message-view-audio-player"
+                                                    preload="metadata"
+                                                />
+                                                {item.fileName && (
+                                                    <span className="message-view-audio-filename">{item.fileName}</span>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    className="message-view-audio-download"
+                                                    onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                    disabled={!!downloading}
+                                                >
+                                                    {downloading === `${item.fileUrl}-${item.fileName || ''}` ? 'İndiriliyor…' : 'İndir'}
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}

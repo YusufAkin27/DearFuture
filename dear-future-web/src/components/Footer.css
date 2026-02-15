@@ -6,6 +6,24 @@
   display: flex;
   justify-content: center;
   position: relative;
+  /* Dış alan: tema renginden alta doğru siyaha geçiş, footer ile uyumlu */
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.3) 85%,
+    #000 100%
+  );
+}
+
+.theme-dark .footer {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.5) 80%,
+    #000 100%
+  );
 }
 
 .footer-bar {
@@ -13,25 +31,28 @@
   max-width: 800px;
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: var(--card-nav-bg, #fff);
+  background: linear-gradient(
+    180deg,
+    var(--card-nav-bg, #fff) 0%,
+    var(--card-nav-bg, #fff) 40%,
+    #1a1a1a 85%,
+    #000 100%
+  );
   border: 1px solid rgba(20, 40, 80, 0.08);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
 .theme-dark .footer-bar {
-  background: var(--surface-color);
+  background: linear-gradient(
+    180deg,
+    var(--surface-color) 0%,
+    var(--surface-color) 40%,
+    #0d0d0d 85%,
+    #000 100%
+  );
   border-color: rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* Welcome sayfasında: header gibi galaxy üzerinde cam efekti */
-.footer--on-galaxy .footer-bar {
-  background: rgba(5, 8, 18, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
 }
 
 .footer-bar-inner {
@@ -104,8 +125,7 @@
   font-size: 1rem;
 }
 
-.theme-dark .footer-social-link,
-.footer--on-galaxy .footer-social-link {
+.theme-dark .footer-social-link {
   color: rgba(255, 255, 255, 0.9);
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);

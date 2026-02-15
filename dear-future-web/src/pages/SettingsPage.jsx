@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaTrash, FaClock, FaPlus, FaPen, FaPaperPlane, FaHourglassStart, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaTrash, FaClock, FaPlus, FaPaperPlane, FaExternalLinkAlt } from 'react-icons/fa';
 import { getProfile, updateSettings, deleteAccount, deactivateAccount } from '../api/profile';
 import { cancelSubscription } from '../api/subscription';
-import { getPendingMessages, getDeliveredMessages, deleteMessage } from '../api/message';
-import EditMessageModal from '../components/EditMessageModal';
+import { getDeliveredMessages, deleteMessage } from '../api/message';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -22,10 +21,8 @@ const SettingsPage = () => {
     const [confirmDeactivate, setConfirmDeactivate] = useState('');
     const [confirmCancelPlan, setConfirmCancelPlan] = useState(false);
     const [deactivating, setDeactivating] = useState(false);
-    const [msgTab, setMsgTab] = useState('pending');
     const [messages, setMessages] = useState([]);
     const [messagesLoading, setMessagesLoading] = useState(false);
-    const [editingMessage, setEditingMessage] = useState(null);
 
     useEffect(() => {
         loadProfile();
@@ -33,12 +30,12 @@ const SettingsPage = () => {
 
     useEffect(() => {
         if (profile) loadMessages();
-    }, [profile, msgTab]);
+    }, [profile]);
 
     const loadMessages = async () => {
         setMessagesLoading(true);
         try {
-            const res = msgTab === 'pending' ? await getPendingMessages() : await getDeliveredMessages();
+            const res = await getDeliveredMessages();
             setMessages(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error(err);
@@ -187,11 +184,11 @@ const SettingsPage = () => {
                 <p>Hesap tercihlerinizi ve uygulama ayarlarınızı yönetin.</p>
             </div>
 
-            {/* Mesajlarım - Bekleyen / İletilen */}
+            {/* İletilen mesajlar – bekleyen mesajlar tüm kullanıcılar için görüntülenemez / düzenlenemez */}
             <div className="settings-messages-wrap">
                 <div className="settings-messages-card">
                     <div className="settings-messages-head">
-                        <h2>Mesajlarım</h2>
+                        <h2>İletilen mesajlar</h2>
                         <Link to="/new" className="settings-new-msg-btn">
                             <FaPlus /> Yeni Mesaj
                         </Link>
@@ -202,22 +199,6 @@ const SettingsPage = () => {
                             <span className="settings-plan-expired"> (süre doldu, Ücretsiz geçerli)</span>
                         )}
                     </p>
-                    <div className="settings-messages-tabs">
-                        <button
-                            type="button"
-                            className={`settings-tab-btn ${msgTab === 'pending' ? 'active' : ''}`}
-                            onClick={() => setMsgTab('pending')}
-                        >
-                            <FaHourglassStart /> Bekleyenler
-                        </button>
-                        <button
-                            type="button"
-                            className={`settings-tab-btn ${msgTab === 'delivered' ? 'active' : ''}`}
-                            onClick={() => setMsgTab('delivered')}
-                        >
-                            <FaPaperPlane /> İletilenler
-                        </button>
-                    </div>
                     {messagesLoading ? (
                         <div className="settings-messages-loading">
                             <div className="spinner" />
@@ -228,17 +209,11 @@ const SettingsPage = () => {
                             {messages.length === 0 ? (
                                 <div className="settings-messages-empty">
                                     <div className="settings-messages-empty-icon">
-                                        {msgTab === 'pending' ? <FaHourglassStart /> : <FaPaperPlane />}
+                                        <FaPaperPlane />
                                     </div>
                                     <h3>Burada henüz bir şey yok</h3>
-                                    <p>
-                                        {msgTab === 'pending'
-                                            ? 'Henüz geleceğe gönderilmek üzere bekleyen bir mesajın yok.'
-                                            : 'Henüz teslim edilmiş bir mesajın yok.'}
-                                    </p>
-                                    {msgTab === 'pending' && (
-                                        <Link to="/new" className="settings-empty-cta">İlk mesajını yaz</Link>
-                                    )}
+                                    <p>Henüz teslim edilmiş bir mesajın yok.</p>
+                                    <Link to="/new" className="settings-empty-cta">Yeni mesaj yaz</Link>
                                 </div>
                             ) : (
                                 messages.map((msg) => (
@@ -254,62 +229,33 @@ const SettingsPage = () => {
                                                     minute: '2-digit',
                                                 })}
                                             </span>
-                                            <span className={`settings-status-badge ${msgTab}`}>
-                                                {msgTab === 'pending' ? 'Bekliyor' : 'İletildi'}
-                                            </span>
+                                            <span className="settings-status-badge delivered">İletildi</span>
                                         </div>
                                         <div className="settings-message-preview">
                                             {(msg.content && msg.content.substring(0, 150)) || 'Metin içeriği yok'}
                                             {msg.content && msg.content.length > 150 && '...'}
                                         </div>
                                         <div className="settings-message-actions">
-                                            {msgTab === 'pending' && canEditDeleteMessages && (
-                                                <>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setEditingMessage(msg)}
-                                                        className="settings-action-btn edit"
-                                                        title="Düzenle"
-                                                    >
-                                                        <FaPen /> Düzenle
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDeleteMessage(msg.id)}
-                                                        className="settings-action-btn delete"
-                                                        title="Sil"
-                                                    >
-                                                        <FaTrash /> Sil
-                                                    </button>
-                                                </>
+                                            {msg.viewToken && (
+                                                <Link
+                                                    to={`/message/view/${msg.viewToken}`}
+                                                    className="settings-action-btn view-link"
+                                                    title="Mesajın sayfasına git"
+                                                >
+                                                    <FaExternalLinkAlt /> Mesajı görüntüle
+                                                </Link>
                                             )}
-                                            {msgTab === 'pending' && !canEditDeleteMessages && (
-                                                <span className="settings-free-hint">Ücretsiz planda bekleyen mesajlar düzenlenemez veya silinemez. Planı yükselterek düzenleme ve silme yetkisi kazanırsınız.</span>
+                                            {canEditDeleteMessages && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                    className="settings-action-btn delete"
+                                                    title="Sil"
+                                                >
+                                                    <FaTrash /> Sil
+                                                </button>
                                             )}
-                                            {msgTab === 'delivered' && (
-                                                <>
-                                                    {msg.viewToken && (
-                                                        <Link
-                                                            to={`/message/view/${msg.viewToken}`}
-                                                            className="settings-action-btn view-link"
-                                                            title="Mesajın sayfasına git"
-                                                        >
-                                                            <FaExternalLinkAlt /> Mesajı görüntüle
-                                                        </Link>
-                                                    )}
-                                                    {canEditDeleteMessages && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDeleteMessage(msg.id)}
-                                                            className="settings-action-btn delete"
-                                                            title="Sil"
-                                                        >
-                                                            <FaTrash /> Sil
-                                                        </button>
-                                                    )}
-                                                </>
-                                            )}
-                                            {msgTab === 'delivered' && !canEditDeleteMessages && !msg.viewToken && (
+                                            {!canEditDeleteMessages && !msg.viewToken && (
                                                 <span className="settings-free-hint">Ücretsiz planda iletilen mesajlar silinemez.</span>
                                             )}
                                         </div>
@@ -320,14 +266,6 @@ const SettingsPage = () => {
                     )}
                 </div>
             </div>
-
-            {editingMessage && (
-                <EditMessageModal
-                    message={editingMessage}
-                    onClose={() => setEditingMessage(null)}
-                    onUpdate={loadMessages}
-                />
-            )}
 
             <div className="settings-grid">
                 {/* Hesap bilgisi (salt okunur) */}

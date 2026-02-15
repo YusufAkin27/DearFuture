@@ -550,6 +550,100 @@ input.form-input[type="datetime-local"] {
     background: rgba(239, 68, 68, 0.25);
 }
 
+/* Ses kaydı (Premium) */
+.voice-recording-block {
+    margin-top: 0.5rem;
+}
+
+.voice-record-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    color: var(--text-main);
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.12);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.voice-record-btn:hover:not(:disabled) {
+    background: rgba(20, 40, 80, 0.06);
+    border-color: var(--primary-color);
+}
+
+.voice-record-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.voice-recording-active {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-card);
+    color: var(--text-main);
+}
+
+.voice-recording-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dc2626;
+    animation: voice-pulse 1s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.voice-stop-btn {
+    margin-left: auto;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+    color: #fff;
+    background: #dc2626;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.voice-stop-btn:hover {
+    background: #b91c1c;
+}
+
+.voice-preview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-color);
+    border: 1px solid rgba(20, 40, 80, 0.08);
+    border-radius: var(--radius-card);
+}
+
+.theme-dark .voice-preview {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.voice-preview-audio {
+    flex: 1 1 100%;
+    max-width: 100%;
+    height: 36px;
+}
+
+.voice-preview-name {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
 .file-upload-list {
     list-style: none;
     padding: 0;

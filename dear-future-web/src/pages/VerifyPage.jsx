@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaRedo, FaArrowLeft } from 'react-icons/fa';
 import { verifyCode, resendCode } from '../api/auth';
+import { PinInput } from '../components/base/pin-input';
 import './VerifyPage.css';
 
 const VerifyPage = () => {
@@ -33,9 +34,14 @@ const VerifyPage = () => {
 
     const handleVerify = async (e) => {
         e.preventDefault();
+        const digitsOnly = (code || '').replace(/\D/g, '').replace(/\s/g, '');
+        if (digitsOnly.length !== 6) {
+            toast.error('Lütfen 6 haneli kodu girin.');
+            return;
+        }
         setIsLoading(true);
         try {
-            const response = await verifyCode(email, code);
+            const response = await verifyCode(email, digitsOnly);
             const token = response.data.token;
 
             localStorage.setItem('token', token);
@@ -95,19 +101,19 @@ const VerifyPage = () => {
 
                 <form onSubmit={handleVerify} className="modern-form">
                     <div className="code-input-wrapper">
-                        <input
-                            type="text"
-                            placeholder="000000"
-                            value={code}
-                            onChange={(e) => {
-                                const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                setCode(val);
-                            }}
-                            required
-                            maxLength="6"
-                            className="modern-code-input"
-                            autoFocus
-                        />
+                        <PinInput value={code} onChange={setCode} size="md">
+                            <PinInput.Label>Doğrulama kodu</PinInput.Label>
+                            <PinInput.Group maxLength={6}>
+                                <PinInput.Slot index={0} />
+                                <PinInput.Slot index={1} />
+                                <PinInput.Slot index={2} />
+                                <PinInput.Separator />
+                                <PinInput.Slot index={3} />
+                                <PinInput.Slot index={4} />
+                                <PinInput.Slot index={5} />
+                            </PinInput.Group>
+                            <PinInput.Description>E-posta adresinize gönderilen 6 haneli kodu girin.</PinInput.Description>
+                        </PinInput>
                     </div>
                 </form>
 

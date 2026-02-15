@@ -30,6 +30,12 @@ const NewMessagePage = () => {
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const [uploadingFile, setUploadingFile] = useState(false);
     const [isPublic, setIsPublic] = useState(false);
+    const [voiceRecording, setVoiceRecording] = useState(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isUploadingVoice, setIsUploadingVoice] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const mediaStreamRef = useRef(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -50,8 +56,7 @@ const NewMessagePage = () => {
                 setPendingCount(pendingList.length);
                 setTotalCount(pendingList.length + deliveredList.length);
                 if (plan !== 'FREE') {
-                    const maxR = PLAN_LIMITS[plan]?.maxRecipients ?? 1;
-                    setRecipients([user.email || '', ...Array(Math.max(0, maxR - 1)).fill('')]);
+                    setRecipients([user.email || '']);
                 }
             } catch (err) {
                 if (!cancelled) {
@@ -92,6 +97,8 @@ const NewMessagePage = () => {
     const maxPhotoSizeBytes = profile?.maxPhotoSizeBytes ?? 0;
     const maxFiles = profile?.maxFilesPerMessage ?? 0;
     const maxFileSizeBytes = profile?.maxFileSizeBytes ?? 0;
+    const maxAudioPerMessage = limits.voice ? 1 : 0;
+    const maxAudioSizeBytes = limits.voice ? 10 * 1024 * 1024 : 0;
 
     const handlePhotoSelect = async (e) => {
         const selected = Array.from(e.target.files || []);
@@ -146,6 +153,53 @@ const NewMessagePage = () => {
     const removePhoto = (index) => setPhotos((prev) => prev.filter((_, i) => i !== index));
     const removeFile = (index) => setFiles((prev) => prev.filter((_, i) => i !== index));
 
+    const startVoiceRecording = async () => {
+        if (!limits.voice || voiceRecording || isRecording) return;
+        audioChunksRef.current = [];
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaStreamRef.current = stream;
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+            const recorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = recorder;
+            recorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+            recorder.onstop = async () => {
+                mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+                mediaStreamRef.current = null;
+                const blob = new Blob(audioChunksRef.current, { type: mimeType });
+                const ext = mimeType.includes('opus') || mimeType.includes('webm') ? 'webm' : 'ogg';
+                const file = new File([blob], `recording.${ext}`, { type: blob.type });
+                if (maxAudioSizeBytes && file.size > maxAudioSizeBytes) {
+                    toast.error(`Ses kaydı en fazla ${Math.round(maxAudioSizeBytes / (1024 * 1024))} MB olabilir.`);
+                    setIsRecording(false);
+                    return;
+                }
+                setIsUploadingVoice(true);
+                try {
+                    const res = await uploadMessageAttachment(file, 'AUDIO');
+                    setVoiceRecording({ url: res.data.url, fileName: res.data.fileName, fileSize: res.data.fileSize });
+                } catch (err) {
+                    toast.error(err.response?.data?.message || 'Ses yüklenemedi.');
+                } finally {
+                    setIsUploadingVoice(false);
+                }
+                setIsRecording(false);
+            };
+            recorder.start();
+            setIsRecording(true);
+        } catch (err) {
+            toast.error('Mikrofon erişimi gerekli. Tarayıcı iznini verin.');
+        }
+    };
+
+    const stopVoiceRecording = () => {
+        if (mediaRecorderRef.current?.state === 'recording') {
+            mediaRecorderRef.current.stop();
+        }
+    };
+
+    const removeVoiceRecording = () => setVoiceRecording(null);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!content.trim() || !scheduledAt) {
@@ -186,6 +240,7 @@ const NewMessagePage = () => {
                     { type: 'TEXT', text: content.trim() },
                     ...photos.map((p) => ({ type: 'IMAGE', fileUrl: p.url, fileName: p.fileName, fileSize: p.fileSize })),
                     ...files.map((f) => ({ type: 'FILE', fileUrl: f.url, fileName: f.fileName, fileSize: f.fileSize })),
+                    ...(voiceRecording ? [{ type: 'AUDIO', fileUrl: voiceRecording.url, fileName: voiceRecording.fileName, fileSize: voiceRecording.fileSize }] : []),
                 ];
                 await scheduleMessage({
                     recipientEmails: emails,
@@ -257,7 +312,7 @@ const NewMessagePage = () => {
                     {effectivePlan === 'PREMIUM' && (
                         <ul>
                             <li>100 zamanlanmış mesaj</li>
-                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB) + ses (yakında)</li>
+                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB) + ses kaydı (1 adet, en fazla 10 MB)</li>
                             <li>20 alıcı</li>
                             <li>Herkese açık seçeneği</li>
                         </ul>
@@ -473,9 +528,45 @@ const NewMessagePage = () => {
                     </div>
                 )}
 
-                {limits.voice && (
-                    <div className="form-group plan-features-note">
-                        <p className="plan-features-title"><FaMicrophone /> Ses kaydı (yakında)</p>
+                {limits.voice && maxAudioPerMessage > 0 && (
+                    <div className="form-group file-input-block voice-recording-block">
+                        <label className="file-input-label">
+                            <FaMicrophone /> Ses kaydı (en fazla {maxAudioPerMessage} adet, en fazla {Math.round(maxAudioSizeBytes / (1024 * 1024))} MB)
+                        </label>
+                        {!voiceRecording && !isRecording && (
+                            <button
+                                type="button"
+                                className="voice-record-btn"
+                                onClick={startVoiceRecording}
+                                disabled={isUploadingVoice}
+                            >
+                                <FaMicrophone /> Ses kaydet
+                            </button>
+                        )}
+                        {isRecording && (
+                            <div className="voice-recording-active">
+                                <span className="voice-recording-dot" aria-hidden />
+                                <span>Kaydediliyor...</span>
+                                <button type="button" className="voice-stop-btn" onClick={stopVoiceRecording}>
+                                    Durdur
+                                </button>
+                            </div>
+                        )}
+                        {isUploadingVoice && <p className="uploading-hint">Ses yükleniyor...</p>}
+                        {voiceRecording && !isRecording && (
+                            <div className="voice-preview">
+                                <audio src={voiceRecording.url} controls className="voice-preview-audio" />
+                                <span className="voice-preview-name">{voiceRecording.fileName}</span>
+                                <button
+                                    type="button"
+                                    className="file-upload-delete file-upload-delete--list"
+                                    onClick={removeVoiceRecording}
+                                    aria-label="Ses kaydını kaldır"
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
