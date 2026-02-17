@@ -184,23 +184,7 @@ const ContactPage = () => {
                             <FaEnvelope className="contact-info-icon" />
                             <div>
                                 <h3>E-posta</h3>
-                                <p>merhaba@dearfuture.com</p>
-                                <p>destek@dearfuture.com</p>
-                            </div>
-                        </div>
-                        <div className="contact-info-item">
-                            <FaMapMarkerAlt className="contact-info-icon" />
-                            <div>
-                                <h3>Adres</h3>
-                                <p>Örnek Mah. Gelecek Sok. No: 1</p>
-                                <p>34000 İstanbul</p>
-                            </div>
-                        </div>
-                        <div className="contact-info-item">
-                            <FaPhone className="contact-info-icon" />
-                            <div>
-                                <h3>Telefon</h3>
-                                <p>+90 (212) 000 00 00</p>
+                                <p>merhaba@dearfuture.info</p>
                             </div>
                         </div>
                     </div>
