@@ -1,0 +1,289 @@
+/* Çerez onay modalı – profesyonel, tema uyumlu */
+.cookie-consent-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  animation: cookie-consent-fade 0.3s ease;
+}
+
+@keyframes cookie-consent-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cookie-consent-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--surface-color);
+  border-radius: var(--radius-card);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15), 0 4px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(20, 40, 80, 0.08);
+  animation: cookie-consent-slide 0.35s ease;
+}
+
+.theme-dark .cookie-consent-modal {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes cookie-consent-slide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cookie-consent-header {
+  padding: 1.5rem 1.5rem 0;
+}
+
+.cookie-consent-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(0, 168, 204, 0.12);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.cookie-consent-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.5rem;
+}
+
+.cookie-consent-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.cookie-consent-link {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-consent-link:hover {
+  color: var(--accent-bright);
+}
+
+.cookie-consent-details-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: var(--btn-secondary-bg);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: var(--radius-button);
+  transition: background 0.2s;
+}
+
+.cookie-consent-details-toggle:hover {
+  background: rgba(0, 168, 204, 0.1);
+}
+
+.cookie-consent-chevron {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.cookie-consent-chevron--open {
+  transform: rotate(180deg);
+}
+
+.cookie-consent-details {
+  padding: 1rem 1.5rem 0;
+  border-top: 1px solid rgba(20, 40, 80, 0.06);
+  margin-top: 1rem;
+}
+
+.theme-dark .cookie-consent-details {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.cookie-consent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(20, 40, 80, 0.06);
+}
+
+.theme-dark .cookie-consent-row {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.cookie-consent-row:last-child {
+  border-bottom: none;
+}
+
+.cookie-consent-row-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cookie-consent-row-label strong {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.cookie-consent-row-label small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cookie-consent-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.cookie-consent-badge--always {
+  background: rgba(0, 168, 204, 0.12);
+  color: var(--primary-color);
+}
+
+.cookie-consent-toggle {
+  flex-shrink: 0;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(20, 40, 80, 0.2);
+  background: var(--background-color);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.theme-dark .cookie-consent-toggle {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cookie-consent-toggle:hover {
+  border-color: var(--primary-color);
+}
+
+.cookie-consent-toggle--on {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.cookie-consent-toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.cookie-consent-toggle--on .cookie-consent-toggle-slider {
+  transform: translateX(20px);
+}
+
+.cookie-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(20, 40, 80, 0.06);
+}
+
+.theme-dark .cookie-consent-actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.cookie-consent-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-button);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  border: none;
+}
+
+.cookie-consent-btn:hover {
+  transform: translateY(-1px);
+}
+
+.cookie-consent-btn--secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--text-secondary);
+}
+
+.cookie-consent-btn--secondary:hover {
+  background: rgba(0, 168, 204, 0.1);
+  color: var(--primary-color);
+}
+
+.cookie-consent-btn--outline {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.cookie-consent-btn--outline:hover {
+  background: rgba(0, 168, 204, 0.08);
+}
+
+.cookie-consent-btn--primary {
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: var(--shadow-button);
+}
+
+.cookie-consent-btn--primary:hover {
+  box-shadow: 0 6px 20px rgba(0, 168, 204, 0.35);
+}
+
+@media (max-width: 480px) {
+  .cookie-consent-actions {
+    flex-direction: column;
+  }
+
+  .cookie-consent-actions .cookie-consent-btn {
+    width: 100%;
+  }
+}

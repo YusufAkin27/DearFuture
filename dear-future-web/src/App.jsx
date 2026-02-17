@@ -26,6 +26,37 @@ import CookieConsent from './components/CookieConsent';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const BASE_TITLE = 'Dear Future – Geleceğe Mesaj Yaz';
+const PAGE_TITLES = {
+  '/welcome': `${BASE_TITLE} | Hoş Geldin`,
+  '/login': `Giriş | ${BASE_TITLE}`,
+  '/verify': `Doğrulama | ${BASE_TITLE}`,
+  '/pricing': `Fiyatlandırma | ${BASE_TITLE}`,
+  '/features': `Özellikler | ${BASE_TITLE}`,
+  '/blog': `Blog | ${BASE_TITLE}`,
+  '/about': `Hakkımızda | ${BASE_TITLE}`,
+  '/contact': `İletişim | ${BASE_TITLE}`,
+  '/privacy': `Gizlilik | ${BASE_TITLE}`,
+  '/terms': `Kullanım Koşulları | ${BASE_TITLE}`,
+  '/cookie-policy': `Çerez Politikası | ${BASE_TITLE}`,
+  '/security': `Güvenlik | ${BASE_TITLE}`,
+  '/public-messages': `Herkese Açık Mesajlar | ${BASE_TITLE}`,
+  '/new': `Yeni Mesaj Yaz | ${BASE_TITLE}`,
+  '/profile': `Profil | ${BASE_TITLE}`,
+  '/change-subscription': `Abonelik | ${BASE_TITLE}`,
+  '/settings': `Ayarlar | ${BASE_TITLE}`,
+};
+
+function DocumentTitle() {
+  const location = useLocation();
+  useEffect(() => {
+    const path = location.pathname.replace(/\/message\/view\/[^/]+/, '/message/view');
+    const title = PAGE_TITLES[path] ?? (path.startsWith('/message/view') ? `Mesajı Görüntüle | ${BASE_TITLE}` : BASE_TITLE);
+    document.title = title;
+  }, [location.pathname]);
+  return null;
+}
+
 const Layout = () => {
   const location = useLocation();
   const isWelcome = location.pathname === '/welcome';
@@ -60,6 +91,7 @@ function App() {
 
   return (
     <Router>
+      <DocumentTitle />
       <CookieConsent />
       <Routes>
         <Route element={<Layout />}>

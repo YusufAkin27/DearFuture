@@ -1,0 +1,116 @@
+.pin-input {
+  width: 100%;
+}
+
+.pin-input__label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-main, #0f172a);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.pin-input__group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pin-input__slot {
+  width: 2.5rem;
+  height: 2.75rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: 'Courier New', monospace;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main, #fff);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.pin-input__slot:focus {
+  border-color: var(--primary-color, #10b981);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.pin-input__slot--sm {
+  width: 2.25rem;
+  height: 2.5rem;
+  font-size: 1.25rem;
+}
+
+.pin-input__slot--md {
+  width: 2.5rem;
+  height: 2.75rem;
+  font-size: 1.5rem;
+}
+
+.pin-input__slot--lg {
+  width: 3rem;
+  height: 3.25rem;
+  font-size: 1.75rem;
+}
+
+.pin-input__separator {
+  width: 0.5rem;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.pin-input__description {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0.5rem 0 0;
+}
+
+/* Verify page / dark card context */
+.modern-verify-card .pin-input__slot {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.modern-verify-card .pin-input__slot:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.modern-verify-card .pin-input__label {
+  color: #e2e8f0;
+}
+
+.modern-verify-card .pin-input__description {
+  color: #94a3b8;
+}
+
+/* Contact page */
+.contact-verify-form .pin-input__slot {
+  border-color: rgba(20, 40, 80, 0.15);
+  background: var(--surface-color, #fff);
+  color: var(--text-main, #0f172a);
+}
+
+.contact-verify-form .pin-input__slot:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.15);
+}
+
+.theme-dark .contact-verify-form .pin-input__slot {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.theme-dark .contact-verify-form .pin-input__slot:focus {
+  border-color: var(--primary-color);
+}
