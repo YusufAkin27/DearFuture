@@ -5,6 +5,7 @@ import { FaTrash, FaClock, FaPlus, FaPaperPlane, FaExternalLinkAlt } from 'react
 import { getProfile, updateSettings, deleteAccount, deactivateAccount } from '../api/profile';
 import { cancelSubscription } from '../api/subscription';
 import { getDeliveredMessages, deleteMessage } from '../api/message';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -158,6 +159,12 @@ const SettingsPage = () => {
         }
     };
 
+    const debouncedSaveSettings = useDebouncedCallback(handleSaveSettings, 500);
+    const debouncedDeleteMessage = useDebouncedCallback((id) => handleDeleteMessage(id), 500);
+    const debouncedCancelSubscription = useDebouncedCallback(handleCancelSubscription, 500);
+    const debouncedDeactivate = useDebouncedCallback(handleDeactivateAccount, 500);
+    const debouncedDeleteAccount = useDebouncedCallback(handleDeleteAccount, 500);
+
     if (loading) {
         return (
             <div className="settings-container">
@@ -245,20 +252,8 @@ const SettingsPage = () => {
                                                     <FaExternalLinkAlt /> Mesajı görüntüle
                                                 </Link>
                                             )}
-                                            {canEditDeleteMessages && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDeleteMessage(msg.id)}
-                                                    className="settings-action-btn delete"
-                                                    title="Sil"
-                                                >
-                                                    <FaTrash /> Sil
-                                                </button>
-                                            )}
-                                            {!canEditDeleteMessages && !msg.viewToken && (
-                                                <span className="settings-free-hint">Ücretsiz planda iletilen mesajlar silinemez.</span>
-                                            )}
-                                        </div>
+                                           
+                                         </div>
                                     </div>
                                 ))
                             )}
@@ -279,7 +274,7 @@ const SettingsPage = () => {
                 </div>
 
                 {/* Genel: Dil */}
-                <form className="settings-card" onSubmit={handleSaveSettings}>
+                <form className="settings-card" onSubmit={debouncedSaveSettings}>
                     <h2>Genel</h2>
                     <div className="form-group">
                         <label htmlFor="locale">Dil</label>
@@ -301,14 +296,14 @@ const SettingsPage = () => {
                 </form>
 
                 {/* Bildirimler */}
-                <form className="settings-card" onSubmit={handleSaveSettings}>
+                <form className="settings-card" onSubmit={debouncedSaveSettings}>
                     <h2>Bildirimler</h2>
                     <div className="form-group checkbox-group">
                         <label className="toggle-switch">
                             <input
                                 type="checkbox"
                                 name="emailNotifications"
-                                checked={formData.emailNotifications}
+                                checked={formData.emailNotifications}   
                                 onChange={handleSettingsChange}
                             />
                             <span className="slider round" />
@@ -358,13 +353,13 @@ const SettingsPage = () => {
                                         <button type="button" className="secondary-btn" onClick={() => setConfirmCancelPlan(false)}>
                                             Vazgeç
                                         </button>
-                                        <button type="button" className="cancel-plan-btn" onClick={handleCancelSubscription}>
+                                        <button type="button" className="cancel-plan-btn" onClick={debouncedCancelSubscription}>
                                             İptal et
                                         </button>
                                     </div>
                                 </>
                             ) : (
-                                <button type="button" className="secondary-btn" onClick={handleCancelSubscription}>
+                                <button type="button" className="secondary-btn" onClick={debouncedCancelSubscription}>
                                     Aboneliği iptal et
                                 </button>
                             )}
@@ -394,7 +389,7 @@ const SettingsPage = () => {
                             <button
                                 type="button"
                                 className="deactivate-btn"
-                                onClick={handleDeactivateAccount}
+                                onClick={debouncedDeactivate}
                                 disabled={confirmDeactivate !== 'DONDUR' || deactivating}
                             >
                                 {deactivating ? 'İşleniyor...' : 'Hesabı dondur'}
@@ -425,7 +420,7 @@ const SettingsPage = () => {
                             <button
                                 type="button"
                                 className="delete-btn"
-                                onClick={handleDeleteAccount}
+                                onClick={debouncedDeleteAccount}
                                 disabled={confirmDelete !== 'SİL'}
                             >
                                 Hesabı kalıcı sil

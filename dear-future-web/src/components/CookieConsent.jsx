@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCookieBite, FaChevronDown, FaCheck } from 'react-icons/fa';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './CookieConsent.css';
 
 const STORAGE_KEY = 'dearfuture_cookie_consent';
@@ -49,6 +50,10 @@ const CookieConsent = () => {
       console.warn('Cookie preferences save failed', e);
     }
   };
+
+  const debouncedSavePreferences = useDebouncedCallback(handleSavePreferences, 500);
+  const debouncedAcceptAll = useDebouncedCallback(handleAcceptAll, 500);
+  const debouncedEssentialOnly = useDebouncedCallback(handleEssentialOnly, 500);
 
   const togglePreference = (key) => {
     setPreferences((p) => ({ ...p, [key]: !p[key] }));
@@ -133,15 +138,15 @@ const CookieConsent = () => {
 
         <div className="cookie-consent-actions">
           {showDetails ? (
-            <button type="button" className="cookie-consent-btn cookie-consent-btn--primary" onClick={handleSavePreferences}>
+            <button type="button" className="cookie-consent-btn cookie-consent-btn--primary" onClick={debouncedSavePreferences}>
               <FaCheck /> Tercihleri Kaydet
             </button>
           ) : (
             <>
-              <button type="button" className="cookie-consent-btn cookie-consent-btn--secondary" onClick={handleEssentialOnly}>
+              <button type="button" className="cookie-consent-btn cookie-consent-btn--secondary" onClick={debouncedEssentialOnly}>
                 Sadece Zorunlu
               </button>
-              <button type="button" className="cookie-consent-btn cookie-consent-btn--primary" onClick={handleAcceptAll}>
+              <button type="button" className="cookie-consent-btn cookie-consent-btn--primary" onClick={debouncedAcceptAll}>
                 Tümünü Kabul Et
               </button>
             </>

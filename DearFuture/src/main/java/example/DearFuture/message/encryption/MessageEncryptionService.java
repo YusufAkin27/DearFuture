@@ -128,4 +128,25 @@ public class MessageEncryptionService {
             }
         }
     }
+
+    /**
+     * Mesaj içeriklerindeki dosya URL'lerini (fotoğraf, video, ses, dosya) şifreden çözer (yerinde günceller).
+     * Görüntüleme ve public API yanıtları öncesi çağrılır; böylece istemci gerçek Cloudinary URL'ini alır.
+     */
+    public void decryptMessageFileUrls(FutureMessage message) {
+        if (message == null || message.getContents() == null) return;
+        for (FutureMessageContent content : message.getContents()) {
+            if (content.getFileUrl() != null && !content.getFileUrl().isBlank() && isEncrypted(content.getFileUrl())) {
+                content.setFileUrl(decrypt(content.getFileUrl()));
+            }
+        }
+    }
+
+    /**
+     * Tek bir dosya URL'ini çözer. Şifreli değilse olduğu gibi döner.
+     */
+    public String decryptFileUrlIfNeeded(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return fileUrl;
+        return isEncrypted(fileUrl) ? decrypt(fileUrl) : fileUrl;
+    }
 }

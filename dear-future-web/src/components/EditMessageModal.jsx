@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaTimes, FaSave, FaCalendar, FaUserFriends } from 'react-icons/fa';
 import { updateMessage } from '../api/message';
 import { toast } from 'react-toastify';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './EditMessageModal.css';
 
 const EditMessageModal = ({ message, onClose, onUpdate }) => {
@@ -50,6 +51,8 @@ const EditMessageModal = ({ message, onClose, onUpdate }) => {
         }
     };
 
+    const debouncedSubmit = useDebouncedCallback(handleSubmit, 500);
+
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -60,7 +63,7 @@ const EditMessageModal = ({ message, onClose, onUpdate }) => {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="edit-form">
+                <form onSubmit={debouncedSubmit} className="edit-form">
                     <div className="form-group">
                         <label>Mesaj İçeriği</label>
                         <textarea

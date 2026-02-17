@@ -15,6 +15,7 @@ import {
     FaStar,
 } from 'react-icons/fa';
 import { getProfile, updateProfile, uploadProfilePhoto, deleteProfilePhoto } from '../api/profile';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -96,6 +97,9 @@ const ProfilePage = () => {
         }
     };
 
+    const debouncedUpdate = useDebouncedCallback(handleUpdate, 500);
+    const debouncedDeletePhoto = useDebouncedCallback(handleDeletePhoto, 500);
+
     const formatDate = (d) =>
         d ? new Date(d).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
@@ -161,7 +165,7 @@ const ProfilePage = () => {
                             />
                         </div>
                         {photoUrl && (
-                            <button type="button" className="avatar-remove-btn" onClick={handleDeletePhoto} disabled={photoLoading}>
+                            <button type="button" className="avatar-remove-btn" onClick={debouncedDeletePhoto} disabled={photoLoading}>
                                 Fotoğrafı kaldır
                             </button>
                         )}
@@ -217,7 +221,7 @@ const ProfilePage = () => {
                         </div>
 
                         {isEditing ? (
-                            <form onSubmit={handleUpdate} className="profile-form">
+                            <form onSubmit={debouncedUpdate} className="profile-form">
                                 <div className="form-row">
                                     <label>Ad</label>
                                     <input

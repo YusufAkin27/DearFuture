@@ -9,12 +9,15 @@ import example.DearFuture.user.dto.response.UsageResponse;
 import example.DearFuture.user.dto.response.UserResponse;
 import example.DearFuture.user.service.UsageService;
 import example.DearFuture.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -118,7 +121,7 @@ public class UserController {
     @GetMapping("/profile/photo")
     public void getProfilePhoto(
             Authentication authentication,
-            jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+            HttpServletResponse response) throws IOException {
 
         Long userId = (Long) authentication.getPrincipal();
         String photoUrl = userService.getProfilePhoto(userId);
@@ -126,7 +129,7 @@ public class UserController {
             response.sendRedirect(photoUrl);
             return;
         }
-        response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_NO_CONTENT);
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
     /* ===================== ACCOUNT ===================== */

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 import { sendContactMessage, verifyContactEmail } from '../api/contact';
 import { PinInput } from '../components/base/pin-input';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './ContactPage.css';
 
 const NAME_MIN = 2;
@@ -115,6 +116,9 @@ const ContactPage = () => {
         }
     };
 
+    const debouncedSubmit = useDebouncedCallback(handleSubmit, 500);
+    const debouncedVerify = useDebouncedCallback(handleVerify, 500);
+
     if (step === 'done') {
         return (
             <section className="contact-container">
@@ -142,7 +146,7 @@ const ContactPage = () => {
                         <p className="contact-verify-hint">Kod 15 dakika geçerlidir. Görmediyseniz spam klasörünü kontrol edin.</p>
                     </header>
                     <div className="contact-verify-wrap">
-                        <form className="contact-form contact-verify-form" onSubmit={handleVerify}>
+                        <form className="contact-form contact-verify-form" onSubmit={debouncedVerify}>
                             <div className="contact-form-group contact-form-group--pin">
                                 <PinInput value={verifyCode} onChange={setVerifyCode} size="md">
                                     <PinInput.Label>Doğrulama kodu</PinInput.Label>
@@ -200,7 +204,7 @@ const ContactPage = () => {
                         </div>
                     </div>
 
-                    <form className="contact-form" onSubmit={handleSubmit}>
+                    <form className="contact-form" onSubmit={debouncedSubmit}>
                         <div className="contact-form-group">
                             <label htmlFor="contact-name">Ad Soyad *</label>
                             <input

@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaCheck, FaPaperPlane, FaUserFriends, FaImage, FaFile, FaMicrophone } from 'react-icons/fa';
 import { getPlanByCode } from '../api/subscription';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './PricingPage.css';
 import './PlanDetailPage.css';
 
@@ -55,6 +56,8 @@ const PlanDetailPage = () => {
             navigate('/login');
         }
     };
+
+    const debouncedSelectPlan = useDebouncedCallback(handleSelectPlan, 500);
 
     if (loading) {
         return (
@@ -181,7 +184,7 @@ const PlanDetailPage = () => {
                 <button
                     type="button"
                     className={`plan-detail-cta ${plan.recommended ? 'plan-detail-cta--primary' : 'plan-detail-cta--secondary'}`}
-                    onClick={handleSelectPlan}
+                    onClick={debouncedSelectPlan}
                     disabled={!plan.active && plan.id !== 'FREE'}
                 >
                     {plan.id === 'FREE' ? 'Ücretsiz Başla' : plan.active ? 'Planı Seç' : 'Satın alınamıyor'}

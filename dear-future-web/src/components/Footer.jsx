@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 import './Footer.css';
 
 const Footer = () => {
@@ -16,8 +16,7 @@ const Footer = () => {
                             Geleceğe bugünden iz bırakın.
                         </p>
                         <div className="footer-social">
-                            <a href="#" className="footer-social-link" aria-label="Instagram"><FaInstagram /></a>
-                            <a href="#" className="footer-social-link" aria-label="LinkedIn"><FaLinkedin /></a>
+                            <a href="https://www.instagram.com/dear.futuree" className="footer-social-link" aria-label="Instagram"><FaInstagram /></a>
                         </div>
                     </div>
 

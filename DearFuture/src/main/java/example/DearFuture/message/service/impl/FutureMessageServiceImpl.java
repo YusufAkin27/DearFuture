@@ -233,6 +233,11 @@ public class FutureMessageServiceImpl implements FutureMessageService {
                     && messageEncryptionService.isEnabled()) {
                 c.setTextContent(messageEncryptionService.encrypt(c.getTextContent()));
             }
+            // Fotoğraf, video, ses ve dosya URL'lerini şifrele (Cloudinary linki DB'de düz metin kalmasın)
+            if (c.getFileUrl() != null && !c.getFileUrl().isBlank() && messageEncryptionService.isEnabled()
+                    && !messageEncryptionService.isEncrypted(c.getFileUrl())) {
+                c.setFileUrl(messageEncryptionService.encrypt(c.getFileUrl()));
+            }
         }
 
         futureMessageRepository.save(futureMessage);
@@ -240,7 +245,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     }
 
     private SubscriptionPlan effectivePlan(User user) {
-        if (user.getSubscriptionEndsAt() != null && java.time.LocalDateTime.now().isAfter(user.getSubscriptionEndsAt())) {
+        if (user.getSubscriptionEndsAt() != null && LocalDateTime.now().isAfter(user.getSubscriptionEndsAt())) {
             return getFreePlan();
         }
         return user.getSubscriptionPlan() != null ? user.getSubscriptionPlan() : getFreePlan();
@@ -336,7 +341,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         }
         if (audioCount > 0 && !plan.isAllowVoice()) {
             throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                    "Planınızda ses kaydı ekleme yok. Plus veya Premium'a yükseltin.");
+                    "Planınızda ses kaydı ekleme yok. Premium'a yükseltin.");
         }
 
         if (plan.getMaxPhotosPerMessage() > 0 && visualCount > plan.getMaxPhotosPerMessage()) {
@@ -433,7 +438,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         } else if ("AUDIO".equals(typeUpper)) {
             if (!plan.isAllowVoice()) {
                 throw new PlanLimitExceededException(ErrorCode.PLAN_FEATURE_NOT_AVAILABLE,
-                        "Ses kaydı ekleme planınızda yok. Plus veya Premium'a yükseltin.");
+                        "Ses kaydı ekleme planınızda yok. Premium'a yükseltin.");
             }
             long maxAudioSize = plan.getMaxAudioSizeBytes() > 0 ? plan.getMaxAudioSizeBytes() : plan.getMaxFileSizeBytes();
             if (maxAudioSize > 0 && file.getSize() > maxAudioSize) {

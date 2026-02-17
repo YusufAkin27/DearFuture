@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaEnvelope, FaPaperPlane, FaLock, FaArrowLeft, FaGoogle } from 'react-icons/fa';
 import { login } from '../api/auth';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -39,6 +40,8 @@ const LoginPage = () => {
         }
     };
 
+    const debouncedSubmit = useDebouncedCallback(handleSubmit, 500);
+
     return (
         <div className="login-page-wrap">
             <button type="button" className="login-back-btn" onClick={() => navigate('/welcome')}>
@@ -55,7 +58,7 @@ const LoginPage = () => {
                 </div>
 
                 <div className="login-card-body">
-                    <form onSubmit={handleSubmit} className="login-form">
+                    <form onSubmit={debouncedSubmit} className="login-form">
                         <div className={`login-input-wrap ${isFocused || email ? 'active' : ''}`}>
                             <label htmlFor="login-email">E-POSTA ADRESI</label>
                             <div className="login-input-inner">

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getMessageByViewToken } from '../api/message';
 import Stack from '../components/Stack';
 import Folder from '../components/Folder';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './MessageViewPage.css';
 
 /** Uzantıya göre MIME tipi döndürür (yüklenen tipte indirme için). */
@@ -101,6 +102,8 @@ const MessageViewPage = () => {
         }
     }, [downloading]);
 
+    const debouncedDownload = useDebouncedCallback(handleDownload, 500);
+
     useEffect(() => {
         if (!viewToken) {
             setError('Geçersiz bağlantı.');
@@ -178,7 +181,7 @@ const MessageViewPage = () => {
             <button
                 type="button"
                 className="stack-card-download"
-                onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
                 disabled={!!downloading}
             >
                 {downloading === `${item.fileUrl}-${item.fileName || ''}` ? 'İndiriliyor…' : 'İndir'}
@@ -243,7 +246,7 @@ const MessageViewPage = () => {
                                                 <button
                                                     type="button"
                                                     className="message-view-audio-download"
-                                                    onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                    onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
                                                     disabled={!!downloading}
                                                 >
                                                     {downloading === `${item.fileUrl}-${item.fileName || ''}` ? 'İndiriliyor…' : 'İndir'}
@@ -267,7 +270,7 @@ const MessageViewPage = () => {
                                                     key={index}
                                                     type="button"
                                                     className="message-view-folder-paper-link"
-                                                    onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                    onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
                                                     disabled={!!downloading}
                                                 >
                                                     {item.fileName || 'Dosya'}
@@ -282,7 +285,7 @@ const MessageViewPage = () => {
                                                         key={index}
                                                         type="button"
                                                         className="message-view-file-link"
-                                                        onClick={(e) => handleDownload(e, item.fileUrl, item.fileName)}
+                                                        onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
                                                         disabled={!!downloading}
                                                     >
                                                         {item.fileName || 'Dosyayı indir'}

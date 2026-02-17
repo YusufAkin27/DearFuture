@@ -4,6 +4,7 @@ import example.DearFuture.exception.contract.ResourceNotFoundException;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.message.dto.response.PublicMessageItemResponse;
 import example.DearFuture.message.dto.response.PublicPhotoItemResponse;
+import example.DearFuture.message.encryption.MessageEncryptionService;
 import example.DearFuture.message.entity.ContentType;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.FutureMessageContent;
@@ -39,6 +40,7 @@ public class PublicMessageServiceImpl implements PublicMessageService {
     private final FutureMessageContentRepository futureMessageContentRepository;
     private final StarredPublicMessageRepository starredRepository;
     private final UserRepository userRepository;
+    private final MessageEncryptionService messageEncryptionService;
 
     @Override
     @Transactional(readOnly = true)
@@ -140,7 +142,7 @@ public class PublicMessageServiceImpl implements PublicMessageService {
                 .contentId(c.getId())
                 .messageId(fm != null ? fm.getId() : null)
                 .viewToken(fm != null ? fm.getViewToken() : null)
-                .fileUrl(c.getFileUrl())
+                .fileUrl(messageEncryptionService.decryptFileUrlIfNeeded(c.getFileUrl()))
                 .fileName(c.getFileName())
                 .fileSize(c.getFileSize())
                 .sentAt(fm != null ? fm.getSentAt() : null)

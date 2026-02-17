@@ -5,6 +5,7 @@ import { FaPaperPlane, FaUser, FaImage, FaFile, FaMicrophone, FaTrash } from 're
 import { PiFilesThin } from 'react-icons/pi';
 import { getProfile, getMessageQuota } from '../api/profile';
 import { createMessage, scheduleMessage, uploadMessageAttachment } from '../api/message';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './NewMessagePage.css';
 
 /** Profil/kota gelmezse kullanılacak varsayılanlar (sadece yedek) */
@@ -259,6 +260,8 @@ const NewMessagePage = () => {
         }
     };
 
+    const debouncedSubmit = useDebouncedCallback(handleSubmit, 500);
+
     if (loading) {
         return (
             <div className="new-message-container">
@@ -307,7 +310,7 @@ const NewMessagePage = () => {
                 </div>
             </header>
 
-            <form onSubmit={handleSubmit} className="new-message-form">
+            <form onSubmit={debouncedSubmit} className="new-message-form">
                 <div className="form-group">
                     <label>Mesaj metni</label>
                     <textarea

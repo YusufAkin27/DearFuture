@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { FaRedo, FaArrowLeft } from 'react-icons/fa';
 import { verifyCode, resendCode } from '../api/auth';
 import { PinInput } from '../components/base/pin-input';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './VerifyPage.css';
 
 const VerifyPage = () => {
@@ -76,6 +77,9 @@ const VerifyPage = () => {
         }
     };
 
+    const debouncedVerify = useDebouncedCallback(handleVerify, 500);
+    const debouncedResend = useDebouncedCallback(handleResend, 500);
+
     const handleLoginRedirect = () => {
         navigate('/login');
     };
@@ -99,7 +103,7 @@ const VerifyPage = () => {
                     <p className="verify-instruction">E-posta adresinize gönderilen 6 haneli kodu girin.</p>
                 </div>
 
-                <form onSubmit={handleVerify} className="modern-form">
+                <form onSubmit={debouncedVerify} className="modern-form">
                     <div className="code-input-wrapper">
                         <PinInput value={code} onChange={setCode} size="md">
                             <PinInput.Label>Doğrulama kodu</PinInput.Label>
@@ -120,7 +124,7 @@ const VerifyPage = () => {
                 <div className="resend-section">
                     <button
                         className={`resend-button ${timer > 0 ? 'disabled' : ''}`}
-                        onClick={handleResend}
+                        onClick={debouncedResend}
                         disabled={timer > 0 || isResending}
                     >
                         {isResending ? (

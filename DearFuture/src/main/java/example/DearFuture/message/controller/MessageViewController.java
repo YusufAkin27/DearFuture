@@ -1,6 +1,7 @@
 package example.DearFuture.message.controller;
 
 import example.DearFuture.message.dto.response.MessageViewResponse;
+import example.DearFuture.message.encryption.MessageEncryptionService;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.repository.FutureMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.time.Instant;
 public class MessageViewController {
 
     private final FutureMessageRepository futureMessageRepository;
+    private final MessageEncryptionService messageEncryptionService;
 
     /**
      * Token ile mesajı görüntüle.
@@ -45,6 +47,8 @@ public class MessageViewController {
                     .body("Bu mesaj henüz açılmadı. Zamanı geldiğinde görüntüleyebilirsiniz.");
         }
 
+        // Fotoğraf, video, ses ve dosya URL'lerini şifreden çöz (istemci gerçek Cloudinary linkini görsün)
+        messageEncryptionService.decryptMessageFileUrls(message);
         return ResponseEntity.ok(MessageViewResponse.fromEntity(message));
     }
 }

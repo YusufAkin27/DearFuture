@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { getProfile } from '../api/profile';
 import { getPlans, initializeCheckout } from '../api/subscription';
 import AnimatedContent from '../components/AnimatedContent';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './PricingPage.css';
 import './ChangeSubscriptionPage.css';
 
@@ -73,6 +74,8 @@ const ChangeSubscriptionPage = () => {
             setPayLoading(null);
         }
     };
+
+    const debouncedUpgrade = useDebouncedCallback(handleUpgrade, 500);
 
     const formatDate = (dateStr) => {
         if (!dateStr) return null;
@@ -156,7 +159,7 @@ const ChangeSubscriptionPage = () => {
                                 <button
                                     type="button"
                                     className="pricing-cta"
-                                    onClick={() => handleUpgrade(plan.id)}
+                                    onClick={() => debouncedUpgrade(plan.id)}
                                     disabled={isCurrent || (plan.id === 'FREE' && !isCurrent) || payLoading !== null}
                                 >
                                     {isCurrent

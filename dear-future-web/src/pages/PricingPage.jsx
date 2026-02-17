@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getPlans } from '../api/subscription';
 import AnimatedContent from '../components/AnimatedContent';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './PricingPage.css';
 
 const PricingPage = () => {
@@ -44,6 +45,8 @@ const PricingPage = () => {
             navigate('/login');
         }
     };
+
+    const debouncedSelectPlan = useDebouncedCallback(handleSelectPlan, 500);
 
     if (loading) {
         return (
@@ -114,7 +117,7 @@ const PricingPage = () => {
                                 <button
                                     type="button"
                                     className="pricing-cta"
-                                    onClick={() => handleSelectPlan(plan.id)}
+                                    onClick={() => debouncedSelectPlan(plan.id)}
                                 >
                                     {plan.id === 'FREE' ? 'Ücretsiz Başla' : 'Planı Seç'}
                                 </button>

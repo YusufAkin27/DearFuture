@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaStar, FaRegStar, FaHeart } from 'react-icons/fa';
 import { getPublicMessages, getMyStarredMessages, starPublicMessage, unstarPublicMessage } from '../api/message';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './PublicMessagesPage.css';
 
 const PAGE_SIZE = 12;
@@ -99,6 +100,8 @@ const PublicMessagesPage = () => {
         }
     };
 
+    const debouncedStar = useDebouncedCallback(handleStar, 500);
+
     const formatDate = (instant) => {
         if (!instant) return '—';
         return new Date(instant).toLocaleDateString('tr-TR', {
@@ -123,7 +126,7 @@ const PublicMessagesPage = () => {
                 <button
                     type="button"
                             className={`star-btn ${msg.starredByMe ? 'starred' : ''}`}
-                    onClick={() => handleStar(msg)}
+                    onClick={() => debouncedStar(msg)}
                     disabled={starringId === msg.id}
                     title={msg.starredByMe ? 'Yıldızı kaldır' : 'Yıldızla'}
                 >
