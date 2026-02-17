@@ -4,6 +4,12 @@ export const getProfile = async () => {
     return api.get('/user/profile');
 };
 
+/** Plan bazlı mesaj kotası: limit, kullanılan, kalan (backend’den güncel). */
+export const getMessageQuota = async () => {
+    const res = await api.get('/user/message-quota');
+    return res.data;
+};
+
 export const updateProfile = async (data) => {
     return api.put('/user/profile', data);
 };

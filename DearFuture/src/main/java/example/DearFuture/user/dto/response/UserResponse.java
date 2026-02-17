@@ -43,6 +43,14 @@ public class UserResponse {
     private Integer maxFilesPerMessage;
     /** Dosya başına max boyut (byte) */
     private Long maxFileSizeBytes;
+    /** Mesaj başına max alıcı sayısı */
+    private Integer maxRecipientsPerMessage;
+    /** Ses kaydı ekleme izni */
+    private Boolean allowVoice;
+    /** Mesaj başına max ses kaydı sayısı */
+    private Integer maxAudioPerMessage;
+    /** Ses kaydı başına max boyut (byte) */
+    private Long maxAudioSizeBytes;
 
     private String locale;
     private boolean emailNotifications;
@@ -72,6 +80,10 @@ public class UserResponse {
                 .maxPhotoSizeBytes(effective != null && effective.getMaxPhotoSizeBytes() > 0 ? effective.getMaxPhotoSizeBytes() : null)
                 .maxFilesPerMessage(effective != null && effective.getMaxFilesPerMessage() > 0 ? effective.getMaxFilesPerMessage() : null)
                 .maxFileSizeBytes(effective != null && effective.getMaxFileSizeBytes() > 0 ? effective.getMaxFileSizeBytes() : null)
+                .maxRecipientsPerMessage(effective != null && effective.getMaxRecipientsPerMessage() > 0 ? effective.getMaxRecipientsPerMessage() : 1)
+                .allowVoice(effective != null && effective.isAllowVoice())
+                .maxAudioPerMessage(effective != null && effective.getMaxAudioPerMessage() > 0 ? effective.getMaxAudioPerMessage() : null)
+                .maxAudioSizeBytes(effective != null && effective.getMaxAudioSizeBytes() > 0 ? effective.getMaxAudioSizeBytes() : null)
                 .locale(user.getLocale() != null ? user.getLocale() : "tr")
                 .emailNotifications(user.isEmailNotifications())
                 .marketingEmails(user.isMarketingEmails())

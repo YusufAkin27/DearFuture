@@ -149,6 +149,29 @@
     flex-shrink: 0;
 }
 
+.pricing-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.pricing-detail-link {
+    display: block;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    border-radius: var(--radius-button);
+    border: 1px solid transparent;
+    transition: background 0.2s;
+}
+
+.pricing-detail-link:hover {
+    background: rgba(0, 168, 204, 0.08);
+}
+
 .pricing-cta {
     width: 100%;
     padding: 0.85rem 1.25rem;

@@ -104,13 +104,21 @@ const PricingPage = () => {
                                     <li key={i}>{feature}</li>
                                 ))}
                             </ul>
-                            <button
-                                type="button"
-                                className="pricing-cta"
-                                onClick={() => handleSelectPlan(plan.id)}
-                            >
-                                {plan.id === 'FREE' ? 'Ücretsiz Başla' : 'Planı Seç'}
-                            </button>
+                            <div className="pricing-card-actions">
+                                <Link
+                                    to={`/pricing/plan/${plan.id}`}
+                                    className="pricing-detail-link"
+                                >
+                                    Detay
+                                </Link>
+                                <button
+                                    type="button"
+                                    className="pricing-cta"
+                                    onClick={() => handleSelectPlan(plan.id)}
+                                >
+                                    {plan.id === 'FREE' ? 'Ücretsiz Başla' : 'Planı Seç'}
+                                </button>
+                            </div>
                         </div>
                     </AnimatedContent>
                 ))}

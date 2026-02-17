@@ -1,5 +1,6 @@
 package example.DearFuture.mail;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final EmailQueue emailQueue;
 
-    private final String fromEmail = "no-reply@yusufakin.online";
+    @Value("${spring.mail.from}")
+    private  String fromEmail;
 
     /**
      * Kuyruğu kontrol et ve mail gönder

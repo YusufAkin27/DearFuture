@@ -10,6 +10,7 @@ import VerifyPage from './pages/VerifyPage';
 import NewMessagePage from './pages/NewMessagePage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
+import PlanDetailPage from './pages/PlanDetailPage';
 import ChangeSubscriptionPage from './pages/ChangeSubscriptionPage';
 import SettingsPage from './pages/SettingsPage';
 import FeaturesPage from './pages/FeaturesPage';
@@ -32,6 +33,7 @@ const PAGE_TITLES = {
   '/login': `Giriş | ${BASE_TITLE}`,
   '/verify': `Doğrulama | ${BASE_TITLE}`,
   '/pricing': `Fiyatlandırma | ${BASE_TITLE}`,
+  '/pricing/plan': `Plan detayı | ${BASE_TITLE}`,
   '/features': `Özellikler | ${BASE_TITLE}`,
   '/blog': `Blog | ${BASE_TITLE}`,
   '/about': `Hakkımızda | ${BASE_TITLE}`,
@@ -50,7 +52,9 @@ const PAGE_TITLES = {
 function DocumentTitle() {
   const location = useLocation();
   useEffect(() => {
-    const path = location.pathname.replace(/\/message\/view\/[^/]+/, '/message/view');
+    const path = location.pathname
+      .replace(/\/message\/view\/[^/]+/, '/message/view')
+      .replace(/\/pricing\/plan\/[^/]+/, '/pricing/plan');
     const title = PAGE_TITLES[path] ?? (path.startsWith('/message/view') ? `Mesajı Görüntüle | ${BASE_TITLE}` : BASE_TITLE);
     document.title = title;
   }, [location.pathname]);
@@ -101,6 +105,7 @@ function App() {
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/pricing/plan/:code" element={<PlanDetailPage />} />
 
           <Route path="/features" element={<FeaturesPage />} />
           <Route path="/blog" element={<BlogPage />} />

@@ -29,6 +29,19 @@ public interface FutureMessageRepository extends JpaRepository<FutureMessage, Lo
             MessageStatus status,
             Instant now);
 
+    /** İletim için hazır mesajları içerikleriyle birlikte getirir (şifre çözümü için). */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+                SELECT DISTINCT fm FROM FutureMessage fm
+                LEFT JOIN FETCH fm.contents
+                WHERE fm.status = :status
+                AND fm.scheduledAt <= :now
+                AND fm.sentAt IS NULL
+            """)
+    List<FutureMessage> findReadyMessagesWithContents(
+            @Param("status") MessageStatus status,
+            @Param("now") Instant now);
+
     List<FutureMessage> findAllByUser(User user);
 
     List<FutureMessage> findAllByUserAndScheduledAtAfterOrderByScheduledAtAsc(User user, Instant now);

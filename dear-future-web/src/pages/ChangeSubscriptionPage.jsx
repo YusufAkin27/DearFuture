@@ -177,7 +177,12 @@ const ChangeSubscriptionPage = () => {
                 <p>
                     Ödeme iyzico güvencesiyle alınır. Abonelik her ay otomatik yenilenir; süre sonunda
                     yenileme yapılmazsa plan Ücretsiz'e döner.
+            
                 </p>
+
+                <p>ödeme için iyzico test kartlarını kullanabilirsiniz. <a href="https://docs.iyzico.com/ek-bilgiler/test-kartlari"
+                 target="_blank"
+                 rel="noopener noreferrer">Test kartları</a></p>
             </div>
         </div>
     );

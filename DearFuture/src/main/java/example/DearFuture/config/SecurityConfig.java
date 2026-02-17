@@ -37,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Açık endpoint'ler (OPTIONS preflight dahil)
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/subscription/callback", "/api/subscription/plans").permitAll()
+                .requestMatchers("/api/subscription/callback", "/api/subscription/plans", "/api/subscription/plans/**").permitAll()
                 .requestMatchers("/api/messages/view/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/messages/public").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/messages/public/photos").permitAll()

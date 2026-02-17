@@ -136,13 +136,14 @@ const ContactPage = () => {
                     <header className="contact-hero">
                         <span className="contact-pill">Doğrulama</span>
                         <h1>E-posta doğrulama</h1>
-                        <p>
-                            <strong>{formData.email}</strong> adresine gönderilen 6 haneli kodu girin. (Kod 15 dakika geçerlidir)
+                        <p className="contact-verify-email-text">
+                            <strong>{formData.email}</strong> adresine 6 haneli bir kod gönderdik. Aşağıya girin.
                         </p>
+                        <p className="contact-verify-hint">Kod 15 dakika geçerlidir. Görmediyseniz spam klasörünü kontrol edin.</p>
                     </header>
                     <div className="contact-verify-wrap">
                         <form className="contact-form contact-verify-form" onSubmit={handleVerify}>
-                            <div className="contact-form-group">
+                            <div className="contact-form-group contact-form-group--pin">
                                 <PinInput value={verifyCode} onChange={setVerifyCode} size="md">
                                     <PinInput.Label>Doğrulama kodu</PinInput.Label>
                                     <PinInput.Group maxLength={6}>
@@ -154,12 +155,22 @@ const ContactPage = () => {
                                         <PinInput.Slot index={4} />
                                         <PinInput.Slot index={5} />
                                     </PinInput.Group>
-                                    <PinInput.Description>E-postanıza gelen 6 haneli kodu girin. (Kod 15 dakika geçerlidir)</PinInput.Description>
+                                    <PinInput.Description>E-postanıza gelen 6 haneli kodu girin.</PinInput.Description>
                                 </PinInput>
                             </div>
-                            <button type="submit" className="contact-submit-btn" disabled={loading}>
-                                {loading ? 'Doğrulanıyor...' : 'Doğrula'}
-                            </button>
+                            <div className="contact-verify-actions">
+                                <button
+                                    type="button"
+                                    className="contact-back-btn"
+                                    onClick={() => setStep('form')}
+                                    disabled={loading}
+                                >
+                                    E-postayı değiştir
+                                </button>
+                                <button type="submit" className="contact-submit-btn" disabled={loading}>
+                                    {loading ? 'Doğrulanıyor...' : 'Doğrula'}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -3,8 +3,10 @@ package example.DearFuture.payment.controller;
 import example.DearFuture.exception.security.UserNotFoundException;
 import example.DearFuture.payment.dto.request.InitializeCheckoutRequest;
 import example.DearFuture.payment.dto.response.CheckoutInitializeResponse;
+import example.DearFuture.payment.dto.response.PlanDetailResponse;
 import example.DearFuture.payment.dto.response.PlanResponse;
 import example.DearFuture.payment.service.SubscriptionPaymentService;
+import example.DearFuture.exception.contract.ResourceNotFoundException;
 import example.DearFuture.user.entity.SubscriptionPlan;
 import example.DearFuture.user.entity.User;
 import example.DearFuture.user.repository.SubscriptionPlanRepository;
@@ -82,6 +84,18 @@ public class SubscriptionController {
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(plans);
+    }
+
+    /**
+     * Plan detayı (kod ile). Fiyat, açıklama, mesaj limitleri, dosya/fotoğraf/ses limitleri.
+     * Giriş gerekmez.
+     */
+    @GetMapping("/plans/{code}")
+    public ResponseEntity<PlanDetailResponse> getPlanByCode(@PathVariable String code) {
+        String codeUpper = code != null ? code.trim().toUpperCase() : "";
+        SubscriptionPlan plan = planRepository.findByCode(codeUpper)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan bulunamadı: " + code));
+        return ResponseEntity.ok(PlanDetailResponse.fromEntity(plan));
     }
 
     /**

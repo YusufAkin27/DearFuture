@@ -10,6 +10,7 @@ import example.DearFuture.message.dto.request.MessageContentRequest;
 import example.DearFuture.message.dto.response.MessageResponse;
 import example.DearFuture.message.dto.response.MessageUploadResponse;
 import example.DearFuture.user.dto.response.MessageQuotaResponse;
+import example.DearFuture.message.encryption.MessageEncryptionService;
 import example.DearFuture.message.entity.ContentType;
 import example.DearFuture.message.entity.FutureMessage;
 import example.DearFuture.message.entity.FutureMessageContent;
@@ -76,6 +77,7 @@ public class FutureMessageServiceImpl implements FutureMessageService {
     private final SubscriptionPlanRepository planRepository;
     private final SubscriptionPaymentRepository paymentRepository;
     private final Cloudinary cloudinary;
+    private final MessageEncryptionService messageEncryptionService;
 
     @Override
     @Transactional
@@ -93,10 +95,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         message.setRecipientEmails(new java.util.ArrayList<>(Collections.singletonList(user.getEmail())));
         message.setPublic(request.getIsPublic() != null && request.getIsPublic());
 
-        // Create Content (Defaulting to TEXT)
         FutureMessageContent content = new FutureMessageContent();
         content.setType(ContentType.TEXT);
-        content.setTextContent(request.getContent());
+        String rawText = request.getContent();
+        content.setTextContent(messageEncryptionService.isEnabled() && rawText != null && !rawText.isBlank()
+                ? messageEncryptionService.encrypt(rawText)
+                : rawText);
         content.setFutureMessage(message);
 
         message.setContents(new java.util.ArrayList<>(Collections.singletonList(content)));
@@ -140,9 +144,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         }
 
         if (request.getContent() != null) {
-            // Update first content text for now
             if (!message.getContents().isEmpty()) {
-                message.getContents().get(0).setTextContent(request.getContent());
+                String raw = request.getContent();
+                FutureMessageContent first = message.getContents().get(0);
+                first.setTextContent(messageEncryptionService.isEnabled() && raw != null && !raw.isBlank()
+                        ? messageEncryptionService.encrypt(raw)
+                        : raw);
             }
         }
         if (request.getScheduledAt() != null) {
@@ -221,6 +228,12 @@ public class FutureMessageServiceImpl implements FutureMessageService {
         validateAttachmentLimits(plan, request.getContents());
         FutureMessage futureMessage = FutureMessageMapper.toEntity(request);
         futureMessage.setUser(user);
+        for (FutureMessageContent c : futureMessage.getContents()) {
+            if (c.getType() == ContentType.TEXT && c.getTextContent() != null && !c.getTextContent().isBlank()
+                    && messageEncryptionService.isEnabled()) {
+                c.setTextContent(messageEncryptionService.encrypt(c.getTextContent()));
+            }
+        }
 
         futureMessageRepository.save(futureMessage);
         return ResponseEntity.ok("Message scheduled");

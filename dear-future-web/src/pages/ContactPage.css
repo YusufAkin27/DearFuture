@@ -191,12 +191,113 @@
 }
 
 .contact-verify-wrap {
-  max-width: 400px;
+  max-width: 420px;
   margin: 0 auto;
 }
 
+.contact-verify-email-text {
+  margin-bottom: 0.35rem !important;
+}
+
+.contact-verify-hint {
+  font-size: 0.9rem !important;
+  color: var(--text-muted) !important;
+  margin-top: 0 !important;
+}
+
 .contact-verify-form .contact-form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.contact-verify-form .contact-form-group--pin {
+  margin-bottom: 1.75rem;
+}
+
+.contact-verify-form .contact-form-group--pin .pin-input__group {
+  margin-bottom: 0.5rem;
+}
+
+.contact-verify-form .pin-input__label {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  color: var(--text-main);
+}
+
+.contact-verify-form .pin-input__description {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.contact-verify-form .pin-input__slot {
+  width: 2.75rem;
+  height: 3rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 2px solid rgba(20, 40, 80, 0.12);
+  background: var(--background-color);
+}
+
+.contact-verify-form .pin-input__slot:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.18);
+}
+
+.contact-verify-form .pin-input__separator {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.theme-dark .contact-verify-form .pin-input__slot {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.theme-dark .contact-verify-form .pin-input__slot:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.25);
+}
+
+.contact-verify-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contact-back-btn {
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid rgba(20, 40, 80, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.contact-back-btn:hover:not(:disabled) {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.contact-back-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.theme-dark .contact-back-btn {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+}
+
+.theme-dark .contact-back-btn:hover:not(:disabled) {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.contact-verify-form .contact-submit-btn {
+  margin-top: 0;
 }
 
 .contact-code-input {

@@ -3,23 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaPaperPlane, FaUser, FaImage, FaFile, FaMicrophone, FaTrash } from 'react-icons/fa';
 import { PiFilesThin } from 'react-icons/pi';
-import { getProfile } from '../api/profile';
-import { getPendingMessages, getDeliveredMessages, createMessage, scheduleMessage, uploadMessageAttachment } from '../api/message';
+import { getProfile, getMessageQuota } from '../api/profile';
+import { createMessage, scheduleMessage, uploadMessageAttachment } from '../api/message';
 import './NewMessagePage.css';
 
-const PLAN_LIMITS = {
-    FREE: { maxMessages: 3, maxRecipients: 1, photo: false, file: false, voice: false },
-    PLUS: { maxMessages: 20, maxRecipients: 5, photo: true, file: true, voice: false },
-    PREMIUM: { maxMessages: 100, maxRecipients: 20, photo: true, file: true, voice: true },
-};
+/** Profil/kota gelmezse kullanılacak varsayılanlar (sadece yedek) */
+const FALLBACK_LIMITS = { maxMessages: 3, maxRecipients: 1, photo: false, file: false, voice: false };
 
 const NewMessagePage = () => {
     const navigate = useNavigate();
     const photoInputRef = useRef(null);
     const fileInputRef = useRef(null);
     const [profile, setProfile] = useState(null);
-    const [pendingCount, setPendingCount] = useState(0);
-    const [totalCount, setTotalCount] = useState(0);
+    const [quota, setQuota] = useState(null);
     const [loading, setLoading] = useState(true);
     const [content, setContent] = useState('');
     const [scheduledAt, setScheduledAt] = useState('');
@@ -41,20 +37,16 @@ const NewMessagePage = () => {
         let cancelled = false;
         const load = async () => {
             try {
-                const [profileRes, pendingRes, deliveredRes] = await Promise.all([
+                const [profileRes, quotaRes] = await Promise.all([
                     getProfile(),
-                    getPendingMessages(),
-                    getDeliveredMessages(),
+                    getMessageQuota(),
                 ]);
                 if (cancelled) return;
                 const user = profileRes.data;
                 const isExpired = user.subscriptionEndsAt && new Date(user.subscriptionEndsAt) < new Date();
                 const plan = isExpired ? 'FREE' : (user.subscriptionPlanCode ?? user.subscriptionPlan ?? 'FREE');
                 setProfile({ ...user, effectivePlan: plan });
-                const pendingList = Array.isArray(pendingRes.data) ? pendingRes.data : [];
-                const deliveredList = Array.isArray(deliveredRes.data) ? deliveredRes.data : [];
-                setPendingCount(pendingList.length);
-                setTotalCount(pendingList.length + deliveredList.length);
+                setQuota(quotaRes && typeof quotaRes === 'object' ? quotaRes : null);
                 if (plan !== 'FREE') {
                     setRecipients([user.email || '']);
                 }
@@ -72,13 +64,21 @@ const NewMessagePage = () => {
     }, [navigate]);
 
     const effectivePlan = profile?.effectivePlan || 'FREE';
-    const limits = PLAN_LIMITS[effectivePlan] || PLAN_LIMITS.FREE;
-    const canAddMore = effectivePlan === 'FREE'
-        ? totalCount < limits.maxMessages
-        : pendingCount < limits.maxMessages;
+    const limit = quota?.limit ?? profile?.maxMessagesPerPlan ?? FALLBACK_LIMITS.maxMessages;
+    const used = quota?.used ?? 0;
+    const remaining = quota?.remaining ?? 0;
+    const maxRecipients = profile?.maxRecipientsPerMessage ?? FALLBACK_LIMITS.maxRecipients;
+    const limits = {
+        maxMessages: limit,
+        maxRecipients,
+        photo: (profile?.maxPhotosPerMessage ?? 0) > 0,
+        file: (profile?.maxFilesPerMessage ?? 0) > 0,
+        voice: profile?.allowVoice === true,
+    };
+    const canAddMore = remaining > 0;
 
     const addRecipient = () => {
-        if (recipients.length >= limits.maxRecipients) return;
+                if (recipients.length >= maxRecipients) return;
         setRecipients([...recipients, '']);
     };
 
@@ -97,8 +97,8 @@ const NewMessagePage = () => {
     const maxPhotoSizeBytes = profile?.maxPhotoSizeBytes ?? 0;
     const maxFiles = profile?.maxFilesPerMessage ?? 0;
     const maxFileSizeBytes = profile?.maxFileSizeBytes ?? 0;
-    const maxAudioPerMessage = limits.voice ? 1 : 0;
-    const maxAudioSizeBytes = limits.voice ? 10 * 1024 * 1024 : 0;
+    const maxAudioPerMessage = profile?.maxAudioPerMessage ?? (limits.voice ? 1 : 0);
+    const maxAudioSizeBytes = profile?.maxAudioSizeBytes ?? (limits.voice ? 10 * 1024 * 1024 : 0);
 
     const handlePhotoSelect = async (e) => {
         const selected = Array.from(e.target.files || []);
@@ -211,12 +211,12 @@ const NewMessagePage = () => {
             toast.error('İletim tarihi gelecekte olmalıdır.');
             return;
         }
-        if (!canAddMore) {
-            toast.error(effectivePlan === 'FREE'
-                ? 'Ücretsiz hesapta bekleyen ve iletilen mesajların toplamı en fazla 3 olabilir. Yeni mesaj kaydedemezsiniz.'
-                : `Planınızda en fazla ${limits.maxMessages} zamanlanmış mesaj olabilir.`);
-            return;
-        }
+                if (!canAddMore) {
+                    toast.error(remaining <= 0
+                        ? 'Mesaj hakkınız doldu. Yeni mesaj için planınızı yükseltin.'
+                        : 'Yeni mesaj ekleyemezsiniz.');
+                    return;
+                }
 
         setSubmitting(true);
         try {
@@ -231,8 +231,8 @@ const NewMessagePage = () => {
                     setSubmitting(false);
                     return;
                 }
-                if (emails.length > limits.maxRecipients) {
-                    toast.error(`Planınızda mesaj başına en fazla ${limits.maxRecipients} alıcı seçebilirsiniz.`);
+                if (emails.length > maxRecipients) {
+                    toast.error(`Planınızda mesaj başına en fazla ${maxRecipients} alıcı seçebilirsiniz.`);
                     setSubmitting(false);
                     return;
                 }
@@ -276,47 +276,34 @@ const NewMessagePage = () => {
                 <h2>Geleceğe Mesaj Yaz</h2>
                 <p className="new-message-subtitle">Kendinize veya sevdiklerinize zamanlanmış mesaj bırakın.</p>
                 <div className="new-message-plan-info">
-                    <span className="plan-badge">{effectivePlan}</span>
+                    <span className="plan-badge">{quota?.planName ?? effectivePlan}</span>
                     <span className="plan-usage">
                         {effectivePlan === 'FREE'
-                            ? `${totalCount} / ${limits.maxMessages} mesaj`
-                            : `${pendingCount} / ${limits.maxMessages} zamanlanmış mesaj`}
+                            ? `${used} / ${limit} mesaj (toplam bekleyen + iletilen)`
+                            : `${used} / ${limit} zamanlanmış mesaj · Kalan: ${remaining}`}
                     </span>
-                    {effectivePlan === 'FREE' && canAddMore && (
-                        <span className="new-message-allow-hint">Ücretsiz hesapta toplam 3 mesaj (bekleyen + iletilen) hakkınız var. Şu an {totalCount}/3 kullanıyorsunuz.</span>
+                    {canAddMore && (
+                        <span className="new-message-allow-hint">
+                            {effectivePlan === 'FREE'
+                                ? `Ücretsiz hesapta toplam ${limit} mesaj hakkınız var. ${remaining} hakkınız kaldı.`
+                                : `Bu dönemde ${limit} mesaj hakkınız var. ${remaining} hakkınız kaldı.`}
+                        </span>
                     )}
-                    {effectivePlan === 'FREE' && !canAddMore && (
-                        <span className="plan-limit-warn">Ücretsiz hesapta toplam 3 mesaj limitine ulaştınız. Yeni mesaj eklemek için planı yükseltin veya mevcut bir mesajı silin.</span>
-                    )}
-                    {effectivePlan !== 'FREE' && !canAddMore && (
-                        <span className="plan-limit-warn">Limit doldu. Yeni mesaj için planınızı yükseltin veya mevcut bir mesajı silin.</span>
+                    {!canAddMore && (
+                        <span className="plan-limit-warn">Mesaj hakkınız doldu. Yeni mesaj için planı yükseltin .</span>
                     )}
                 </div>
                 <div className="plan-features-summary">
-                    {effectivePlan === 'FREE' && (
-                        <ul>
-                            <li>Toplam 3 mesaj (bekleyen + iletilen)</li>
-                            <li>Sadece metin</li>
-                            <li>Tek alıcı (size iletilecek)</li>
-                            <li>Herkese açık seçeneği</li>
-                        </ul>
-                    )}
-                    {effectivePlan === 'PLUS' && (
-                        <ul>
-                            <li>20 zamanlanmış mesaj</li>
-                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB)</li>
-                            <li>5 alıcı</li>
-                            <li>Herkese açık seçeneği</li>
-                        </ul>
-                    )}
-                    {effectivePlan === 'PREMIUM' && (
-                        <ul>
-                            <li>100 zamanlanmış mesaj</li>
-                            <li>Metin + fotoğraf ({maxPhotos} adet, en fazla {Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB) + dosya ({maxFiles} adet, en fazla {Math.round(maxFileSizeBytes / (1024 * 1024))} MB) + ses kaydı (1 adet, en fazla 10 MB)</li>
-                            <li>20 alıcı</li>
-                            <li>Herkese açık seçeneği</li>
-                        </ul>
-                    )}
+                    <ul>
+                        <li>Toplam {limit} mesaj hakkı · Kalan: {remaining}</li>
+                        <li>
+                            Metin
+                            {maxPhotos > 0 && ` · Fotoğraf (en fazla ${maxPhotos} adet, ${Math.round(maxPhotoSizeBytes / (1024 * 1024))} MB)`}
+                            {maxFiles > 0 && ` · Dosya (en fazla ${maxFiles} adet, ${Math.round(maxFileSizeBytes / (1024 * 1024))} MB)`}
+                            {limits.voice && ` · Ses kaydı (en fazla ${maxAudioPerMessage} adet, ${Math.round(maxAudioSizeBytes / (1024 * 1024))} MB)`}
+                        </li>
+                        <li>Mesaj başına en fazla {maxRecipients} alıcı · Herkese açık seçeneği</li>
+                    </ul>
                 </div>
             </header>
 
@@ -337,7 +324,7 @@ const NewMessagePage = () => {
                     <label>
                         <FaUser /> Mesajı ileteceğim e-posta adresini girin
                         {effectivePlan !== 'FREE' && (
-                            <span className="label-hint"> (en fazla {limits.maxRecipients} adres)</span>
+                            <span className="label-hint"> (en fazla {maxRecipients} adres)</span>
                         )}
                     </label>
                     {effectivePlan === 'FREE' ? (
@@ -369,7 +356,7 @@ const NewMessagePage = () => {
                                     )}
                                 </div>
                             ))}
-                            {recipients.length < limits.maxRecipients && (
+                            {recipients.length < maxRecipients && (
                                 <button type="button" className="recipient-add" onClick={addRecipient}>
                                     + Alıcı ekle
                                 </button>

@@ -11,6 +11,8 @@ import java.util.List;
 @Data
 @Builder
 public class MessageResponse {
+    private static final String ENCRYPTED_PREFIX = "ENCv1:";
+
     private Long id;
     private String content;
     private Instant scheduledAt;
@@ -28,6 +30,11 @@ public class MessageResponse {
         String contentText = "";
         if (message.getContents() != null && !message.getContents().isEmpty()) {
             contentText = message.getContents().get(0).getTextContent();
+        }
+        if (contentText != null && contentText.startsWith(ENCRYPTED_PREFIX)) {
+            contentText = "[Şifreli içerik]";
+        } else if (contentText == null) {
+            contentText = "";
         }
 
         return MessageResponse.builder()

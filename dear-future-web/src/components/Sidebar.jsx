@@ -86,8 +86,8 @@ export const Sidebar = () => {
   useEffect(() => setToken(localStorage.getItem('token')), [location.pathname]);
 
   const isLoggedIn = !!token;
-  /* Giriş yaptıktan sonra: önce hesap/mesaj (Mesajlar, Hesabım, Plan), sonra genel (Keşfet, Hakkında, Yasal) */
-  const groups = isLoggedIn ? [...SIDEBAR_PRIVATE, ...SIDEBAR_PUBLIC] : SIDEBAR_PUBLIC;
+  /* Giriş yapınca sadece Mesajlar, Hesabım, Plan. Giriş yoksa Keşfet, Hakkında, Yasal. */
+  const groups = isLoggedIn ? SIDEBAR_PRIVATE : SIDEBAR_PUBLIC;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
