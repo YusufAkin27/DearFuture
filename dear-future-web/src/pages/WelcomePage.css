@@ -1,191 +1,181 @@
-/* WelcomePage */
+/* Welcome – Tüm renk ve boyutlar theme.css'ten (--welcome-*, --text-*, --space-*, --btn-*) */
+
 .welcome-page {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #050508 0%, #0f172a 50%, #0c1222 100%);
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--welcome-bg);
+}
+
+.welcome-page__bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 210, 252, 0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 168, 204, 0.06), transparent);
+    pointer-events: none;
 }
 
 .welcome-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  padding: 4rem 2rem;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    padding: var(--section-padding-y) var(--section-padding-x);
+    padding-bottom: max(var(--section-padding-y), env(safe-area-inset-bottom));
+    padding-left: max(var(--section-padding-x), env(safe-area-inset-left));
+    padding-right: max(var(--section-padding-x), env(safe-area-inset-right));
 }
 
 .hero-content {
-  position: relative;
-  z-index: 10;
-  max-width: 800px;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
+    position: relative;
+    z-index: 2;
+    max-width: 36rem;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xl);
 }
 
-.welcome-logo-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-/* Zarf GIF (public/mektup.gif) */
-.welcome-envelope-gif {
-  width: 140px;
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 4px 16px rgba(8, 145, 178, 0.3));
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 99px;
-  font-size: 0.9rem;
-  color: var(--accent-bright);
-  margin-bottom: 0.5rem;
-  backdrop-filter: blur(8px);
+.welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--welcome-badge-bg);
+    border: 1px solid var(--welcome-badge-border);
+    border-radius: var(--radius-button);
+    font-size: var(--text-small);
+    font-weight: var(--font-weight-medium);
+    color: var(--accent-bright);
+    backdrop-filter: blur(8px);
 }
 
 .welcome-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  line-height: 1.15;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.03em;
-  margin: 0;
-  text-align: center;
+    font-family: var(--font-family);
+    font-size: var(--text-hero);
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--welcome-title-color);
 }
 
-.gradient-text {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-bright) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.welcome-brand {
-  font-size: 0.9rem;
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-  text-transform: uppercase;
+.welcome-title-accent {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .welcome-message {
-  font-size: 1.15rem;
-  color: rgba(255, 255, 255, 0.75);
-  max-width: 560px;
-  line-height: 1.6;
-  margin: 0 auto;
-  text-align: center;
+    font-size: var(--text-body-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--welcome-message-color);
+    margin: 0;
+    max-width: 28rem;
 }
 
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: var(--primary-gradient);
-  color: #ffffff;
-  border: none;
-  padding: 1rem 2.5rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  border-radius: var(--radius-button);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: var(--shadow-button);
-  font-family: inherit;
+.welcome-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    min-height: 48px;
+    padding: var(--btn-padding-y) var(--btn-padding-x);
+    padding-left: calc(var(--btn-padding-x) + 2px);
+    padding-right: calc(var(--btn-padding-x) + 2px);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    border: none;
+    border-radius: var(--radius-button);
+    font-family: var(--font-family);
+    font-size: var(--btn-font-size);
+    font-weight: var(--btn-font-weight);
+    box-shadow: var(--btn-primary-shadow);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 168, 204, 0.4);
+.welcome-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--btn-primary-shadow-hover);
 }
 
-.button-icon {
-  transition: transform 0.2s ease;
+.welcome-cta:active {
+    transform: translateY(0);
 }
 
-.cta-button:hover .button-icon {
-  transform: translateX(4px);
+.welcome-cta__icon {
+    transition: transform 0.2s ease;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  margin-top: 4rem;
-  width: 100%;
+.welcome-cta:hover .welcome-cta__icon {
+    transform: translateX(4px);
 }
 
+/* Özellik listesi */
+.welcome-features {
+    list-style: none;
+    margin: var(--space-3xl) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-lg);
+    max-width: 22rem;
+}
+
+.welcome-features__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-small);
+    color: var(--welcome-message-color);
+}
+
+.welcome-features__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 210, 252, 0.15);
+    color: var(--accent-bright);
+    flex-shrink: 0;
+}
+
+/* Tablet ve üstü */
 @media (min-width: 640px) {
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .welcome-features {
+        max-width: none;
+        gap: var(--space-xl);
+    }
+
+    .welcome-features__item {
+        font-size: var(--text-body-size);
+    }
 }
 
-.feature-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: var(--radius-card);
-  text-align: left;
-  transition: transform 0.2s, background 0.2s;
-}
+/* Küçük ekranlarda başlık okunaklı kalsın */
+@media (max-width: 380px) {
+    .welcome-title {
+        font-size: clamp(1.5rem, 8vw, 2rem);
+    }
 
-.feature-item:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.feature-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  background: rgba(0, 168, 204, 0.2);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-bright);
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.feature-item h3 {
-  color: #fff;
-  font-size: 1.15rem;
-  margin: 0 0 0.5rem 0;
-  font-weight: 600;
-}
-
-.feature-item p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  margin: 0;
-  line-height: 1.5;
-}
-
-@media (max-width: 768px) {
-  .welcome-title {
-    font-size: 2.25rem;
-  }
+    .welcome-message {
+        font-size: var(--text-body-size);
+    }
 }

@@ -43,17 +43,16 @@ public class UsageServiceImpl implements UsageService {
 
     private UsageResponse buildFreeUsage(User user) {
         SubscriptionPlan freePlan = planRepository.findByCode("FREE").orElse(null);
-        int limit = freePlan != null ? freePlan.getMaxMessages() : 3;
+        long limit = freePlan != null ? freePlan.getMaxMessages() : 3L;
         long used = futureMessageRepository.countByUserAndStatusIn(user,
                 Set.of(MessageStatus.SCHEDULED, MessageStatus.QUEUED, MessageStatus.SENT));
-        int usedInt = (int) Math.min(used, Integer.MAX_VALUE);
-        int remaining = Math.max(0, limit - usedInt);
+        long remaining = Math.max(0L, limit - used);
 
         return UsageResponse.builder()
                 .planCode(freePlan != null ? freePlan.getCode() : "FREE")
                 .planName(freePlan != null ? freePlan.getName() : "Ücretsiz")
                 .limit(limit)
-                .used(usedInt)
+                .used(used)
                 .remaining(remaining)
                 .resetsMonthly(false)
                 .periodStart(null)
@@ -62,7 +61,7 @@ public class UsageServiceImpl implements UsageService {
     }
 
     private UsageResponse buildPaidUsage(User user, SubscriptionPlan plan) {
-        int limit = plan.getMaxMessages();
+        long limit = plan.getMaxMessages();
         Instant periodStart;
         Instant periodEnd;
 
@@ -80,14 +79,13 @@ public class UsageServiceImpl implements UsageService {
         }
 
         long used = futureMessageRepository.countByUserIdAndScheduledAtBetween(user.getId(), periodStart, periodEnd);
-        int usedInt = (int) Math.min(used, Integer.MAX_VALUE);
-        int remaining = Math.max(0, limit - usedInt);
+        long remaining = Math.max(0L, limit - used);
 
         return UsageResponse.builder()
                 .planCode(plan.getCode())
                 .planName(plan.getName())
                 .limit(limit)
-                .used(usedInt)
+                .used(used)
                 .remaining(remaining)
                 .resetsMonthly(true)
                 .periodStart(periodStart)

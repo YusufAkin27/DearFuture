@@ -405,7 +405,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
                                                LocalDateTime nextPayDate, boolean isRenewal) {
         String actionLabel = isRenewal ? "yenilendi" : "aktif edildi";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy",
-                java.util.Locale.of("tr", "TR"));
+                new java.util.Locale("tr", "TR"));
         String nextPayDateStr = nextPayDate.format(formatter);
 
         String htmlBody = SubscriptionSuccessEmailTemplate.build(planName, actionLabel,

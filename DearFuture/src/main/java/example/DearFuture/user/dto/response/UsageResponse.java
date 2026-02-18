@@ -19,11 +19,11 @@ public class UsageResponse {
     private String planCode;
     private String planName;
     /** Bu dönem veya toplam maksimum mesaj hakkı */
-    private int limit;
+    private long limit;
     /** Kullanılan mesaj sayısı */
-    private int used;
+    private long used;
     /** Kalan hak */
-    private int remaining;
+    private long remaining;
     /** Her ay yenileniyor mu (FREE: false, PLUS/PREMIUM: true) */
     private boolean resetsMonthly;
     /** Dönem başlangıcı (FREE için null) */

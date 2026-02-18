@@ -3,7 +3,7 @@ const THEME_KEY = 'dearfuture-theme';
 export function getTheme() {
   const saved = localStorage.getItem(THEME_KEY);
   if (saved === 'dark' || saved === 'light') return saved;
-  return 'light';
+  return 'dark';
 }
 
 export function setTheme(theme) {

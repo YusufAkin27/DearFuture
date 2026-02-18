@@ -29,7 +29,27 @@ body {
 }
 
 .app-layout--welcome {
-  background-color: #050508;
+  background: var(--welcome-bg);
+}
+
+/* Üst bar: mobilde sidebar tetikleyici (hamburger) her zaman görünür */
+.app-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: 56px;
+  padding: var(--space-sm) var(--space-md);
+  padding-left: max(var(--space-md), env(safe-area-inset-left));
+  padding-right: max(var(--space-md), env(safe-area-inset-right));
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-color);
+}
+
+.app-topbar-title {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-main);
 }
 
 .app-main {
@@ -77,30 +97,30 @@ button {
   box-sizing: border-box;
 }
 
-/* Global buton stilleri – tema renklerini kullan */
+/* Global buton stilleri – tümü theme.css'ten */
 .btn-primary {
-  background: var(--primary-gradient);
-  color: #ffffff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-color);
   border: none;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   border-radius: var(--radius-button);
-  box-shadow: var(--shadow-button);
+  box-shadow: var(--btn-primary-shadow);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 168, 204, 0.35);
+  box-shadow: var(--btn-primary-shadow-hover);
 }
 
 .btn-secondary {
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-text);
-  border: 1px solid var(--primary-color);
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
+  border: 1px solid var(--btn-secondary-border);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   border-radius: var(--radius-button);
   transition: background 0.2s, color 0.2s;
 }

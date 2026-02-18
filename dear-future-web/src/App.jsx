@@ -69,7 +69,25 @@ const Layout = () => {
       <SidebarProvider>
         <Sidebar />
         <SidebarInset>
-         
+          {!isWelcome && (
+            <header className="app-topbar" role="banner">
+              <SidebarTrigger />
+              <span className="app-topbar-title">
+                {location.pathname === '/features' && 'Özellikler'}
+                {location.pathname === '/pricing' && 'Fiyatlandırma'}
+                {location.pathname === '/blog' && 'Blog'}
+                {location.pathname === '/about' && 'Hakkımızda'}
+                {location.pathname === '/contact' && 'İletişim'}
+                {location.pathname === '/login' && 'Giriş'}
+                {location.pathname.startsWith('/public-messages') && 'Herkese Açık Mesajlar'}
+                {location.pathname === '/new' && 'Yeni Mesaj'}
+                {location.pathname === '/profile' && 'Profil'}
+                {location.pathname === '/settings' && 'Ayarlar'}
+                {location.pathname === '/change-subscription' && 'Abonelik'}
+                {!['/features', '/pricing', '/blog', '/about', '/contact', '/login', '/new', '/profile', '/settings', '/change-subscription'].includes(location.pathname) && !location.pathname.startsWith('/public-messages') && 'Menü'}
+              </span>
+            </header>
+          )}
           <main className="app-main">
             <Outlet />
           </main>
