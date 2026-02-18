@@ -23,6 +23,7 @@ import SecurityPage from './pages/SecurityPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import PublicMessagesPage from './pages/PublicMessagesPage';
 import MessageViewPage from './pages/MessageViewPage';
+import NotFoundPage from './pages/NotFoundPage';
 import CookieConsent from './components/CookieConsent';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -155,6 +156,9 @@ function App() {
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
       <ToastContainer position="bottom-right" theme="light" />
