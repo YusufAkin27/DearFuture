@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaEnvelope, FaPaperPlane, FaLock, FaArrowLeft, FaGoogle } from 'react-icons/fa';
 import { login } from '../api/auth';
@@ -107,6 +107,15 @@ const LoginPage = () => {
                             <span>Google ile Giriş Yap</span>
                         </button>
                     </form>
+
+                    <p className="login-agreement">
+                        Giriş yaparsanız{' '}
+                        <Link to="/terms" className="login-agreement-link">Kullanım Şartları</Link>,{' '}
+                        <Link to="/privacy" className="login-agreement-link">Gizlilik Politikası</Link>
+                        {' '}ve{' '}
+                        <Link to="/cookie-policy" className="login-agreement-link">Çerez Politikası</Link>
+                        {' '}sözleşmelerini onaylamış kabul edilirsiniz.
+                    </p>
 
                     <div className="login-card-footer">
                         <div className="login-secure-badge">

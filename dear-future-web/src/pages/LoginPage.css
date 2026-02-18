@@ -288,6 +288,24 @@
   to { transform: rotate(360deg); }
 }
 
+.login-agreement {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  line-height: var(--line-height-body);
+  margin: 0;
+  text-align: center;
+}
+
+.login-agreement-link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-agreement-link:hover {
+  color: var(--accent-bright);
+}
+
 .login-card-footer {
   text-align: center;
   padding-top: 0.5rem;

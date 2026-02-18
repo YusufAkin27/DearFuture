@@ -214,7 +214,7 @@ const MessageViewPage = () => {
                                 <div className="message-view-block message-view-section message-view-photos-section">
                                     <p className="message-view-section-label">Fotoğraflar</p>
                                     <div className="message-view-stack-wrap">
-                                        <div className="message-view-stack-size" style={{ width: 280, height: 280 }}>
+                                        <div className="message-view-stack-size">
                                             <Stack
                                                 key={viewToken}
                                                 randomRotation={false}
@@ -261,22 +261,24 @@ const MessageViewPage = () => {
                                 <div className="message-view-block message-view-section message-view-files-section">
                                     <p className="message-view-section-label">Dosyalar</p>
                                     <div className="message-view-folder-wrap">
-                                        <Folder
-                                            size={2}
-                                            color="#5227FF"
-                                            className="message-view-folder"
-                                            items={fileContents.slice(0, 3).map((item, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    className="message-view-folder-paper-link"
-                                                    onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
-                                                    disabled={!!downloading}
-                                                >
-                                                    {item.fileName || 'Dosya'}
-                                                </button>
-                                            ))}
-                                        />
+                                        <div className="message-view-folder-scaler">
+                                            <Folder
+                                                size={2}
+                                                color="#5227FF"
+                                                className="message-view-folder"
+                                                items={fileContents.slice(0, 3).map((item, index) => (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="message-view-folder-paper-link"
+                                                        onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
+                                                        disabled={!!downloading}
+                                                    >
+                                                        {item.fileName || 'Dosya'}
+                                                    </button>
+                                                ))}
+                                            </Folder>
+                                        </div>
                                         {fileContents.length > 3 && (
                                             <div className="message-view-files-extra">
                                                 <p className="message-view-files-label">Diğer dosyalar</p>

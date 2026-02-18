@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -27,10 +29,13 @@ public class JwtUtil {
 
     // token üretirken:
     public String generateToken(Long userId, String email, Set<Role> roles) {
+        List<String> roleNames = (roles == null || roles.isEmpty())
+                ? Collections.emptyList()
+                : roles.stream().map(Role::name).toList();
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("email", email)
-                .claim("roles", roles.stream().map(Enum::name).toList())
+                .claim("roles", roleNames)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 saat
                 .signWith(secretKey)

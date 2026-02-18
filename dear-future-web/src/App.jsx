@@ -69,25 +69,32 @@ const Layout = () => {
       <SidebarProvider>
         <Sidebar />
         <SidebarInset>
-          {!isWelcome && (
-            <header className="app-topbar" role="banner">
-              <SidebarTrigger />
-              <span className="app-topbar-title">
-                {location.pathname === '/features' && 'Özellikler'}
-                {location.pathname === '/pricing' && 'Fiyatlandırma'}
-                {location.pathname === '/blog' && 'Blog'}
-                {location.pathname === '/about' && 'Hakkımızda'}
-                {location.pathname === '/contact' && 'İletişim'}
-                {location.pathname === '/login' && 'Giriş'}
-                {location.pathname.startsWith('/public-messages') && 'Herkese Açık Mesajlar'}
-                {location.pathname === '/new' && 'Yeni Mesaj'}
-                {location.pathname === '/profile' && 'Profil'}
-                {location.pathname === '/settings' && 'Ayarlar'}
-                {location.pathname === '/change-subscription' && 'Abonelik'}
-                {!['/features', '/pricing', '/blog', '/about', '/contact', '/login', '/new', '/profile', '/settings', '/change-subscription'].includes(location.pathname) && !location.pathname.startsWith('/public-messages') && 'Menü'}
-              </span>
-            </header>
-          )}
+          <header className="app-topbar" role="banner">
+            <SidebarTrigger />
+            <span className="app-topbar-title">
+              {location.pathname === '/welcome' && 'Ana Sayfa'}
+              {location.pathname === '/features' && 'Özellikler'}
+              {location.pathname === '/pricing' && 'Fiyatlandırma'}
+              {location.pathname === '/blog' && 'Blog'}
+              {location.pathname === '/about' && 'Hakkımızda'}
+              {location.pathname === '/contact' && 'İletişim'}
+              {location.pathname === '/login' && 'Giriş'}
+              {location.pathname === '/verify' && 'Doğrulama'}
+              {location.pathname.startsWith('/public-messages') && 'Herkese Açık Mesajlar'}
+              {location.pathname === '/new' && 'Yeni Mesaj'}
+              {location.pathname === '/profile' && 'Profil'}
+              {location.pathname === '/settings' && 'Ayarlar'}
+              {location.pathname === '/change-subscription' && 'Abonelik'}
+              {location.pathname === '/privacy' && 'Gizlilik'}
+              {location.pathname === '/terms' && 'Kullanım Şartları'}
+              {location.pathname === '/cookie-policy' && 'Çerez Politikası'}
+              {location.pathname === '/security' && 'Güvenlik'}
+              {location.pathname.startsWith('/message/view') && 'Mesaj'}
+              {location.pathname.startsWith('/pricing/plan') && 'Plan'}
+              {location.pathname === '/' && 'Ana Sayfa'}
+              {!['/welcome', '/features', '/pricing', '/blog', '/about', '/contact', '/login', '/verify', '/new', '/profile', '/settings', '/change-subscription', '/privacy', '/terms', '/cookie-policy', '/security', '/'].includes(location.pathname) && !location.pathname.startsWith('/public-messages') && !location.pathname.startsWith('/message/view') && !location.pathname.startsWith('/pricing/plan') && 'Menü'}
+            </span>
+          </header>
           <main className="app-main">
             <Outlet />
           </main>
