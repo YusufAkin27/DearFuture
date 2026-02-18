@@ -10,6 +10,10 @@
   transition: opacity 0.25s ease;
 }
 
+.theme-dark .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
 .sidebar-backdrop--open {
   display: block;
   opacity: 1;
@@ -28,7 +32,7 @@
   bottom: 0;
   z-index: 999;
   width: 260px;
-  max-width: 85vw;
+  max-width: min(320px, 85vw);
   background: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
   box-shadow: var(--sidebar-shadow);
@@ -368,6 +372,21 @@
   }
 }
 
+/* Dark theme: sidebar iç metin/kenarlık kontrastı */
+.theme-dark .sidebar-header,
+.theme-dark .sidebar-footer {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.theme-dark .sidebar-title {
+  color: var(--text-secondary);
+}
+.theme-dark .sidebar-subtitle {
+  color: var(--text-body);
+}
+.theme-dark .sidebar-subtitle--active {
+  color: var(--accent-bright);
+}
+
 @media (max-width: 1024px) {
   .sidebar:not(.sidebar--open) {
     transform: translateX(-100%);
@@ -379,5 +398,27 @@
 
   .sidebar--open {
     width: min(260px, 85vw);
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    max-width: 90vw;
+  }
+  .sidebar--open {
+    width: min(260px, 90vw);
+  }
+  .sidebar-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+  .sidebar-content {
+    padding: var(--space-sm);
+  }
+  .sidebar-footer {
+    padding: var(--space-sm);
+  }
+  .sidebar-subtitle {
+    min-height: 48px;
+    padding: var(--space-sm) var(--space-md);
   }
 }

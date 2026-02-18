@@ -189,6 +189,18 @@ const MessageViewPage = () => {
         </div>
     ));
 
+    const folderItems = fileContents.slice(0, 3).map((item, index) => (
+        <button
+            key={index}
+            type="button"
+            className="message-view-folder-paper-link"
+            onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
+            disabled={!!downloading}
+        >
+            {item.fileName || 'Dosya'}
+        </button>
+    ));
+
     return (
         <div className="message-view-container">
             <div className="message-view-card">
@@ -266,36 +278,28 @@ const MessageViewPage = () => {
                                                 size={2}
                                                 color="#5227FF"
                                                 className="message-view-folder"
-                                                items={fileContents.slice(0, 3).map((item, index) => (
-                                                    <button
-                                                        key={index}
-                                                        type="button"
-                                                        className="message-view-folder-paper-link"
-                                                        onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
-                                                        disabled={!!downloading}
-                                                    >
-                                                        {item.fileName || 'Dosya'}
-                                                    </button>
-                                                ))}
-                                            </Folder>
+                                                items={folderItems}
+                                            />
                                         </div>
-                                        {fileContents.length > 3 && (
-                                            <div className="message-view-files-extra">
-                                                <p className="message-view-files-label">Diğer dosyalar</p>
-                                                {fileContents.slice(3).map((item, index) => (
-                                                    <button
-                                                        key={index}
-                                                        type="button"
-                                                        className="message-view-file-link"
-                                                        onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
-                                                        disabled={!!downloading}
-                                                    >
-                                                        {item.fileName || 'Dosyayı indir'}
-                                                        <span className="message-view-file-download-badge">İndir</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
+                                        {fileContents.length > 3
+                                            ? (
+                                                <div className="message-view-files-extra">
+                                                    <p className="message-view-files-label">Diğer dosyalar</p>
+                                                    {fileContents.slice(3).map((item, index) => (
+                                                        <button
+                                                            key={index}
+                                                            type="button"
+                                                            className="message-view-file-link"
+                                                            onClick={(e) => debouncedDownload(e, item.fileUrl, item.fileName)}
+                                                            disabled={!!downloading}
+                                                        >
+                                                            {item.fileName || 'Dosyayı indir'}
+                                                            <span className="message-view-file-download-badge">İndir</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )
+                                            : null}
                                     </div>
                                 </div>
                             )}

@@ -1,4 +1,7 @@
 import api from './axiosConfig';
+import { invalidatePrefix } from './cache';
+
+const USER_CACHE_PREFIX = 'get:/user';
 
 export const getProfile = async () => {
     return api.get('/user/profile');
@@ -11,12 +14,16 @@ export const getMessageQuota = async () => {
 };
 
 export const updateProfile = async (data) => {
-    return api.put('/user/profile', data);
+    const res = await api.put('/user/profile', data);
+    invalidatePrefix(USER_CACHE_PREFIX);
+    return res;
 };
 
 /** Ayarlar: dil, bildirimler */
 export const updateSettings = async (data) => {
-    return api.put('/user/settings', data);
+    const res = await api.put('/user/settings', data);
+    invalidatePrefix(USER_CACHE_PREFIX);
+    return res;
 };
 
 /** Hesabı kalıcı sil (tüm veriler silinir) */
@@ -33,11 +40,15 @@ export const deactivateAccount = async () => {
 export const uploadProfilePhoto = async (file) => {
     const formData = new FormData();
     formData.append('photo', file);
-    return api.post('/user/profile/photo', formData, {
+    const res = await api.post('/user/profile/photo', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
+    invalidatePrefix(USER_CACHE_PREFIX);
+    return res;
 };
 
 export const deleteProfilePhoto = async () => {
-    return api.delete('/user/profile/photo');
+    const res = await api.delete('/user/profile/photo');
+    invalidatePrefix(USER_CACHE_PREFIX);
+    return res;
 };

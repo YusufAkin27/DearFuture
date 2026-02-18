@@ -20,7 +20,6 @@ const WelcomePage = () => {
             <div className="welcome-page__bg" aria-hidden="true" />
             <div className="welcome-container">
                 <div className="hero-content">
-                    <span className="welcome-badge">Zaman kapsülü</span>
                     <h1 className="welcome-title">
                         Bugünden geleceğe,
                         <br />

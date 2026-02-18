@@ -23,6 +23,7 @@ import SecurityPage from './pages/SecurityPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import PublicMessagesPage from './pages/PublicMessagesPage';
 import MessageViewPage from './pages/MessageViewPage';
+import NotFoundPage from './pages/NotFoundPage';
 import CookieConsent from './components/CookieConsent';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -111,6 +112,12 @@ const ProtectedLayout = () => (
   </div>
 );
 
+/** Ana sayfa (/): giriş yoksa welcome, varsa settings. Böylece site açıldığında doğrudan Google’a gitmez. */
+const RootRedirect = () => {
+  const token = localStorage.getItem('token');
+  return token ? <Navigate to="/settings" replace /> : <Navigate to="/welcome" replace />;
+};
+
 import { getTheme, setTheme } from './theme';
 
 function App() {
@@ -124,6 +131,8 @@ function App() {
       <CookieConsent />
       <Routes>
         <Route element={<Layout />}>
+          {/* Ana sayfa: önce welcome göster, giriş yapılmışsa settings (otomatik Google yönlendirmesi önlenir) */}
+          <Route path="/" element={<RootRedirect />} />
           {/* Public Routes */}
           <Route path="/welcome" element={<WelcomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -148,13 +157,15 @@ function App() {
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
             <Route element={<ProtectedLayout />}>
-              <Route path="/" element={<Navigate to="/settings" replace />} />
               <Route path="/new" element={<NewMessagePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/change-subscription" element={<ChangeSubscriptionPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
       <ToastContainer position="bottom-right" theme="light" />

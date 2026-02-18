@@ -53,9 +53,19 @@ PinInput.Group = function PinInputGroup({ children, maxLength = 6 }) {
             if (e.key === 'Backspace' && !value[index] && index > 0) {
                 refs.current[index - 1]?.focus();
                 setSlotValue(index - 1, '');
+                return;
+            }
+            /* Enter: formu gönder (verify sayfası vb.) */
+            if (e.key === 'Enter') {
+                const digitsOnly = (value || '').replace(/\D/g, '').slice(0, maxLength);
+                if (digitsOnly.length === maxLength) {
+                    e.preventDefault();
+                    const form = e.target?.closest?.('form');
+                    if (form) form.requestSubmit();
+                }
             }
         },
-        [value, setSlotValue]
+        [value, setSlotValue, maxLength]
     );
 
     const handlePaste = useCallback(

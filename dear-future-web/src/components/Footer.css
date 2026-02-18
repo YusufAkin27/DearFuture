@@ -1,4 +1,4 @@
-/* Footer – Tüm renk/spacing theme.css'ten; mobil uyumlu */
+/* Footer – Tüm renk/spacing theme.css'ten; dark theme + responsive */
 
 .footer {
   width: 100%;
@@ -11,6 +11,10 @@
   background: var(--footer-bg);
 }
 
+.theme-dark .footer {
+  background: var(--footer-bg);
+}
+
 .footer-bar {
   width: 92%;
   max-width: 800px;
@@ -20,6 +24,11 @@
   border: 1px solid var(--footer-bar-border);
   box-shadow: var(--footer-bar-shadow);
   position: relative;
+}
+
+.theme-dark .footer-bar {
+  background: var(--footer-bar-bg);
+  border-color: var(--footer-bar-border);
 }
 
 .footer-bar-inner {
@@ -73,6 +82,10 @@
   color: var(--text-secondary);
   margin: 0;
   line-height: var(--line-height-body);
+}
+
+.theme-dark .footer-tagline {
+  color: var(--text-secondary);
 }
 
 .footer-social {
@@ -132,6 +145,10 @@
   margin-bottom: var(--space-xs);
 }
 
+.theme-dark .footer-col-label {
+  color: var(--text-muted);
+}
+
 .footer-link {
   font-size: var(--text-small);
   color: var(--text-secondary);
@@ -142,6 +159,13 @@
 
 .footer-link:hover {
   color: var(--primary-color);
+}
+
+.theme-dark .footer-link {
+  color: var(--text-body);
+}
+.theme-dark .footer-link:hover {
+  color: var(--accent-bright);
 }
 
 .footer-link:focus-visible {
@@ -158,10 +182,18 @@
   text-align: center;
 }
 
+.theme-dark .footer-bottom {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
 .footer-bottom span {
   font-size: var(--text-tiny);
   color: var(--text-secondary);
   opacity: 0.9;
+}
+
+.theme-dark .footer-bottom span {
+  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {
@@ -208,5 +240,36 @@
 
   .footer-col {
     align-items: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .footer-bar {
+    width: 98%;
+    border-radius: var(--radius-sm);
+  }
+
+  .footer-bar-inner {
+    padding: var(--space-lg) var(--space-md) var(--space-md);
+    gap: var(--space-lg);
+  }
+
+  .footer-brand {
+    font-size: var(--text-body-lg);
+  }
+
+  .footer-logo-img {
+    height: 24px;
+  }
+
+  .footer-social-link {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer-bottom {
+    padding: var(--space-sm) var(--space-md);
   }
 }

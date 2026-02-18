@@ -164,13 +164,15 @@
 
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-strong: rgba(255, 255, 255, 0.1);
-  --sidebar-bg: var(--surface-color);
+  /* Sidebar – dark theme: koyu yüzey, ince kenarlık */
+  --sidebar-bg: #12171e;
   --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
-  --footer-bg: linear-gradient(180deg, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.4) 80%, #050508 100%);
-  --footer-bar-bg: linear-gradient(180deg, var(--surface-color) 0%, var(--surface-color) 40%, #0d0d0d 85%, #050508 100%);
+  --sidebar-shadow: 2px 0 24px rgba(0, 0, 0, 0.4);
+  /* Footer – dark theme: gradient geçiş, koyu bar */
+  --footer-bg: linear-gradient(180deg, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.5) 75%, #080b0f 100%);
+  --footer-bar-bg: linear-gradient(165deg, #131920 0%, #0f1419 50%, #0a0d12 100%);
   --footer-bar-border: rgba(255, 255, 255, 0.06);
-  --footer-bar-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --footer-bar-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
   --link-hover-bg: rgba(0, 168, 204, 0.12);
   --link-active-bg: rgba(0, 168, 204, 0.15);
   --danger-bg: rgba(239, 68, 68, 0.12);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaRedo, FaArrowLeft } from 'react-icons/fa';
@@ -15,6 +15,7 @@ const VerifyPage = () => {
     const navigate = useNavigate();
     const email = location.state?.email;
     const [timer, setTimer] = useState(60);
+    const lastAutoSubmittedRef = useRef('');
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
@@ -33,13 +34,24 @@ const VerifyPage = () => {
         return () => clearInterval(interval);
     }, [email]);
 
+    /* Tüm 6 kutu doldurulunca otomatik backend'e gönder */
+    useEffect(() => {
+        if (!email || isLoading) return;
+        const digitsOnly = (code || '').replace(/\D/g, '').replace(/\s/g, '');
+        if (digitsOnly.length === 6 && digitsOnly !== lastAutoSubmittedRef.current) {
+            lastAutoSubmittedRef.current = digitsOnly;
+            handleVerify();
+        }
+    }, [code, email]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const handleVerify = async (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
         const digitsOnly = (code || '').replace(/\D/g, '').replace(/\s/g, '');
         if (digitsOnly.length !== 6) {
             toast.error('Lütfen 6 haneli kodu girin.');
             return;
         }
+        if (isLoading) return;
         setIsLoading(true);
         try {
             const response = await verifyCode(email, digitsOnly);
@@ -77,7 +89,6 @@ const VerifyPage = () => {
         }
     };
 
-    const debouncedVerify = useDebouncedCallback(handleVerify, 500);
     const debouncedResend = useDebouncedCallback(handleResend, 500);
 
     const handleLoginRedirect = () => {
@@ -103,7 +114,7 @@ const VerifyPage = () => {
                     <p className="verify-instruction">E-posta adresinize gönderilen 6 haneli kodu girin.</p>
                 </div>
 
-                <form onSubmit={debouncedVerify} className="modern-form">
+                <form onSubmit={handleVerify} className="modern-form">
                     <div className="code-input-wrapper">
                         <PinInput value={code} onChange={setCode} size="md">
                             <PinInput.Label>Doğrulama kodu</PinInput.Label>
