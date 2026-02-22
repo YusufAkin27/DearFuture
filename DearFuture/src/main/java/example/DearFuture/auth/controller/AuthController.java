@@ -1,5 +1,6 @@
 package example.DearFuture.auth.controller;
 
+import example.DearFuture.auth.request.GoogleLoginRequest;
 import example.DearFuture.auth.request.SendCodeRequest;
 import example.DearFuture.auth.request.VerifyCodeRequest;
 import example.DearFuture.auth.response.AuthResponse;
@@ -53,5 +54,11 @@ public class AuthController {
     public ResponseEntity<String> resendCode(@RequestBody SendCodeRequest request, HttpServletRequest httpRequest) {
         authService.sendLoginCode(request.getEmail(), getClientIp(httpRequest));
         return ResponseEntity.ok("doğrulama kodu gönderildi");
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(@RequestBody GoogleLoginRequest request) {
+        AuthResponse response = authService.loginWithGoogleIdToken(request.getIdToken());
+        return ResponseEntity.ok(response);
     }
 }

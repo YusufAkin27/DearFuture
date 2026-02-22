@@ -29,8 +29,12 @@ public class RedisRateLimitConfig {
         return new LettuceConnectionFactory(config);
     }
 
-    @Bean
-    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    /**
+     * Bean adı "redisTemplate" olmalı; bazı bileşenler (örn. redisReferenceResolver) bu ada göre arar.
+     * StringRedisTemplate, RedisTemplate&lt;String, String&gt; alt sınıfıdır; rate limit ve diğer kullanımlar için uygundur.
+     */
+    @Bean(name = "redisTemplate")
+    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         return new StringRedisTemplate(redisConnectionFactory);
     }
 }

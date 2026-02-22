@@ -111,4 +111,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
     }
+
+    /**
+     * Mobil uygulama için: Google ID token doğrulandıktan sonra
+     * email, ad-soyad ve profil resmi ile kullanıcıyı bulur veya oluşturur.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public User getOrCreateUserFromGoogle(String email, String givenName, String familyName, String fullName, String picture) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Google email is required");
+        }
+        String normalizedEmail = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail).orElse(null);
+        if (user != null) {
+            updateProfile(user, givenName, familyName, fullName, picture);
+            user = userRepository.save(user);
+            log.info("Google (mobile): existing user, profile updated: {}", normalizedEmail);
+        } else {
+            user = createUser(normalizedEmail, givenName, familyName, fullName, picture);
+            user = userRepository.save(user);
+            log.info("Google (mobile): new user created: {}", normalizedEmail);
+        }
+        return user;
+    }
 }
