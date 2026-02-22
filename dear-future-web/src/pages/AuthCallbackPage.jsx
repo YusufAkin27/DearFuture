@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { invalidatePrefix } from '../api/cache';
 import './AuthCallbackPage.css';
 
 /**
@@ -16,6 +17,7 @@ const AuthCallbackPage = () => {
     useEffect(() => {
         if (token) {
             localStorage.setItem('token', token);
+            invalidatePrefix('get:/user');
             toast.success('Google ile giriş başarılı! Hoş geldiniz.');
             navigate('/', { replace: true });
             return;

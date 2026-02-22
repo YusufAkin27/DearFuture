@@ -15,10 +15,12 @@ const ChangeSubscriptionPage = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [payLoading, setPayLoading] = useState(null);
+    const [loadErrorDetail, setLoadErrorDetail] = useState(null);
 
     useEffect(() => {
         const load = async () => {
             setLoading(true);
+            setLoadErrorDetail(null);
             try {
                 const [profileRes, plansData] = await Promise.all([
                     getProfile(),
@@ -27,10 +29,17 @@ const ChangeSubscriptionPage = () => {
                 setProfile(profileRes.data);
                 setPlans(Array.isArray(plansData) ? plansData : []);
             } catch (err) {
-                console.error(err);
-                toast.error('Bilgiler yüklenemedi. Lütfen tekrar giriş yapın.');
-                localStorage.removeItem('token');
-                navigate('/login', { replace: true });
+                const status = err.response?.status;
+                const url = err.config?.baseURL + (err.config?.url || '');
+                const detail = `Status: ${status ?? 'yok'} | URL: ${url || 'bilinmiyor'} | ${err.response?.data?.message || err.message || ''}`;
+                setLoadErrorDetail(detail);
+                console.error('[ChangeSubscriptionPage] Bilgiler yüklenemedi:', detail, err.response?.data, err);
+                toast.error(err.response?.data?.message || 'Bilgiler yüklenemedi. Sayfayı yenileyip tekrar deneyin.');
+                const isAuthError = status === 401 || status === 403;
+                if (isAuthError) {
+                    localStorage.removeItem('token');
+                    navigate('/login', { replace: true });
+                }
             } finally {
                 setLoading(false);
             }
@@ -92,6 +101,19 @@ const ChangeSubscriptionPage = () => {
                 <div className="pricing-loading">
                     <div className="pricing-spinner" />
                     <p>Yükleniyor...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (loadErrorDetail) {
+        return (
+            <div className="pricing-container">
+                <div className="pricing-error">
+                    <p>Bilgiler yüklenemedi.</p>
+                    <pre className="app-debug-log" aria-live="polite">
+                        {loadErrorDetail}
+                    </pre>
                 </div>
             </div>
         );

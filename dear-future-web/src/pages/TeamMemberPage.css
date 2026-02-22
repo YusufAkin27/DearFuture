@@ -1,0 +1,377 @@
+/* Kurucu ortak detay sayfası – tema uyumlu */
+.team-member-container {
+  width: 100%;
+  padding: 2rem 1.5rem 4rem;
+  background: radial-gradient(circle at top, rgba(0, 168, 204, 0.06), transparent 55%),
+    var(--background-color);
+  color: var(--text-main);
+}
+
+.team-member-inner {
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.team-member-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color 0.2s ease;
+}
+
+.team-member-back:hover {
+  color: var(--primary-color);
+}
+
+.team-member-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.team-member-photo-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.team-member-photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: var(--shadow-card);
+  border: 3px solid rgba(0, 168, 204, 0.15);
+  background: var(--surface-color);
+}
+
+.team-member-name {
+  font-size: 1.85rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--text-main);
+}
+
+.team-member-role {
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+}
+
+.team-member-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.team-member-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.team-member-link:hover {
+  opacity: 0.85;
+}
+
+.team-member-loading {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+/* Proje kartı – tıklanınca README modalda açılır */
+.team-member-repo-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1rem !important;
+}
+
+.team-member-repo-card-inner {
+  flex: 1;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.team-member-repo-card-inner:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.team-member-repo-name {
+  display: block;
+  font-size: 1rem;
+  color: var(--primary-color);
+  margin-bottom: 0.35rem;
+}
+
+.team-member-repo-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.team-member-repo-readme-hint {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  opacity: 0.9;
+}
+
+.team-member-repo-github-link {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: rgba(15, 23, 42, 0.04);
+  transition: color 0.2s, background 0.2s;
+}
+
+.team-member-repo-github-link:hover {
+  color: var(--primary-color);
+  background: rgba(0, 168, 204, 0.08);
+}
+
+/* README modal */
+.team-member-readme-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: team-readme-fadeIn 0.2s ease;
+}
+
+@keyframes team-readme-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.team-member-readme-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  background: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  animation: team-readme-slideIn 0.25s ease;
+}
+
+@keyframes team-readme-slideIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.team-member-readme-modal-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.team-member-readme-modal-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  min-width: 0;
+}
+
+.team-member-readme-modal-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.team-member-readme-modal-github:hover {
+  text-decoration: underline;
+}
+
+.team-member-readme-modal-close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.team-member-readme-modal-close:hover {
+  color: var(--text-main);
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.team-member-readme-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.team-member-readme-modal-body .team-member-readme-md {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+/* README Markdown – başlık, liste, paragraf; kod blokları gizli */
+.team-member-readme-md {
+  margin: 0.75rem 0 0;
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  background: var(--surface-color);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 8px;
+  color: var(--text-secondary);
+}
+
+.team-member-readme-md p {
+  margin: 0 0 0.75rem;
+}
+
+.team-member-readme-md p:last-child {
+  margin-bottom: 0;
+}
+
+.team-member-readme-md h1,
+.team-member-readme-md h2,
+.team-member-readme-md h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 1rem 0 0.5rem;
+}
+
+.team-member-readme-md h1:first-child,
+.team-member-readme-md h2:first-child,
+.team-member-readme-md h3:first-child {
+  margin-top: 0;
+}
+
+.team-member-readme-md ul,
+.team-member-readme-md ol {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.team-member-readme-md li {
+  margin-bottom: 0.25rem;
+}
+
+.team-member-readme-md strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.team-member-readme-link {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.team-member-readme-link:hover {
+  text-decoration: underline;
+}
+
+.team-member-readme-md hr {
+  border: none;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  margin: 1rem 0;
+}
+
+.team-member-bio,
+.team-member-projects {
+  margin-bottom: 2.5rem;
+}
+
+.team-member-bio h2,
+.team-member-projects h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team-member-projects-icon {
+  color: var(--primary-color);
+}
+
+.team-member-bio-text {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1rem;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.team-member-project-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.team-member-project-item {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--surface-color);
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.team-member-project-item strong {
+  color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+  .team-member-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .team-member-photo {
+    width: 140px;
+    height: 140px;
+  }
+
+  .team-member-name {
+    font-size: 1.5rem;
+  }
+}

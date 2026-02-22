@@ -18,7 +18,7 @@ public class MessageSender {
 
     private final MailService mailService;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
+    @Value("${app.frontend-url:https://dearfuture.com.tr}")
     private String frontendUrl;
 
     /**
@@ -46,7 +46,7 @@ public class MessageSender {
         // Mesaj görüntüleme URL'i oluştur
         String baseUrl = frontendUrl != null && !frontendUrl.isBlank()
                 ? frontendUrl.trim().replaceAll("/$", "")
-                : "http://localhost:5173";
+                : "https://dearfuture.com.tr";
         String viewUrl = baseUrl + "/message/view/" + message.getViewToken();
 
         // HTML email oluştur

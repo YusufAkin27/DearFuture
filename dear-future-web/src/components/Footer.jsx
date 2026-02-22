@@ -28,6 +28,7 @@ const Footer = () => {
                         <div className="footer-col">
                             <span className="footer-col-label">Kurumsal</span>
                             <Link to="/about" className="footer-link">Hakkımızda</Link>
+                            <Link to="/sss" className="footer-link">SSS</Link>
                             <Link to="/contact" className="footer-link">İletişim</Link>
                         </div>
                         <div className="footer-col">

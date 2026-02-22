@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaRedo, FaArrowLeft } from 'react-icons/fa';
 import { verifyCode, resendCode } from '../api/auth';
+import { invalidatePrefix } from '../api/cache';
 import { PinInput } from '../components/base/pin-input';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import './VerifyPage.css';
@@ -55,9 +56,13 @@ const VerifyPage = () => {
         setIsLoading(true);
         try {
             const response = await verifyCode(email, digitsOnly);
-            const token = response.data.token;
-
+            const token = response?.data?.token;
+            if (!token || typeof token !== 'string') {
+                toast.error('Giriş yanıtı alınamadı. Tekrar deneyin.');
+                return;
+            }
             localStorage.setItem('token', token);
+            invalidatePrefix('get:/user'); // İlk profil isteği güncel veri getirsin
             toast.success('Giriş başarılı! Hoş geldiniz.');
             const from = location.state?.from || '/';
             navigate(from, { replace: true });

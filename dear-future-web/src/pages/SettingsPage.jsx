@@ -24,6 +24,8 @@ const SettingsPage = () => {
     const [deactivating, setDeactivating] = useState(false);
     const [messages, setMessages] = useState([]);
     const [messagesLoading, setMessagesLoading] = useState(false);
+    /** Hata ayıklama: profil yüklenirken oluşan son hata detayı (sayfada gösterilir) */
+    const [loadErrorDetail, setLoadErrorDetail] = useState(null);
 
     useEffect(() => {
         loadProfile();
@@ -59,9 +61,16 @@ const SettingsPage = () => {
 
     const loadProfile = async () => {
         setLoading(true);
+        setLoadErrorDetail(null);
         try {
             const res = await getProfile();
             const user = res.data;
+            if (!user) {
+                toast.error('Profil yanıtı alınamadı.');
+                setLoadErrorDetail('Backend boş yanıt döndü.');
+                setLoading(false);
+                return;
+            }
             setProfile(user);
             setFormData({
                 locale: user.locale || 'tr',
@@ -69,9 +78,22 @@ const SettingsPage = () => {
                 marketingEmails: user.marketingEmails === true,
             });
         } catch (err) {
-            toast.error('Ayarlar yüklenemedi. Lütfen tekrar giriş yapın.');
-            localStorage.removeItem('token');
-            navigate('/login', { replace: true });
+            const status = err.response?.status;
+            const url = err.config?.baseURL + (err.config?.url || '');
+            const msg = err.response?.data?.message || err.message || 'Bilinmeyen hata';
+            const detail = `Status: ${status ?? 'yok'} | URL: ${url || 'bilinmiyor'} | Mesaj: ${msg}`;
+            setLoadErrorDetail(detail);
+            console.error('[SettingsPage] getProfile hatası:', detail, err.response?.data, err);
+            const isAuthError = status === 401 || status === 403;
+            toast.error(
+                isAuthError
+                    ? 'Oturum süresi doldu. Lütfen tekrar giriş yapın.'
+                    : (err.response?.data?.message || 'Ayarlar yüklenemedi. Sayfayı yenileyip tekrar deneyin.')
+            );
+            if (isAuthError) {
+                localStorage.removeItem('token');
+                navigate('/login', { replace: true });
+            }
         } finally {
             setLoading(false);
         }
@@ -180,6 +202,11 @@ const SettingsPage = () => {
         return (
             <div className="settings-container">
                 <div className="settings-error">Profil yüklenemedi.</div>
+                {loadErrorDetail && (
+                    <pre className="app-debug-log" aria-live="polite">
+                        {loadErrorDetail}
+                    </pre>
+                )}
             </div>
         );
     }

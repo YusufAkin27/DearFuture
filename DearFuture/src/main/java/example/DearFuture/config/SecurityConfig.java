@@ -1,5 +1,6 @@
 package example.DearFuture.config;
 
+import example.DearFuture.auth.handler.OAuth2LoginFailureHandler;
 import example.DearFuture.auth.handler.OAuth2LoginSuccessHandler;
 import example.DearFuture.auth.jwt.JwtAuthenticationFilter;
 import example.DearFuture.auth.service.CustomOAuth2UserService;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final CorsConfigurationSource corsConfigurationSource;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oauth2LoginFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,10 +47,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/contracts").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/contracts/type/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/contracts/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/public/team/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Backend kökü: tarayıcı api.dearfuture.info açınca login'e düşmesin
+                .requestMatchers("/").permitAll()
                 // Google OAuth2 giriş akışı (login sayfası ve callback)
-                .requestMatchers("/login/**", "/oauth2/**").permitAll()
+                .requestMatchers("/login", "/login/**", "/oauth2/**").permitAll()
                 // Admin endpoint'leri sadece ADMIN rolüne sahip kullanıcılar
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Public mesajlar: liste herkese açık, yıldız/starred giriş gerekir
@@ -59,6 +64,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
                 .successHandler(oauth2LoginSuccessHandler)
+                .failureHandler(oauth2LoginFailureHandler)
             );
 
         // Both filters before UsernamePasswordAuthenticationFilter (which has registered order). Second add = runs first.

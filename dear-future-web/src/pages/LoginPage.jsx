@@ -17,8 +17,15 @@ const LoginPage = () => {
     useEffect(() => {
         if (localStorage.getItem('token')) {
             navigate('/', { replace: true });
+            return;
         }
-    }, [navigate]);
+        const params = new URLSearchParams(location.search);
+        const errorMsg = params.get('error');
+        if (errorMsg) {
+            toast.error(errorMsg);
+            navigate(location.pathname, { replace: true }); // URL'den ?error kaldır
+        }
+    }, [navigate, location.search, location.pathname]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -96,11 +103,12 @@ const LoginPage = () => {
                             type="button"
                             className="login-google-btn"
                             onClick={() => {
-                                // OAuth2 session backend'de tutulduğu için tarayıcı doğrudan backend'e gitmeli (proxy ile cookie/8080 uyuşmaz).
-                                const base = import.meta.env.VITE_BACKEND_URL
-                                    || (import.meta.env.DEV ? 'http://localhost:8080' : '');
-                                const url = base ? `${base.replace(/\/$/, '')}/oauth2/authorization/google` : '/oauth2/authorization/google';
-                                window.location.href = url;
+                                // OAuth session backend'de (api.dearfuture.info) tutulur; link mutlaka backend domain'ine gitmeli.
+                                // dearfuture.com.tr üzerinden giderse cookie farklı domain'de kalır → authorization_request_not_found.
+                                const envUrl = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+                                const isFrontendOrigin = typeof window !== 'undefined' && /dearfuture\.com\.tr$/i.test(window.location.origin);
+                                const base = (isFrontendOrigin || !envUrl) ? 'https://api.dearfuture.info' : envUrl;
+                                window.location.href = `${base}/oauth2/authorization/google`;
                             }}
                         >
                             <FaGoogle className="login-google-icon" />

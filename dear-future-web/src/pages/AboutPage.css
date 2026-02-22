@@ -128,6 +128,21 @@
   box-shadow: 0 10px 30px rgba(20, 40, 80, 0.12);
 }
 
+.about-team-card--link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+.about-team-card-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  margin-top: 0.75rem;
+  opacity: 0.9;
+}
+
 .about-team-avatar {
   width: 120px;
   height: 120px;

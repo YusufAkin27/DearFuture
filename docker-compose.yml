@@ -41,9 +41,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: "6379"
-      # Dış erişim (tarayıcı / callback): tek giriş noktası frontend
-      APP_BASE_URL: http://localhost
-      APP_FRONTEND_URL: http://localhost
+      # Canlı: frontend dearfuture.com.tr, backend api.dearfuture.info
+      APP_BASE_URL: https://api.dearfuture.info
+      APP_FRONTEND_URL: https://dearfuture.com.tr
     depends_on:
       postgres:
         condition: service_healthy

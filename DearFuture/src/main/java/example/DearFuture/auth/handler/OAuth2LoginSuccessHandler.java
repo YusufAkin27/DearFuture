@@ -28,7 +28,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final CustomOAuth2UserService oauth2UserService;
     private final JwtUtil jwtUtil;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
+    @Value("${app.frontend-url:https://dearfuture.com.tr}")
     private String frontendUrl;
 
     @Override
@@ -55,7 +55,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private String buildRedirectUrl(String token, String errorMessage) {
         String base = frontendUrl != null && !frontendUrl.isBlank()
                 ? frontendUrl.trim().replaceAll("/$", "")
-                : "http://localhost:5173";
+                : "https://dearfuture.com.tr";
         String path = "/auth/callback";
         if (token != null) {
             return base + path + "?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);

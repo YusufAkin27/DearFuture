@@ -32,6 +32,25 @@ body {
   background: var(--welcome-bg);
 }
 
+/* Metne tıklanınca imleç (text cursor) çıkmasın; varsayılan ok imleci kalsın */
+.app-main {
+  cursor: default;
+  user-select: none;
+}
+.app-main input,
+.app-main textarea,
+.app-main [contenteditable="true"] {
+  cursor: text;
+  user-select: text;
+}
+.app-main a,
+.app-main button,
+.app-main [role="button"],
+.app-main [type="button"],
+.app-main [type="submit"] {
+  cursor: pointer;
+}
+
 /* Üst bar: mobilde sidebar tetikleyici (hamburger) her zaman görünür */
 .app-topbar {
   flex-shrink: 0;
@@ -146,4 +165,19 @@ button {
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
+}
+
+/* Hata ayıklama: sayfada gösterilen API hata detayı (tüm sayfalarda kullanılabilir) */
+.app-debug-log {
+  margin: 1rem auto;
+  padding: 0.75rem 1rem;
+  max-width: 100%;
+  overflow: auto;
+  font-size: 0.75rem;
+  background: var(--surface-color, #f0f0f0);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  color: var(--text-main, #333);
+  white-space: pre-wrap;
+  word-break: break-all;
 }

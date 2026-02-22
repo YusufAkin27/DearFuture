@@ -38,10 +38,10 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
     private final SubscriptionPlanRepository planRepository;
     private final MailService mailService;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:https://api.dearfuture.info}")
     private String baseUrl;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
+    @Value("${app.frontend-url:https://dearfuture.com.tr}")
     private String frontendUrl;
 
     @Override

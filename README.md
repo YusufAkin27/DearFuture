@@ -76,7 +76,7 @@ cd DearFuture
 mvn spring-boot:run
 ```
 
-Backend varsayılan olarak http://localhost:8080 üzerinde çalışır.
+Backend varsayılan olarak https://api.dearfuture.info üzerinde çalışır.
 
 ### Frontend
 
@@ -88,12 +88,32 @@ npm install
 npm run dev
 ```
 
-2. Tarayıcıda http://localhost:5173 açılır. Vite, `/api` isteklerini backend’e (localhost:8080) proxy eder.
+2. Tarayıcıda https://dearfuture.com.tr açılır. Vite, `/api` isteklerini backend’e (localhost:8080) proxy eder.
 
 ### Build
 
 - **Backend:** `cd DearFuture && mvn package`
 - **Frontend:** `cd dear-future-web && npm run build` (çıktı: `dist/`)
+
+---
+
+## Canlı ortam adresleri
+
+| Ortam   | URL |
+|---------|-----|
+| Frontend | https://dearfuture.com.tr |
+| Backend  | https://api.dearfuture.info |
+
+Google ile giriş: Kullanıcı dearfuture.com.tr üzerinde "Google ile Giriş"e tıklar → tarayıcı api.dearfuture.info/oauth2/authorization/google adresine gider → Google girişi sonrası backend kullanıcıyı https://dearfuture.com.tr/auth/callback?token=... ile yönlendirir.
+
+**Önemli:** Ziyaretçiler her zaman **dearfuture.com.tr** adresinden girmeli; ilk açılışta Welcome (hoş geldin) sayfası görünür, giriş zorunlu değildir. **api.dearfuture.info** yalnızca API ve OAuth için kullanılır; bu adresi tarayıcıda açanlara artık login sayfası yerine kısa bir metin gösterilir. Sunucuda dearfuture.com.tr için React build (SPA) servis edilmeli, api.dearfuture.info’ya yönlendirme yapılmamalıdır.
+
+### Frontend’i dearfuture.com.tr’de yayınlama
+
+1. `cd dear-future-web && npm run build`
+2. Oluşan **dist/** klasörünü dearfuture.com.tr sunucusuna atın.
+3. Sunucuda dearfuture.com.tr için root olarak bu dist gösterilsin; tüm path’ler index.html’e yönlendirilsin (SPA fallback: `try_files $uri $uri/ /index.html`).
+4. api.dearfuture.info ayrı çalışsın; dearfuture.com.tr’yi api’ye yönlendirmeyin.
 
 ---
 
@@ -107,9 +127,24 @@ Docker veya yerel ortamda kullanılabilecek örnekler:
 | `SPRING_DATASOURCE_USERNAME` / `PASSWORD` | Veritabanı kullanıcı bilgileri |
 | `SPRING_DATA_REDIS_HOST` / `PORT` | Redis adresi (rate limit) |
 | `APP_BASE_URL` | Backend’in dış erişim adresi (callback vb.) |
-| `APP_FRONTEND_URL` | Frontend adresi (e-posta linkleri) |
+| `APP_FRONTEND_URL` | Frontend adresi (https://dearfuture.com.tr, e-posta ve OAuth sonrası yönlendirme) |
 
 Geliştirme için hassas bilgiler (JWT secret, Cloudinary, Brevo, iyzico) `application.properties` veya ortam değişkenleri ile ayarlanır; bu dosyaları versiyon kontrolüne **commit etmeyin**.
+
+---
+
+## Google ile giriş (OAuth2) – redirect_uri_mismatch hatası
+
+**Erişim engellendi: 400 redirect_uri_mismatch** alıyorsanız, Google Cloud Console’da yönlendirme adresini eklemeniz gerekir:
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services** → **Credentials**
+2. OAuth 2.0 **Client ID**’nizi seçin (Web uygulaması)
+3. **Authorized redirect URIs** bölümüne şu adresi **birebir** ekleyin (sonunda `/` olmamalı):
+   - **Canlı (production):** `https://api.dearfuture.info/login/oauth2/code/google`
+   - **Yerel test:** `http://localhost:8080/login/oauth2/code/google`
+4. **Save** ile kaydedin.
+
+Backend, `app.base-url` değerine göre redirect URI üretir (`application.properties` içinde `spring.security.oauth2.client.registration.google.redirect-uri=${app.base-url}/login/oauth2/code/google`). Sunucunuz farklı bir domain’deyse (örn. `https://api.dearfuture.com.tr`) `app.base-url` değerini buna göre güncelleyin ve Google Console’daki redirect URI’yi de aynı adresle eşleştirin.
 
 ---
 

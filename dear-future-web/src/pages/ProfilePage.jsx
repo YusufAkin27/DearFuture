@@ -36,16 +36,20 @@ const ProfilePage = () => {
         try {
             const res = await getProfile();
             const user = res.data;
-            setProfile(user);
+            setProfile(user ?? null);
             setFormData({
                 firstName: user?.firstName ?? '',
                 lastName: user?.lastName ?? '',
             });
         } catch (err) {
             console.error(err);
-            toast.error('Profil yüklenemedi. Lütfen tekrar giriş yapın.');
-            localStorage.removeItem('token');
-            navigate('/login', { replace: true });
+            const status = err.response?.status;
+            const isAuthError = status === 401 || status === 403;
+            toast.error(isAuthError ? 'Oturum süresi doldu. Lütfen tekrar giriş yapın.' : 'Profil yüklenemedi. Sayfayı yenileyip tekrar deneyin.');
+            if (isAuthError) {
+                localStorage.removeItem('token');
+                navigate('/login', { replace: true });
+            }
         } finally {
             setIsLoading(false);
         }
@@ -195,14 +199,7 @@ const ProfilePage = () => {
                         </button>
                     </div>
 
-                    <div className="profile-quick-links">
-                        <Link to="/public-messages?tab=starred" className="quick-link">
-                            <FaStar /> Yıldızlı mesajlarım
-                        </Link>
-                        <Link to="/settings" className="quick-link">
-                            <FaCog /> Ayarlar ve güvenlik
-                        </Link>
-                    </div>
+               
                 </aside>
 
                 {/* Sağ: Kişisel bilgiler */}

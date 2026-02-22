@@ -14,6 +14,8 @@ import java.util.List;
 public class CorsConfig implements WebMvcConfigurer {
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
+            "https://dearfuture.com.tr",
+            "https://www.dearfuture.com.tr",
             "http://localhost:5173",
             "http://localhost:3000",
             "http://127.0.0.1:5173",
@@ -42,7 +44,7 @@ public class CorsConfig implements WebMvcConfigurer {
         // Diğer API'ler: belirli origin'ler, credentials ile
         CorsConfiguration defaultConfig = new CorsConfiguration();
         defaultConfig.setAllowedOriginPatterns(ALLOWED_ORIGINS);
-        defaultConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        defaultConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         defaultConfig.setAllowedHeaders(List.of("*"));
         defaultConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", defaultConfig);
@@ -54,7 +56,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns(ALLOWED_ORIGINS.toArray(new String[0]))
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }

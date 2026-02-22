@@ -33,10 +33,12 @@ const NewMessagePage = () => {
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const mediaStreamRef = useRef(null);
+    const [loadErrorDetail, setLoadErrorDetail] = useState(null);
 
     useEffect(() => {
         let cancelled = false;
         const load = async () => {
+            setLoadErrorDetail(null);
             try {
                 const [profileRes, quotaRes] = await Promise.all([
                     getProfile(),
@@ -53,8 +55,17 @@ const NewMessagePage = () => {
                 }
             } catch (err) {
                 if (!cancelled) {
+                    const status = err.response?.status;
+                    const url = err.config?.baseURL + (err.config?.url || '');
+                    const detail = `Status: ${status ?? 'yok'} | URL: ${url || 'bilinmiyor'} | ${err.response?.data?.message || err.message || ''}`;
+                    setLoadErrorDetail(detail);
+                    console.error('[NewMessagePage] Bilgiler yüklenemedi:', detail, err.response?.data, err);
                     toast.error('Bilgiler yüklenemedi.');
-                    navigate('/login', { replace: true });
+                    const isAuthError = status === 401 || status === 403;
+                    if (isAuthError) {
+                        localStorage.removeItem('token');
+                        navigate('/login', { replace: true });
+                    }
                 }
             } finally {
                 if (!cancelled) setLoading(false);
@@ -268,6 +279,19 @@ const NewMessagePage = () => {
                 <div className="new-message-loading">
                     <div className="new-message-spinner" />
                     <p>Yükleniyor...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!profile && loadErrorDetail) {
+        return (
+            <div className="new-message-container">
+                <div className="new-message-loading">
+                    <p>Bilgiler yüklenemedi.</p>
+                    <pre className="app-debug-log" aria-live="polite">
+                        {loadErrorDetail}
+                    </pre>
                 </div>
             </div>
         );

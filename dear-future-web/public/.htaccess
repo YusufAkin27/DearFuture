@@ -1,0 +1,9 @@
+# cPanel / Apache: SPA fallback — tüm istekler index.html'e gitsin, React Router yönlendirsin
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # Gerçek dosya/klasör varsa dokunma
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

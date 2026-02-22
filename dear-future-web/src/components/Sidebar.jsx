@@ -17,6 +17,7 @@ const SIDEBAR_PUBLIC = [
     label: 'Hakkında',
     links: [
       { label: 'Hakkımızda', to: '/about' },
+      { label: 'SSS', to: '/sss' },
       { label: 'İletişim', to: '/contact' },
     ],
   },

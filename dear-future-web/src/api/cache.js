@@ -15,6 +15,8 @@ export const CACHE_TTL = {
     PUBLIC_LIST: 2 * 60 * 1000,  // 2 dk
     /** Token ile mesaj görüntüleme (public) */
     VIEW_MESSAGE: 5 * 60 * 1000, // 5 dk
+    /** Kurucu ortak GitHub profili (projeler + README) */
+    TEAM_GITHUB: 10 * 60 * 1000, // 10 dk
 };
 
 /**
@@ -29,6 +31,7 @@ export function getCacheConfig(path) {
     if (p.startsWith('/user/profile') || p.startsWith('/user/message-quota')) return { ttl: CACHE_TTL.USER };
     if (p.startsWith('/messages/public') && !p.includes('/star')) return { ttl: CACHE_TTL.PUBLIC_LIST };
     if (p.startsWith('/messages/view/')) return { ttl: CACHE_TTL.VIEW_MESSAGE };
+    if (p.startsWith('/public/team/github/')) return { ttl: CACHE_TTL.TEAM_GITHUB };
     return null;
 }
 

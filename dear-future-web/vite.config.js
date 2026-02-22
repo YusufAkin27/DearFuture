@@ -4,25 +4,30 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://api.dearfuture.info',
         changeOrigin: true,
         secure: false,
       },
       '/oauth2': {
-        target: 'http://localhost:8080',
+        target: 'https://api.dearfuture.info',
         changeOrigin: true,
         secure: false,
       },
-      '/login': {
-        target: 'http://localhost:8080',
+      '/login/oauth2': {
+        target: 'https://api.dearfuture.info',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:8080',
+        target: 'https://api.dearfuture.info',
         changeOrigin: true,
         secure: false,
       },
