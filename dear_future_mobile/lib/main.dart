@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/auth_service.dart';
 
@@ -75,39 +76,9 @@ class _SplashWrapperState extends State<SplashWrapper> {
       );
     }
     if (_loggedIn) {
-      return _HomePlaceholder(onLogout: _onLogout);
+      return HomeScreen(onLogout: _onLogout);
     }
     return LoginScreen(onLoginSuccess: _onLoginSuccess);
   }
 }
 
-class _HomePlaceholder extends StatelessWidget {
-  const _HomePlaceholder({required this.onLogout});
-  final VoidCallback onLogout;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dear Future')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.mail_outline, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              'Giriş yaptınız',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: onLogout,
-              icon: const Icon(Icons.logout),
-              label: const Text('Çıkış yap'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/api_config.dart';
+import '../config/google_auth_config.dart';
 import 'api_client.dart';
 
 class AuthService {
@@ -12,8 +13,11 @@ class AuthService {
   final ApiClient _client;
   static const _tokenKey = 'dear_future_jwt_token';
 
+  /// GoogleAuthConfig.androidClientId ve SHA-1 (GoogleAuthConfig.sha1Fingerprint)
+  /// Google Cloud Console'da Android OAuth client'ta tanımlı olmalı.
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
+    serverClientId: GoogleAuthConfig.androidClientId,
   );
 
   String? _token;
@@ -84,7 +88,10 @@ class AuthService {
     final auth = await account.authentication;
     final idToken = auth.idToken;
     if (idToken == null || idToken.isEmpty) {
-      throw Exception('Google kimlik bilgisi alınamadı.');
+      throw Exception(
+        'Google kimlik bilgisi alınamadı. Lütfen Google Cloud Console\'da '
+        'Android uygulaması için OAuth client oluşturup SHA-1 ekleyin ve tekrar deneyin.',
+      );
     }
     final res = await _client.post(ApiConfig.authGoogle, body: {'idToken': idToken});
     if (res.statusCode != 200) {
