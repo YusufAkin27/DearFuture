@@ -117,4 +117,12 @@ class ProfileService {
         .whereType<DeliveredMessageItem>()
         .toList();
   }
+
+  /// GET /api/messages/{id} → mesaj (viewToken ile detay açılabilir)
+  Future<String?> getMessageViewToken(int id) async {
+    final res = await _client.get(ApiConfig.messageById(id));
+    if (res.statusCode != 200) return null;
+    final map = jsonDecode(res.body) as Map<String, dynamic>?;
+    return map?['viewToken'] as String?;
+  }
 }

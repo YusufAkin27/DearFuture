@@ -130,7 +130,7 @@ class _SubscriptionDetailPageState extends State<SubscriptionDetailPage> {
                           label: const Text('Fiyatlandırmaya dön'),
                           style: FilledButton.styleFrom(
                             backgroundColor: LoginColors.primaryEnd,
-                            foregroundColor: Colors.black87,
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           ),
                         ),
@@ -410,7 +410,7 @@ class _SubscriptionDetailPageState extends State<SubscriptionDetailPage> {
         child: OutlinedButton(
           onPressed: null,
           style: OutlinedButton.styleFrom(
-            foregroundColor: LoginColors.textMuted,
+            foregroundColor: LoginColors.textWhite,
             side: BorderSide(color: LoginColors.border),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -425,7 +425,7 @@ class _SubscriptionDetailPageState extends State<SubscriptionDetailPage> {
         onPressed: widget.onPurchase,
         style: FilledButton.styleFrom(
           backgroundColor: LoginColors.primaryEnd,
-          foregroundColor: Colors.black87,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),

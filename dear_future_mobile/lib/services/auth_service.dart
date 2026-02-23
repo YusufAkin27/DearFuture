@@ -13,11 +13,11 @@ class AuthService {
   final ApiClient _client;
   static const _tokenKey = 'dear_future_jwt_token';
 
-  /// GoogleAuthConfig.androidClientId ve SHA-1 (GoogleAuthConfig.sha1Fingerprint)
-  /// Google Cloud Console'da Android OAuth client'ta tanımlı olmalı.
+  /// GoogleAuthConfig: Android client + SHA-1 Console'da tanımlı olmalı;
+  /// serverClientId = Web client ID (idToken için gerekli).
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    serverClientId: GoogleAuthConfig.androidClientId,
+    serverClientId: GoogleAuthConfig.webClientId,
   );
 
   String? _token;
@@ -89,8 +89,8 @@ class AuthService {
     final idToken = auth.idToken;
     if (idToken == null || idToken.isEmpty) {
       throw Exception(
-        'Google kimlik bilgisi alınamadı. Lütfen Google Cloud Console\'da '
-        'Android uygulaması için OAuth client oluşturup SHA-1 ekleyin ve tekrar deneyin.',
+        'Google kimlik bilgisi alınamadı. Google Cloud Console\'da '
+        'Android OAuth client\'a bu cihazın SHA-1\'ini ekleyin (debug: keytool -list -v -keystore ile bakın).',
       );
     }
     final res = await _client.post(ApiConfig.authGoogle, body: {'idToken': idToken});

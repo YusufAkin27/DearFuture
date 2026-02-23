@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -16,6 +17,16 @@ class DearFutureApp extends StatelessWidget {
     return MaterialApp(
       title: 'Dear Future',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('tr', 'TR'),
+      supportedLocales: const [
+        Locale('tr', 'TR'),
+        Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00A8CC), brightness: Brightness.light),
         useMaterial3: true,
@@ -69,9 +80,24 @@ class _SplashWrapperState extends State<SplashWrapper> {
   @override
   Widget build(BuildContext context) {
     if (!_checked) {
-      return const Scaffold(
+      return Scaffold(
+        backgroundColor: Colors.black,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                height: 120,
+                filterQuality: FilterQuality.medium,
+              ),
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(
+                color: Color(0xFF00A8CC),
+                strokeWidth: 2,
+              ),
+            ],
+          ),
         ),
       );
     }

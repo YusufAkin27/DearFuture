@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "info.dearfuture.dear_future_mobile"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

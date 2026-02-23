@@ -1,12 +1,15 @@
 package example.DearFuture.message.dto.response;
 
+import example.DearFuture.message.entity.ContentType;
 import example.DearFuture.message.entity.FutureMessage;
+import example.DearFuture.message.entity.FutureMessageContent;
 import example.DearFuture.message.entity.MessageStatus;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -26,10 +29,28 @@ public class MessageResponse {
     /** Herkes okuyabilsin seçeneği (açıldıktan sonra public sayfada listelenir) */
     private boolean isPublic;
 
+    /** İçerik türleri: TEXT, IMAGE, VIDEO, FILE, AUDIO (liste önizlemesi için) */
+    private List<String> contentTypes;
+
+    /** Liste önizlemesi için ilk fotoğraf URL'i (varsa) */
+    private String previewImageUrl;
+
     public static MessageResponse fromEntity(FutureMessage message) {
         String contentText = "";
+        List<String> types = List.of();
+        String previewImageUrl = null;
         if (message.getContents() != null && !message.getContents().isEmpty()) {
             contentText = message.getContents().get(0).getTextContent();
+            types = message.getContents().stream()
+                    .map(FutureMessageContent::getType)
+                    .map(Enum::name)
+                    .distinct()
+                    .collect(Collectors.toList());
+            previewImageUrl = message.getContents().stream()
+                    .filter(c -> c.getType() == ContentType.IMAGE && c.getFileUrl() != null && !c.getFileUrl().isBlank())
+                    .map(FutureMessageContent::getFileUrl)
+                    .findFirst()
+                    .orElse(null);
         }
         if (contentText != null && contentText.startsWith(ENCRYPTED_PREFIX)) {
             contentText = "[Şifreli içerik]";
@@ -46,6 +67,8 @@ public class MessageResponse {
                 .recipientEmails(message.getRecipientEmails())
                 .viewToken(message.getViewToken())
                 .isPublic(message.isPublic())
+                .contentTypes(types)
+                .previewImageUrl(previewImageUrl)
                 .build();
     }
 }

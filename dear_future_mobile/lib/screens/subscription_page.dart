@@ -386,7 +386,7 @@ class _PlanCard extends StatelessWidget {
                     ? OutlinedButton(
                         onPressed: null,
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: LoginColors.textMuted,
+                          foregroundColor: LoginColors.textWhite,
                           side: BorderSide(color: LoginColors.border),
                         ),
                         child: const Text('Aktif'),
@@ -395,7 +395,7 @@ class _PlanCard extends StatelessWidget {
                         ? OutlinedButton(
                             onPressed: null,
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: LoginColors.primaryEnd,
+                              foregroundColor: LoginColors.textWhite,
                               side: BorderSide(color: LoginColors.primaryEnd),
                             ),
                             child: const Text('Aktif'),
@@ -404,7 +404,7 @@ class _PlanCard extends StatelessWidget {
                             onPressed: checkoutLoading ? null : onPurchase,
                             style: FilledButton.styleFrom(
                               backgroundColor: isRecommended ? LoginColors.primaryEnd : LoginColors.surface,
-                              foregroundColor: isRecommended ? Colors.black87 : LoginColors.primaryEnd,
+                              foregroundColor: isRecommended ? Colors.white : LoginColors.primaryEnd,
                               side: BorderSide(color: LoginColors.primaryEnd),
                             ),
                             child: checkoutLoading

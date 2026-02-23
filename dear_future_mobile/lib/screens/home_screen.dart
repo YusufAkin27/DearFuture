@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/login_theme.dart';
-import 'demo_screens.dart';
 import 'new_message_page.dart';
 import 'profile_page.dart';
 import 'public_messages_page.dart';
@@ -21,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   void _goToSubscriptionTab() {
-    setState(() => _currentIndex = 5);
+    setState(() => _currentIndex = 4);
   }
 
   static const List<_NavItem> _navItems = [
@@ -41,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           PublicMessagesPage(onLogout: widget.onLogout),
           NewMessagePage(onLogout: widget.onLogout),
-          const SavedDemoPage(),
           SettingsPage(onLogout: widget.onLogout, onManageSubscription: _goToSubscriptionTab),
           ProfilePage(onLogout: widget.onLogout, onManageSubscription: _goToSubscriptionTab),
           SubscriptionPage(onLogout: widget.onLogout),

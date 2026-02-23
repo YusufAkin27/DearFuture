@@ -97,30 +97,56 @@ class ProfileData {
 class DeliveredMessageItem {
   DeliveredMessageItem({
     this.id,
+    this.viewToken,
     this.scheduledAt,
     this.sentAt,
     this.status,
+    this.contentPreview,
+    this.contentTypes = const [],
+    this.previewImageUrl,
   });
 
   final int? id;
+  /// Mesaj detayı için GET /api/messages/view/{viewToken}
+  final String? viewToken;
   final DateTime? scheduledAt;
   final DateTime? sentAt;
   final String? status;
+  final String? contentPreview;
+  /// İçerik türleri: TEXT, IMAGE, VIDEO, FILE, AUDIO (backend yoksa boş liste)
+  final List<String> contentTypes;
+  /// Liste önizlemesi için ilk fotoğraf URL'i (varsa)
+  final String? previewImageUrl;
 
   static DateTime? _parseDate(dynamic v) {
     if (v == null) return null;
     if (v is String) return DateTime.tryParse(v);
-    if (v is num) return DateTime.fromMillisecondsSinceEpoch(v.toInt());
+    if (v is num) {
+      final n = v.toInt();
+      // Backend saniye cinsinden Unix timestamp gönderebilir (10 haneli); milisaniye 13 haneli
+      if (n > 0 && n < 10000000000) return DateTime.fromMillisecondsSinceEpoch(n * 1000);
+      return DateTime.fromMillisecondsSinceEpoch(n);
+    }
     return null;
+  }
+
+  static List<String> _parseContentTypes(dynamic v) {
+    if (v == null) return [];
+    if (v is List) return v.map((e) => e?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+    return [];
   }
 
   static DeliveredMessageItem? fromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
     return DeliveredMessageItem(
       id: (json['id'] as num?)?.toInt(),
+      viewToken: json['viewToken'] as String?,
       scheduledAt: _parseDate(json['scheduledAt']),
       sentAt: _parseDate(json['sentAt']),
       status: json['status'] as String?,
+      contentPreview: json['content'] as String?,
+      contentTypes: _parseContentTypes(json['contentTypes']),
+      previewImageUrl: json['previewImageUrl'] as String?,
     );
   }
 }

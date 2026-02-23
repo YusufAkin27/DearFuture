@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
@@ -221,19 +222,42 @@ class _NewMessagePageState extends State<NewMessagePage> {
   }
 
   Future<bool> _requestStoragePermission() async {
-    final perm = await Permission.storage.status;
-    if (perm.isGranted) return true;
-    if (perm.isPermanentlyDenied) {
+    // Android 13+ (API 33+): storage is deprecated; request granular media permissions.
+    final needStorage = await Permission.storage.status;
+    final needPhotos = await Permission.photos.status;
+    final needVideos = await Permission.videos.status;
+    final needAudio = await Permission.audio.status;
+
+    if (needStorage.isGranted && needPhotos.isGranted && needVideos.isGranted && needAudio.isGranted) return true;
+
+    if (needStorage.isPermanentlyDenied && needPhotos.isPermanentlyDenied) {
       if (mounted) _showSnack('Dosya erişimi reddedildi. Ayarlardan izin verin.');
       return false;
     }
-    final status = await Permission.storage.request();
-    if (status.isGranted) return true;
-    if (status.isPermanentlyDenied && mounted) {
-      _showSnack('Dosya izni için ayarlara gidin.');
+
+    // Request in order: storage (legacy), then media types
+    if (!needStorage.isGranted) {
+      final status = await Permission.storage.request();
+      if (status.isPermanentlyDenied && mounted) {
+        _showSnack('Dosya izni için ayarlara gidin.');
+        await openAppSettings();
+        return false;
+      }
+    }
+    if (!needPhotos.isGranted) await Permission.photos.request();
+    if (!needVideos.isGranted) await Permission.videos.request();
+    if (!needAudio.isGranted) await Permission.audio.request();
+
+    // After requesting, check if we have at least storage or photos (for file picker / docs)
+    final storageOk = await Permission.storage.isGranted;
+    final photosOk = await Permission.photos.isGranted;
+    final videosOk = await Permission.videos.isGranted;
+    final audioOk = await Permission.audio.isGranted;
+    if (storageOk || photosOk || videosOk || audioOk) return true;
+
+    if (mounted) {
+      _showSnack('Dosya erişimi için izin gerekli. Ayarlardan depolama/medya izni verin.');
       await openAppSettings();
-    } else if (mounted) {
-      _showSnack('Dosya erişimi için izin gerekli.');
     }
     return false;
   }
@@ -263,7 +287,13 @@ class _NewMessagePageState extends State<NewMessagePage> {
     final picker = ImagePicker();
     final xFile = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1920, imageQuality: 85);
     if (xFile == null) return;
-    final bytes = await xFile.readAsBytes();
+    List<int> bytes;
+    try {
+      bytes = await xFile.readAsBytes();
+    } catch (e) {
+      if (mounted) _showSnack('Fotoğraf okunamadı. Lütfen tekrar seçin.');
+      return;
+    }
     if (_maxPhotoSizeBytes > 0 && bytes.length > _maxPhotoSizeBytes) {
       if (mounted) _showSnack('Fotoğraf en fazla ${_formatSize(_maxPhotoSizeBytes)} olabilir.');
       return;
@@ -293,15 +323,30 @@ class _NewMessagePageState extends State<NewMessagePage> {
   Future<void> _pickAndUploadFile() async {
     if (_files.length >= _maxFiles || _messageService == null) return;
     if (!await _requestStoragePermission()) return;
+    // withData: true ile dosya belleğe alınır; path/content URI sorunları ve arka plana geçince silinme riski olmaz.
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
       allowMultiple: false,
+      withData: true,
     );
     if (result == null || result.files.isEmpty) return;
     final picked = result.files.first;
-    if (picked.path == null) return;
-    final file = File(picked.path!);
-    final bytes = await file.readAsBytes();
+
+    List<int> bytes;
+    if (picked.bytes != null && picked.bytes!.isNotEmpty) {
+      bytes = picked.bytes!;
+    } else if (picked.path != null) {
+      try {
+        bytes = await File(picked.path!).readAsBytes();
+      } catch (e) {
+        if (mounted) _showSnack('Dosya okunamadı. Lütfen tekrar seçin.');
+        return;
+      }
+    } else {
+      if (mounted) _showSnack('Dosya seçilemedi.');
+      return;
+    }
+
     if (_maxFileSizeBytes > 0 && bytes.length > _maxFileSizeBytes) {
       if (mounted) _showSnack('Dosya en fazla ${_formatSize(_maxFileSizeBytes)} olabilir.');
       return;
@@ -569,7 +614,8 @@ class _NewMessagePageState extends State<NewMessagePage> {
   }
 
   String _formatDateTime(DateTime d) {
-    return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}  ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    // Türkiye: gg.AA.yyyy, 24 saat
+    return DateFormat('dd.MM.yyyy HH:mm', 'tr_TR').format(d);
   }
 
   // ─── BUILD ───

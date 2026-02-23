@@ -5,6 +5,9 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/login_theme.dart';
+import 'account_danger_zone_page.dart';
+import 'contact_page.dart';
+import 'delivered_messages_list_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
@@ -25,7 +28,6 @@ class _SettingsPageState extends State<SettingsPage> {
   ApiClient? _apiClient;
   ProfileService? _profileService;
   ProfileData? _profile;
-  List<DeliveredMessageItem> _deliveredMessages = [];
   bool _loading = true;
   String? _error;
 
@@ -35,22 +37,10 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _savingGeneral = false;
   bool _savingNotifications = false;
 
-  final _freezeController = TextEditingController();
-  final _deleteController = TextEditingController();
-  static const _freezeConfirm = 'DONDUR';
-  static const _deleteConfirm = 'SİL';
-
   @override
   void initState() {
     super.initState();
     _initAndLoad();
-  }
-
-  @override
-  void dispose() {
-    _freezeController.dispose();
-    _deleteController.dispose();
-    super.dispose();
   }
 
   Future<void> _initAndLoad() async {
@@ -71,15 +61,12 @@ class _SettingsPageState extends State<SettingsPage> {
     });
     try {
       ProfileData? profile;
-      List<DeliveredMessageItem> messages = [];
       if (_profileService != null) {
         profile = await _profileService!.getProfile();
-        messages = await _profileService!.getDeliveredMessages();
       }
       if (!mounted) return;
       setState(() {
         _profile = profile;
-        _deliveredMessages = messages;
         _locale = profile?.locale ?? 'tr';
         _emailNotifications = profile?.emailNotifications ?? true;
         _marketingEmails = profile?.marketingEmails ?? false;
@@ -138,62 +125,6 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _deactivateAccount() async {
-    if (_freezeController.text.trim().toUpperCase() != _freezeConfirm) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Onaylamak için DONDUR yazın.'), backgroundColor: Colors.red),
-      );
-      return;
-    }
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: LoginColors.surface,
-        title: Text('Hesabı dondur', style: TextStyle(color: LoginColors.textWhite)),
-        content: Text(
-          'Hesabınız devre dışı bırakılacak. Giriş yapamazsınız. Yeniden açmak için destek ile iletişime geçmeniz gerekir. Devam etmek istiyor musunuz?',
-          style: TextStyle(color: LoginColors.textLightGray),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text('İptal', style: TextStyle(color: LoginColors.textLightGray))),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text('Dondur', style: TextStyle(color: Colors.orange))),
-        ],
-      ),
-    );
-    if (confirm != true || _profileService == null) return;
-    final ok = await _profileService!.deactivateAccount();
-    if (!mounted) return;
-    if (ok) widget.onLogout?.call();
-  }
-
-  Future<void> _deleteAccount() async {
-    if (_deleteController.text.trim().toUpperCase() != _deleteConfirm) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kalıcı silmek için SİL yazın.'), backgroundColor: Colors.red),
-      );
-      return;
-    }
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: LoginColors.surface,
-        title: Text('Hesabı kalıcı sil', style: TextStyle(color: LoginColors.textWhite)),
-        content: Text(
-          'Tüm verileriniz kalıcı olarak silinecek. Bu işlem geri alınamaz. Emin misiniz?',
-          style: TextStyle(color: LoginColors.textLightGray),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text('İptal', style: TextStyle(color: LoginColors.textLightGray))),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text('Sil', style: TextStyle(color: Colors.red))),
-        ],
-      ),
-    );
-    if (confirm != true || _profileService == null) return;
-    final ok = await _profileService!.deleteAccount();
-    if (!mounted) return;
-    if (ok) widget.onLogout?.call();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,9 +168,11 @@ class _SettingsPageState extends State<SettingsPage> {
                               value: _locale,
                               dropdownColor: LoginColors.surface,
                               underline: const SizedBox(),
+                              icon: Icon(Icons.arrow_drop_down_rounded, color: LoginColors.textWhite),
+                              style: const TextStyle(color: LoginColors.textWhite, fontSize: 15),
                               items: const [
-                                DropdownMenuItem(value: 'tr', child: Text('Türkçe')),
-                                DropdownMenuItem(value: 'en', child: Text('English')),
+                                DropdownMenuItem(value: 'tr', child: Text('Türkçe', style: TextStyle(color: LoginColors.textWhite))),
+                                DropdownMenuItem(value: 'en', child: Text('English', style: TextStyle(color: LoginColors.textWhite))),
                               ],
                               onChanged: (v) => setState(() => _locale = v ?? 'tr'),
                             ),
@@ -250,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           width: double.infinity,
                           child: FilledButton(
                             onPressed: _savingGeneral ? null : _saveGeneral,
-                            style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.black87),
+                            style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.white),
                             child: _savingGeneral ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Kaydet'),
                           ),
                         ),
@@ -276,7 +209,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           width: double.infinity,
                           child: FilledButton(
                             onPressed: _savingNotifications ? null : _saveNotifications,
-                            style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.black87),
+                            style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.white),
                             child: _savingNotifications ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Kaydet'),
                           ),
                         ),
@@ -292,82 +225,97 @@ class _SettingsPageState extends State<SettingsPage> {
                       ]),
                       const SizedBox(height: 20),
                       _section('İletilen mesajlar', [
-                        if (_deliveredMessages.isEmpty)
-                          Text('Henüz iletilen mesaj yok.', style: TextStyle(color: LoginColors.textMuted, fontSize: 14))
-                        else
-                          ..._deliveredMessages.take(10).map((m) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.send_rounded, size: 18, color: LoginColors.primaryEnd),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Mesaj #${m.id ?? '?'} – ${_formatDate(m.sentAt ?? m.scheduledAt)}',
-                                        style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
-                                      ),
-                                    ),
-                                  ],
+                        Text(
+                          'Size iletilen mesajlarınızı görüntüleyin ve içeriklerini okuyun.',
+                          style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (context) => const DeliveredMessagesListPage(),
                                 ),
-                              )),
-                        if (_deliveredMessages.length > 10)
-                          Text('+ ${_deliveredMessages.length - 10} mesaj daha', style: TextStyle(color: LoginColors.textMuted, fontSize: 12)),
-                      ]),
-                      const SizedBox(height: 20),
-                      _section('Hesabı dondur', [
-                        Text(
-                          'Hesabınız devre dışı bırakılır, giriş yapamazsınız. Verileriniz silinmez. Yeniden açmak için destek ile iletişime geçin.',
-                          style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
-                        ),
-                        const SizedBox(height: 8),
-                        Text('Onaylamak için DONDUR yazın', style: TextStyle(color: LoginColors.textMuted, fontSize: 12)),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _freezeController,
-                          decoration: InputDecoration(
-                            hintText: _freezeConfirm,
-                            filled: true,
-                            fillColor: LoginColors.surface,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.orange.shade700)),
-                          ),
-                          style: TextStyle(color: LoginColors.textWhite),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: _deactivateAccount,
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.orange, side: BorderSide(color: Colors.orange)),
-                            child: const Text('Hesabı dondur'),
+                              );
+                            },
+                            icon: const Icon(Icons.inbox_rounded, size: 20),
+                            label: const Text('İletilen mesajlarımı görüntüle'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: LoginColors.primaryEnd,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
                           ),
                         ),
                       ]),
                       const SizedBox(height: 20),
-                      _section('Hesap silme', [
+                      _section('İletişim', [
                         Text(
-                          'Tüm verileriniz kalıcı olarak silinir. Bu işlem geri alınamaz.',
+                          'Sorularınız veya önerileriniz için bizimle iletişime geçebilirsiniz.',
                           style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
-                        ),
-                        const SizedBox(height: 8),
-                        Text('Kalıcı silmek için SİL yazın', style: TextStyle(color: LoginColors.textMuted, fontSize: 12)),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _deleteController,
-                          decoration: InputDecoration(
-                            hintText: _deleteConfirm,
-                            filled: true,
-                            fillColor: LoginColors.surface,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.red)),
-                          ),
-                          style: TextStyle(color: LoginColors.textWhite),
                         ),
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
-                          child: FilledButton(
-                            onPressed: _deleteAccount,
-                            style: FilledButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-                            child: const Text('Hesabı kalıcı sil'),
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (context) => const ContactPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.mail_outline_rounded, size: 20),
+                            label: const Text('Bizimle iletişime geçin'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: LoginColors.primaryEnd,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+                      _section('Hesap güvenliği', [
+                        Text(
+                          'Hesabınızı dondurmak veya kalıcı olarak silmek isterseniz aşağıdaki bağlantıdan ilerleyebilirsiniz.',
+                          style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
+                        ),
+                        const SizedBox(height: 12),
+                        Material(
+                          color: LoginColors.background,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (context) => AccountDangerZonePage(onLogout: widget.onLogout),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: LoginColors.border),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.warning_amber_rounded, size: 22, color: Colors.orange.shade700),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Hesap dondurma ve silme',
+                                      style: TextStyle(fontSize: 14, color: LoginColors.textWhite),
+                                    ),
+                                  ),
+                                  Icon(Icons.chevron_right_rounded, size: 22, color: LoginColors.textMuted),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ]),

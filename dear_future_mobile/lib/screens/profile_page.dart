@@ -453,7 +453,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(width: 12),
                 FilledButton(
                   onPressed: _savePersonalInfo,
-                  style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.black87),
+                  style: FilledButton.styleFrom(backgroundColor: LoginColors.primaryEnd, foregroundColor: Colors.white),
                   child: const Text('Kaydet'),
                 ),
               ],

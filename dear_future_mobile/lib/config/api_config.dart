@@ -18,6 +18,7 @@ class ApiConfig {
   static const String userAccountDeactivate = '/api/user/account/deactivate';
 
   static const String messagesDelivered = '/api/messages';
+  static String messageById(int id) => '/api/messages/$id';
   static const String messagesPublic = '/api/messages/public';
   static const String messagesPublicStarred = '/api/messages/public/starred';
   static String messageViewByToken(String token) => '/api/messages/view/$token';
@@ -32,4 +33,7 @@ class ApiConfig {
   static const String messagesSchedule = '/api/messages/schedule';
   static const String messagesUpload = '/api/messages/upload';
   static const String messagesPending = '/api/messages/pending';
+
+  static const String contactSend = '/api/contact/send';
+  static const String contactVerifyEmail = '/api/contact/verify-email';
 }
