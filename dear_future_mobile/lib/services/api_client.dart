@@ -8,10 +8,19 @@ import '../config/api_config.dart';
 
 /// Backend REST API istemcisi. Base URL: https://api.dearfuture.info
 class ApiClient {
-  ApiClient({String? token}) : _token = token;
+  ApiClient({String? token, this.onUnauthorized}) : _token = token;
 
   String? _token;
+  /// 401 alındığında (oturum geçersiz) çağrılır; login sayfasına yönlendirmek için kullanılır.
+  final void Function()? onUnauthorized;
+
   String get baseUrl => ApiConfig.baseUrl;
+
+  /// Upload istekleri gibi harici kullanım için auth header'ı döner.
+  Map<String, String>? get authHeaders {
+    if (_token == null || _token!.isEmpty) return null;
+    return {'Authorization': 'Bearer $_token', 'Accept': 'application/json'};
+  }
 
   void setToken(String? token) {
     _token = token;
@@ -29,41 +38,51 @@ class ApiClient {
   }
 
   Future<http.Response> get(String path) async {
-    return http.get(
+    final res = await http.get(
       Uri.parse('$baseUrl$path'),
       headers: _headers,
     );
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   Future<http.Response> post(String path, {Map<String, dynamic>? body}) async {
-    return http.post(
+    final res = await http.post(
       Uri.parse('$baseUrl$path'),
       headers: _headers,
       body: body != null ? jsonEncode(body) : null,
     );
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   Future<http.Response> put(String path, {Map<String, dynamic>? body}) async {
-    return http.put(
+    final res = await http.put(
       Uri.parse('$baseUrl$path'),
       headers: _headers,
       body: body != null ? jsonEncode(body) : null,
     );
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   Future<http.Response> delete(String path) async {
-    return http.delete(
+    final res = await http.delete(
       Uri.parse('$baseUrl$path'),
       headers: _headers,
     );
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   Future<http.Response> patch(String path, {Map<String, dynamic>? body}) async {
-    return http.patch(
+    final res = await http.patch(
       Uri.parse('$baseUrl$path'),
       headers: _headers,
       body: body != null ? jsonEncode(body) : null,
     );
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   /// Multipart POST for profile photo upload. [file] is the local image file.
@@ -75,7 +94,9 @@ class ApiClient {
     }
     request.headers['Accept'] = 'application/json';
     request.files.add(await http.MultipartFile.fromPath(fieldName, file.path));
-    return request.send();
+    final res = await request.send();
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 
   /// Multipart POST with bytes (Android content URI vb. için güvenli).
@@ -102,6 +123,8 @@ class ApiClient {
       filename: filename,
       contentType: type,
     ));
-    return request.send();
+    final res = await request.send();
+    if (res.statusCode == 401 && _token != null) onUnauthorized?.call();
+    return res;
   }
 }

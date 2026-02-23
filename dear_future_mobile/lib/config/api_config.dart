@@ -27,4 +27,9 @@ class ApiConfig {
   static String subscriptionPlanByCode(String code) => '/api/subscription/plans/$code';
   static const String subscriptionCheckoutInitialize = '/api/subscription/checkout/initialize';
   static const String subscriptionCancel = '/api/subscription/cancel';
+
+  static const String messagesCreate = '/api/messages';
+  static const String messagesSchedule = '/api/messages/schedule';
+  static const String messagesUpload = '/api/messages/upload';
+  static const String messagesPending = '/api/messages/pending';
 }

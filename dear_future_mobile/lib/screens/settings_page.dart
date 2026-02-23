@@ -58,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!mounted) return;
     final token = _auth.token;
     if (token != null && token.isNotEmpty) {
-      _apiClient = ApiClient(token: token);
+      _apiClient = ApiClient(token: token, onUnauthorized: widget.onLogout);
       _profileService = ProfileService(_apiClient!);
     }
     await _loadData();

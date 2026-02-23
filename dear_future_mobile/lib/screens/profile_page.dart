@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
       return;
     }
     setState(() {
-      _apiClient = ApiClient(token: token);
+      _apiClient = ApiClient(token: token, onUnauthorized: widget.onLogout);
       _profileService = ProfileService(_apiClient!);
     });
     await _loadData();

@@ -8,7 +8,9 @@ import '../theme/login_theme.dart';
 import 'public_message_detail_page.dart';
 
 class PublicMessagesPage extends StatefulWidget {
-  const PublicMessagesPage({super.key});
+  const PublicMessagesPage({super.key, this.onLogout});
+
+  final VoidCallback? onLogout;
 
   @override
   State<PublicMessagesPage> createState() => _PublicMessagesPageState();
@@ -34,7 +36,7 @@ class _PublicMessagesPageState extends State<PublicMessagesPage> {
   Future<void> _initAndLoad() async {
     await _auth.loadStoredToken();
     if (!mounted) return;
-    _service = PublicMessageService(ApiClient(token: _auth.token));
+    _service = PublicMessageService(ApiClient(token: _auth.token, onUnauthorized: widget.onLogout));
     await _loadPage(0);
   }
 
@@ -85,7 +87,11 @@ class _PublicMessagesPageState extends State<PublicMessagesPage> {
     if (token == null || token.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => PublicMessageDetailPage(viewToken: token),
+        builder: (context) => PublicMessageDetailPage(
+          viewToken: token,
+          messageId: item.id,
+          initialStarred: item.starredByMe,
+        ),
       ),
     );
   }

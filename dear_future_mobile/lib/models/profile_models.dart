@@ -11,6 +11,14 @@ class ProfileData {
     this.subscriptionPlanName,
     this.subscriptionEndsAt,
     this.maxMessagesPerPlan = 3,
+    this.maxRecipientsPerMessage = 1,
+    this.maxPhotosPerMessage = 0,
+    this.maxPhotoSizeBytes = 0,
+    this.maxFilesPerMessage = 0,
+    this.maxFileSizeBytes = 0,
+    this.allowVoice = false,
+    this.maxAudioPerMessage = 0,
+    this.maxAudioSizeBytes = 0,
     this.locale = 'tr',
     this.emailNotifications = true,
     this.marketingEmails = false,
@@ -26,6 +34,14 @@ class ProfileData {
   final String? subscriptionPlanName;
   final DateTime? subscriptionEndsAt;
   final int maxMessagesPerPlan;
+  final int maxRecipientsPerMessage;
+  final int maxPhotosPerMessage;
+  final int maxPhotoSizeBytes;
+  final int maxFilesPerMessage;
+  final int maxFileSizeBytes;
+  final bool allowVoice;
+  final int maxAudioPerMessage;
+  final int maxAudioSizeBytes;
   final String locale;
   final bool emailNotifications;
   final bool marketingEmails;
@@ -62,6 +78,14 @@ class ProfileData {
       subscriptionPlanName: json['subscriptionPlanName'] as String? ?? 'Ücretsiz',
       subscriptionEndsAt: subscriptionEndsAt,
       maxMessagesPerPlan: (json['maxMessagesPerPlan'] as num?)?.toInt() ?? 3,
+      maxRecipientsPerMessage: (json['maxRecipientsPerMessage'] as num?)?.toInt() ?? 1,
+      maxPhotosPerMessage: (json['maxPhotosPerMessage'] as num?)?.toInt() ?? 0,
+      maxPhotoSizeBytes: (json['maxPhotoSizeBytes'] as num?)?.toInt() ?? 0,
+      maxFilesPerMessage: (json['maxFilesPerMessage'] as num?)?.toInt() ?? 0,
+      maxFileSizeBytes: (json['maxFileSizeBytes'] as num?)?.toInt() ?? 0,
+      allowVoice: json['allowVoice'] == true,
+      maxAudioPerMessage: (json['maxAudioPerMessage'] as num?)?.toInt() ?? 0,
+      maxAudioSizeBytes: (json['maxAudioSizeBytes'] as num?)?.toInt() ?? 0,
       locale: json['locale'] as String? ?? 'tr',
       emailNotifications: json['emailNotifications'] == true,
       marketingEmails: json['marketingEmails'] == true,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,9 +26,38 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
 
   bool _loading = false;
   String? _error;
+  int _resendRemainingSeconds = 180;
+  Timer? _resendTimer;
+
+  bool get _resendCooldownActive => _resendRemainingSeconds > 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startResendCooldown();
+  }
+
+  void _startResendCooldown() {
+    _resendTimer?.cancel();
+    setState(() => _resendRemainingSeconds = 180);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _resendRemainingSeconds--;
+        if (_resendRemainingSeconds <= 0) {
+          _resendRemainingSeconds = 0;
+          timer.cancel();
+        }
+      });
+    });
+  }
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     _codeController.dispose();
     super.dispose();
   }
@@ -58,6 +89,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
   }
 
   Future<void> _resendCode() async {
+    if (_resendCooldownActive) return;
     setState(() {
       _error = null;
       _loading = true;
@@ -65,10 +97,8 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
     try {
       await _authService.sendCode(widget.email);
       if (mounted) {
-        setState(() {
-          _loading = false;
-          _error = null;
-        });
+        setState(() => _loading = false);
+        _startResendCooldown();
       }
     } catch (e) {
       if (mounted) {
@@ -78,6 +108,12 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
         });
       }
     }
+  }
+
+  String get _resendTimeText {
+    final m = _resendRemainingSeconds ~/ 60;
+    final s = _resendRemainingSeconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -167,12 +203,28 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                     icon: Icons.check_rounded,
                   ),
                   const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: _loading ? null : _resendCode,
-                    child: Text(
-                      'Kodu tekrar gönder',
-                      style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: (_loading || _resendCooldownActive) ? null : _resendCode,
+                        child: Text(
+                          'Kodu tekrar gönder',
+                          style: TextStyle(color: LoginColors.textLightGray, fontSize: 14),
+                        ),
+                      ),
+                      if (_resendCooldownActive) ...[
+                        const SizedBox(width: 4),
+                        Text(
+                          '(${_resendTimeText})',
+                          style: TextStyle(
+                            color: LoginColors.textMuted,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
@@ -188,29 +240,11 @@ class _VerifyLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [LoginColors.primaryStart, LoginColors.primaryEnd],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: LoginColors.primaryStart.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.arrow_forward_rounded,
-          size: 40,
-          color: Colors.white,
-        ),
+      child: Image.asset(
+        'assets/images/logo.png',
+        width: 88,
+        height: 88,
+        fit: BoxFit.contain,
       ),
     );
   }
@@ -234,7 +268,7 @@ class _CodeInputDark extends StatefulWidget {
 class _CodeInputDarkState extends State<_CodeInputDark> {
   static const int _length = 6;
   static const double _boxSize = 48;
-  static const double _gap = 10;
+  static const double _gap = 16;
 
   @override
   void initState() {
@@ -287,7 +321,7 @@ class _CodeInputDarkState extends State<_CodeInputDark> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: List.generate(_length, (index) {
                   final isActive = index == text.length;
                   return Container(

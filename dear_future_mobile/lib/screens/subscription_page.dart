@@ -11,7 +11,9 @@ import '../theme/login_theme.dart';
 import 'subscription_detail_page.dart';
 
 class SubscriptionPage extends StatefulWidget {
-  const SubscriptionPage({super.key});
+  const SubscriptionPage({super.key, this.onLogout});
+
+  final VoidCallback? onLogout;
 
   @override
   State<SubscriptionPage> createState() => _SubscriptionPageState();
@@ -41,7 +43,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     if (!mounted) return;
     final token = _auth.token;
     if (token != null && token.isNotEmpty) {
-      _apiClient = ApiClient(token: token);
+      _apiClient = ApiClient(token: token, onUnauthorized: widget.onLogout);
       _profileService = ProfileService(_apiClient!);
       _authSubscriptionService = SubscriptionService(_apiClient!);
     }

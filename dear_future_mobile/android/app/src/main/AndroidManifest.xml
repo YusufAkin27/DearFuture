@@ -1,4 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Mikrofon (ses kaydı) - tüm API seviyeleri -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Medya erişimi: Android 13 (API 33) ve üzeri -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- Depolama: Android 12 (API 32) ve altı -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <application
         android:label="dear_future_mobile"
         android:name="${applicationName}"
