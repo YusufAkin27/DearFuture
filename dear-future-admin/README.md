@@ -1,39 +1,41 @@
-# Dear Future – Admin Panel
+# Dear Future — Admin Panel
 
-Admin web paneli. Backend: **https://api.dearfuture.info**
+Dear Future platformu için yönetim paneli. React ve Vite ile geliştirilmiştir.
 
-## Giriş
+## Gereksinimler
 
-- Admin hesabı: **ysufakn63@gmail.com** (backend ilk açılışta bu e-posta ile admin oluşturur).
-- Giriş: E-posta + doğrulama kodu (ana sitedeki gibi: kodu e-posta ile alıp girin).
+- Node.js 18+
+- npm veya yarn
 
-## Geliştirme
+## Kurulum
 
 ```bash
 npm install
+```
+
+## Geliştirme Sunucusu
+
+```bash
 npm run dev
 ```
 
-Tarayıcıda `http://localhost:5173` açılır. Giriş sonrası dashboard görünür.
+Tarayıcıda Vite’ın gösterdiği adrese (genelde `http://localhost:5173`) gidin.
 
-## Production build
-
-API adresini vererek build alın:
+## Build
 
 ```bash
-VITE_API_URL=https://api.dearfuture.info npm run build
+npm run build
 ```
 
-Çıktı: `dist/`. Bu klasörü `admin.dearfuture.info` veya `dearfuture.com.tr/admin` gibi bir adreste statik olarak sunun. API istekleri `VITE_API_URL` ile yapılır.
+Üretim çıktısı `dist` klasörüne alınır.
 
-## Backend (AdminInitializer)
+## Önizleme (Production Build)
 
-Backend ilk çalıştığında `AdminInitializer`:
+```bash
+npm run build
+npm run preview
+```
 
-- E-posta **ysufakn63@gmail.com** ile kullanıcı yoksa oluşturur (ADMIN + USER rolü).
-- Varsa bu kullanıcıya ADMIN rolü ekler.
+---
 
-Farklı admin e-posta kullanmak için:
-
-- Ortam değişkeni: `APP_ADMIN_EMAIL=admin@example.com`
-- veya JVM: `-Dapp.admin-email=admin@example.com`
+Canlı uygulama: [dearfuture.com.tr](https://dearfuture.com.tr)

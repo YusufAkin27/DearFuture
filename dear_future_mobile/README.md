@@ -1,58 +1,38 @@
-# Dear Future – Mobil Uygulama
+# Dear Future — Mobil Uygulama
 
-Flutter ile yazılmış Dear Future mobil uygulaması. Backend: **https://api.dearfuture.info**
+Dear Future platformunun Android (ve isteğe bağlı iOS) mobil uygulaması. Flutter ile geliştirilmiştir.
 
-## Özellikler
+## Gereksinimler
 
-- **Hoşgeldin ekranı** – Başla ile giriş sayfasına geçiş
-- **Giriş sayfası**
-  - E-posta ile doğrulama kodu (kod e-posta ile gönderilir, doğrula ile JWT alınır)
-  - Google ile giriş (Google ID token backend’e gönderilir, JWT döner)
-- JWT token `SharedPreferences` ile saklanır; uygulama açıldığında oturum kontrol edilir
+- Flutter SDK (3.10+)
+- Android Studio / Xcode (platforma göre)
+- Bağlı cihaz veya emülatör
+
+## Kurulum
+
+```bash
+flutter pub get
+```
 
 ## Çalıştırma
 
 ```bash
-flutter pub get
+# Bağlı cihazda veya emülatörde çalıştır
 flutter run
 ```
 
-## API adresi
+## APK Oluşturma (Android)
 
-Tüm istekler `https://api.dearfuture.info` base URL’i üzerinden yapılır. Adres `lib/config/api_config.dart` içinde tanımlıdır.
+```bash
+flutter build apk
+```
 
-## Google ile giriş (Android / iOS)
+APK dosyası `build/app/outputs/flutter-apk/app-release.apk` konumunda oluşur.
 
-Bu projede kullanılan değerler (`lib/config/google_auth_config.dart`):
+## Canlı Sürüm ve APK İndirme
 
-- **Client ID:** `75778679149-temd0gqflf9plbgtb507q0ou04nk2mnf.apps.googleusercontent.com`
-- **SHA-1:** `BB:A7:8C:22:38:AF:51:EA:9C:BE:BA:21:0D:74:C6:89:87:EC:F1:6C`
+Uygulama [dearfuture.com.tr](https://dearfuture.com.tr) adresinde yayındadır. Siteden **Android APK dosyasını indirerek** cihazınıza kurabilirsiniz.
 
-**Önemli:** `{"installed":{"client_id":"75778679149-...", "project_id":"dearfuture-487110", ...}}` şeklinde indirdiğiniz JSON **Desktop/Diğer** tipi client’a aittir. Android’de girişin çalışması için Console’da **Android** tipinde ayrı bir OAuth client oluşturup package name ve SHA-1 eklemeniz gerekir (Android için JSON indirilmez).
+---
 
-### Android – OAuth client kurulumu
-
-1. [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services** → **Credentials**.
-2. **+ CREATE CREDENTIALS** → **OAuth client ID**.
-3. Application type: **Android**.
-4. Name: örn. "Dear Future Android".
-5. Package name: `info.dearfuture.dear_future_mobile`.
-6. **SHA-1 certificate fingerprint:** Yukarıdaki SHA-1 değerini yapıştırın:  
-   `BB:A7:8C:22:38:AF:51:EA:9C:BE:BA:21:0D:74:C6:89:87:EC:F1:6C`
-7. **Create** ile kaydedin. Oluşan Client ID’yi kullanıyorsanız (`75778679149-temd0gqflf9plbgtb507q0ou04nk2mnf...`) uygulama bu değerle çalışır.
-
-Farklı bir keystore (release) kullanıyorsanız o keystore’un SHA-1’ini de aynı Android OAuth client’a ekleyin.
-
-### iOS
-
-- OAuth 2.0 Client ID (iOS) oluşturup bundle ID’yi ekleyin.
-
-### Genel
-
-- Backend’deki `POST /api/auth/google` endpoint’i, Google’dan gelen ID token’ı doğrular ve JWT döndürür.
-
-## Backend auth endpoint’leri
-
-- `POST /api/auth/send-code` – `{ "email": "..." }`
-- `POST /api/auth/verify` – `{ "email": "...", "code": "..." }` → `{ "token": "..." }`
-- `POST /api/auth/google` – `{ "idToken": "..." }` → `{ "token": "..." }`
+Canlı uygulama: [dearfuture.com.tr](https://dearfuture.com.tr)
