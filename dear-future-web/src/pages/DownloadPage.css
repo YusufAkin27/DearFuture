@@ -1,0 +1,172 @@
+/* Android APK İndirme sayfası – tema uyumlu */
+.download-container {
+  width: 100%;
+  padding: 4.5rem 1.5rem 4rem;
+  background: radial-gradient(circle at top, rgba(0, 168, 204, 0.06), transparent 55%),
+    radial-gradient(circle at bottom, rgba(20, 40, 80, 0.04), transparent 55%),
+    var(--background-color);
+  color: var(--text-main);
+}
+
+.download-inner {
+  margin: 0 auto;
+  max-width: 640px;
+}
+
+.download-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.download-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  background: rgba(0, 168, 204, 0.08);
+  color: var(--primary-color);
+  margin-bottom: 1.25rem;
+}
+
+.download-hero h1 {
+  font-size: 2rem;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.download-hero p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.download-card {
+  background: var(--surface-color);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.download-card-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  background: rgba(0, 168, 204, 0.1);
+  border-radius: 20px;
+}
+
+.download-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.download-card-desc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: var(--radius-button, 12px);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 168, 204, 0.35);
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 168, 204, 0.4);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+.download-hint {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.download-info {
+  background: var(--surface-color);
+  padding: 1.75rem 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.download-info h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+.download-info ol {
+  margin: 0;
+  padding-left: 1.35rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.download-info li {
+  margin-bottom: 0.5rem;
+}
+
+.download-info code {
+  font-size: 0.9em;
+  padding: 0.15rem 0.4rem;
+  background: rgba(0, 168, 204, 0.1);
+  border-radius: 4px;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .download-container {
+    padding: 3.5rem 1.25rem 3rem;
+  }
+
+  .download-hero h1 {
+    font-size: 1.65rem;
+  }
+
+  .download-card {
+    padding: 2rem 1.5rem;
+  }
+}

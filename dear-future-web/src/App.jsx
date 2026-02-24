@@ -19,6 +19,7 @@ import AboutPage from './pages/AboutPage';
 import TeamMemberPage from './pages/TeamMemberPage';
 import SSSPage from './pages/SSSPage';
 import ContactPage from './pages/ContactPage';
+import DownloadPage from './pages/DownloadPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SecurityPage from './pages/SecurityPage';
@@ -46,6 +47,7 @@ const PAGE_TITLES = {
   '/about/team': `Kurucu Orta\u011f\u0131 | ${BASE_TITLE}`,
   '/sss': `S\u0131k\u00e7a Sorulan Sorular | ${BASE_TITLE}`,
   '/contact': `\u0130leti\u015fim | ${BASE_TITLE}`,
+  '/download': `Android \u0130ndir | ${BASE_TITLE}`,
   '/privacy': `Gizlilik | ${BASE_TITLE}`,
   '/terms': `Kullan\u0131m Ko\u015fullar\u0131 | ${BASE_TITLE}`,
   '/cookie-policy': `\u00c7erez Politikas\u0131 | ${BASE_TITLE}`,
@@ -89,6 +91,7 @@ const Layout = () => {
               {location.pathname.startsWith('/about/team') && 'Kurucu Orta\u011f\u0131'}
               {location.pathname === '/sss' && 'S\u0131k\u00e7a Sorulan Sorular'}
               {location.pathname === '/contact' && '\u0130leti\u015fim'}
+              {location.pathname === '/download' && 'Android \u0130ndir'}
               {location.pathname === '/login' && 'Giri\u015f'}
               {location.pathname === '/verify' && 'Do\u011frulama'}
               {location.pathname.startsWith('/public-messages') && 'Herkese A\u00e7\u0131k Mesajlar'}
@@ -103,7 +106,7 @@ const Layout = () => {
               {location.pathname.startsWith('/message/view') && 'Mesaj'}
               {location.pathname.startsWith('/pricing/plan') && 'Plan'}
               {location.pathname === '/' && 'Ana Sayfa'}
-              {!['/welcome', '/features', '/pricing', '/blog', '/about', '/sss', '/contact', '/login', '/verify', '/new', '/profile', '/settings', '/change-subscription', '/privacy', '/terms', '/cookie-policy', '/security', '/'].includes(location.pathname) && !location.pathname.startsWith('/public-messages') && !location.pathname.startsWith('/message/view') && !location.pathname.startsWith('/pricing/plan') && !location.pathname.startsWith('/about/team') && 'Men\u00fc'}
+              {!['/welcome', '/features', '/pricing', '/blog', '/about', '/sss', '/contact', '/download', '/login', '/verify', '/new', '/profile', '/settings', '/change-subscription', '/privacy', '/terms', '/cookie-policy', '/security', '/'].includes(location.pathname) && !location.pathname.startsWith('/public-messages') && !location.pathname.startsWith('/message/view') && !location.pathname.startsWith('/pricing/plan') && !location.pathname.startsWith('/about/team') && 'Men\u00fc'}
             </span>
           </header>
           <main className="app-main">
@@ -149,6 +152,7 @@ function App() {
           <Route path="/about/team/:slug" element={<TeamMemberPage />} />
           <Route path="/sss" element={<SSSPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/download" element={<DownloadPage />} />
 
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />

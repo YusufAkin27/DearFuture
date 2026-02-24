@@ -11,6 +11,7 @@ const SIDEBAR_PUBLIC = [
       { label: 'Özellikler', to: '/features' },
       { label: 'Blog', to: '/blog' },
       { label: 'Fiyatlandırma', to: '/pricing' },
+      { label: 'Android İndir', to: '/download' },
     ],
   },
   {
