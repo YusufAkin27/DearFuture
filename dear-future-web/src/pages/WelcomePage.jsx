@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaThLarge, FaEnvelope, FaLock, FaCalendarAlt } from 'react-icons/fa';
+import Aurora from '../components/Aurora';
 import './WelcomePage.css';
 
 const WelcomePage = () => {
@@ -17,6 +18,14 @@ const WelcomePage = () => {
 
     return (
         <div className="welcome-page" role="main" aria-label="Hoş geldiniz">
+            <div className="welcome-page__aurora" aria-hidden="true">
+                <Aurora
+                    colorStops={['#7cff67', '#B19EEF', '#5227FF']}
+                    blend={0.5}
+                    amplitude={1.0}
+                    speed={1}
+                />
+            </div>
             <div className="welcome-page__bg" aria-hidden="true" />
             <div className="welcome-container">
                 <div className="hero-content">

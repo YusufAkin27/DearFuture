@@ -13,6 +13,8 @@ import PricingPage from './pages/PricingPage';
 import PlanDetailPage from './pages/PlanDetailPage';
 import ChangeSubscriptionPage from './pages/ChangeSubscriptionPage';
 import SettingsPage from './pages/SettingsPage';
+import DeliveredMessagesPage from './pages/DeliveredMessagesPage';
+import AccountDangerPage from './pages/AccountDangerPage';
 import FeaturesPage from './pages/FeaturesPage';
 import BlogPage from './pages/BlogPage';
 import AboutPage from './pages/AboutPage';
@@ -34,6 +36,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const BASE_TITLE = 'Dear Future \u2013 Gelece\u011fe Mesaj Yaz';
+const BASE_URL = (import.meta.env.VITE_APP_URL || '').replace(/\/$/, '') || (typeof window !== 'undefined' ? window.location.origin : 'https://dearfuture.com.tr');
+
 const PAGE_TITLES = {
   '/': `${BASE_TITLE} | Ho\u015f Geldin`,
   '/welcome': `${BASE_TITLE} | Ho\u015f Geldin`,
@@ -57,9 +61,40 @@ const PAGE_TITLES = {
   '/profile': `Profil | ${BASE_TITLE}`,
   '/change-subscription': `Abonelik | ${BASE_TITLE}`,
   '/settings': `Ayarlar | ${BASE_TITLE}`,
+  '/settings/delivered-messages': `\u0130letilen Mesajlar | ${BASE_TITLE}`,
+  '/settings/account-danger': `Hesap Dondurma ve Silme | ${BASE_TITLE}`,
 };
 
-function DocumentTitle() {
+const DEFAULT_DESCRIPTION = 'Geleceğe mesaj yaz, zamanlanmış mektup bırak. Kendinize veya sevdiklerinize dijital zaman kapsülü oluşturun; metin, fotoğraf ve ses kaydı ile gelecekteki anı yaşatın.';
+
+const PAGE_DESCRIPTIONS = {
+  '/': DEFAULT_DESCRIPTION,
+  '/welcome': DEFAULT_DESCRIPTION,
+  '/login': 'Dear Future hesabınıza giriş yapın veya kayıt olun. Geleceğe mesaj yazmaya hemen başlayın.',
+  '/verify': 'E-posta veya telefon doğrulama sayfası.',
+  '/pricing': 'Dear Future fiyatlandırma planları. Ücretsiz ve premium seçeneklerle geleceğe mesaj yazın.',
+  '/pricing/plan': 'Plan detayları ve özellikler.',
+  '/features': 'Zaman kapsülü, zamanlanmış mesaj, fotoğraf ve video ile geleceğe mektup özellikleri.',
+  '/blog': 'Geleceğe mektup, dijital miras ve zaman kapsülü hakkında yazılar ve ipuçları.',
+  '/about': 'Dear Future hakkında: misyonumuz zamanı geleceğe taşımak.',
+  '/about/team': 'Dear Future kurucu ekibi.',
+  '/sss': 'Sıkça sorulan sorular: geleceğe mesaj, zaman kapsülü, güvenlik ve abonelik.',
+  '/contact': 'Dear Future iletişim: bize ulaşın, destek ve geri bildirim.',
+  '/download': 'Dear Future Android uygulamasını indirin. Geleceğe mesaj yazın.',
+  '/privacy': 'Dear Future gizlilik politikası ve kişisel verilerin korunması.',
+  '/terms': 'Dear Future kullanım koşulları.',
+  '/cookie-policy': 'Dear Future çerez politikası.',
+  '/security': 'Dear Future güvenlik: şifreleme ve veri koruma.',
+  '/public-messages': 'Herkese açık geleceğe mesajlar. Topluluk zaman kapsülleri.',
+  '/new': 'Yeni mesaj yaz: geleceğe mektup, fotoğraf veya ses ekleyin.',
+  '/profile': 'Profilinizi ve mesajlarınızı yönetin.',
+  '/change-subscription': 'Aboneliğinizi yönetin veya plan değiştirin.',
+  '/settings': 'Hesap ve uygulama ayarları.',
+  '/settings/delivered-messages': 'Teslim edilmiş mesajlarınızı görüntüleyin.',
+  '/settings/account-danger': 'Hesabı dondurma veya kalıcı silme işlemleri.',
+};
+
+function DocumentHead() {
   const location = useLocation();
   useEffect(() => {
     let path = location.pathname
@@ -67,7 +102,28 @@ function DocumentTitle() {
       .replace(/\/pricing\/plan\/[^/]+/, '/pricing/plan');
     if (path.startsWith('/about/team/')) path = '/about/team';
     const title = PAGE_TITLES[path] ?? (path.startsWith('/message/view') ? `Mesaj\u0131 G\u00f6r\u00fcnt\u00fcle | ${BASE_TITLE}` : BASE_TITLE);
+    const description = PAGE_DESCRIPTIONS[path] ?? (path.startsWith('/message/view') ? 'Zaman kapsülü mesajını görüntüleyin.' : DEFAULT_DESCRIPTION);
+    const origin = typeof window !== 'undefined' ? window.location.origin : BASE_URL;
+    const canonicalPath = path === '/' ? '' : path;
+    const canonical = `${origin}${canonicalPath || '/'}`.replace(/([^/])\/$/, '$1');
+
     document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', description);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', description);
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', title);
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', canonical);
+
+    let linkCanonical = document.querySelector('link[rel="canonical"]');
+    if (!linkCanonical) {
+      linkCanonical = document.createElement('link');
+      linkCanonical.rel = 'canonical';
+      document.head.appendChild(linkCanonical);
+    }
+    linkCanonical.href = canonical;
   }, [location.pathname]);
   return null;
 }
@@ -98,6 +154,8 @@ const Layout = () => {
               {location.pathname === '/new' && 'Yeni Mesaj'}
               {location.pathname === '/profile' && 'Profil'}
               {location.pathname === '/settings' && 'Ayarlar'}
+              {location.pathname === '/settings/delivered-messages' && '\u0130letilen Mesajlar'}
+              {location.pathname === '/settings/account-danger' && 'Hesap Dondurma ve Silme'}
               {location.pathname === '/change-subscription' && 'Abonelik'}
               {location.pathname === '/privacy' && 'Gizlilik'}
               {location.pathname === '/terms' && 'Kullan\u0131m \u015eartlar\u0131'}
@@ -132,7 +190,7 @@ function App() {
 
   return (
     <Router>
-      <DocumentTitle />
+      <DocumentHead />
       <CookieConsent />
       <Routes>
         <Route element={<Layout />}>
@@ -168,6 +226,8 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/change-subscription" element={<ChangeSubscriptionPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/settings/delivered-messages" element={<DeliveredMessagesPage />} />
+              <Route path="/settings/account-danger" element={<AccountDangerPage />} />
             </Route>
           </Route>
 

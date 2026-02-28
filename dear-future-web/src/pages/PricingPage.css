@@ -28,6 +28,85 @@
     line-height: 1.5;
 }
 
+/* Aylık / Yıllık seçici */
+.pricing-billing-toggle {
+    display: inline-flex;
+    align-items: stretch;
+    background: var(--surface-color);
+    border: 1px solid var(--border-subtle);
+    border-radius: 9999px;
+    padding: 4px;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.theme-dark .pricing-billing-toggle {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.pricing-toggle-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.2s, background 0.2s;
+}
+
+.pricing-toggle-btn:hover {
+    color: var(--text-main);
+}
+
+.pricing-toggle-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.pricing-toggle-discount {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+}
+
+.pricing-toggle-btn:not(.active) .pricing-toggle-discount {
+    color: var(--primary-color);
+    font-size: 0.65rem;
+}
+
+/* Kartta yıllık indirim rozeti */
+.pricing-yearly-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #fff;
+    padding: 0.25rem 0.65rem;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pricing-card.recommended .pricing-yearly-badge {
+    top: 1.75rem;
+}
+
+.pricing-price-note {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+}
+
 .pricing-cards {
     display: grid;
     grid-template-columns: 1fr;

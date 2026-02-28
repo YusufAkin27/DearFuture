@@ -8,6 +8,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react')) return 'vendor-react';
+            if (id.includes('react-router')) return 'vendor-router';
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 500,
   },
   server: {
     proxy: {

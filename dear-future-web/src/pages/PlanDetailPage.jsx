@@ -61,10 +61,12 @@ const PlanDetailPage = () => {
 
     if (loading) {
         return (
-            <div className="pricing-container">
-                <div className="pricing-loading">
-                    <div className="pricing-spinner" />
-                    <p>Plan yükleniyor...</p>
+            <div className="plan-detail-page">
+                <div className="plan-detail-container">
+                    <div className="plan-detail-loading">
+                        <div className="plan-detail-spinner" />
+                        <p>Plan yükleniyor...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -72,57 +74,61 @@ const PlanDetailPage = () => {
 
     if (error || !plan) {
         return (
-            <div className="pricing-container">
-                <div className="pricing-error">
-                    <p>Plan bulunamadı.</p>
-                    <Link to="/pricing" className="pricing-back-link">Fiyatlandırmaya dön</Link>
+            <div className="plan-detail-page">
+                <div className="plan-detail-container">
+                    <div className="plan-detail-error">
+                        <p>Plan bulunamadı.</p>
+                        <Link to="/pricing" className="plan-detail-back">Fiyatlandırmaya dön</Link>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="pricing-container plan-detail-container">
-            <Link to="/pricing" className="plan-detail-back">
-                <FaArrowLeft aria-hidden /> Fiyatlandırmaya dön
-            </Link>
+        <div className="plan-detail-page">
+            <div className="plan-detail-container">
+                <Link to="/pricing" className="plan-detail-back">
+                    <FaArrowLeft aria-hidden /> Fiyatlandırmaya dön
+                </Link>
 
-            <header className="plan-detail-hero">
-                <div className="plan-detail-hero-inner">
-                    {plan.recommended && <span className="plan-detail-badge">Önerilen</span>}
-                    <span className="plan-detail-code">{plan.id}</span>
-                    <h1 className="plan-detail-title">{plan.name}</h1>
-                    {plan.description && (
-                        <p className="plan-detail-desc">{plan.description}</p>
-                    )}
-                    <div className="plan-detail-price-wrap">
-                        <span className="plan-detail-price-main">
-                            {plan.price === 0 ? 'Ücretsiz' : `${plan.price}`}
-                        </span>
-                        {plan.price > 0 && (
-                            <span className="plan-detail-price-unit">{plan.priceLabel}</span>
+                <header className="plan-detail-hero">
+                    <div className="plan-detail-hero-bg" aria-hidden="true" />
+                    <div className="plan-detail-hero-inner">
+                        {plan.recommended && <span className="plan-detail-badge">Önerilen</span>}
+                        <span className="plan-detail-code">{plan.id}</span>
+                        <h1 className="plan-detail-title">{plan.name}</h1>
+                        {plan.description && (
+                            <p className="plan-detail-desc">{plan.description}</p>
                         )}
+                        <div className="plan-detail-price-wrap">
+                            <span className="plan-detail-price-main">
+                                {plan.price === 0 ? 'Ücretsiz' : `${plan.price}`}
+                            </span>
+                            {plan.price > 0 && (
+                                <span className="plan-detail-price-unit">{plan.priceLabel}</span>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            {plan.features && plan.features.length > 0 && (
-                <section className="plan-detail-block plan-detail-features">
-                    <h2 className="plan-detail-block-title">Neler dahil?</h2>
-                    <ul className="plan-detail-feature-list">
-                        {plan.features.map((feature, i) => (
-                            <li key={i}>
-                                <span className="plan-detail-feature-icon"><FaCheck /></span>
-                                <span>{feature}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            )}
+                {plan.features && plan.features.length > 0 && (
+                    <section className="plan-detail-block plan-detail-features">
+                        <h2 className="plan-detail-block-title">Neler dahil?</h2>
+                        <ul className="plan-detail-feature-list">
+                            {plan.features.map((feature, i) => (
+                                <li key={i}>
+                                    <span className="plan-detail-feature-icon"><FaCheck /></span>
+                                    <span>{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
-            <section className="plan-detail-block plan-detail-limits">
-                <h2 className="plan-detail-block-title">Limitler ve kotalar</h2>
-                <div className="plan-detail-limit-grid">
+                <section className="plan-detail-block plan-detail-limits">
+                    <h2 className="plan-detail-block-title">Limitler ve kotalar</h2>
+                    <div className="plan-detail-limit-grid">
                     <div className="plan-detail-limit-card">
                         <span className="plan-detail-limit-icon"><FaPaperPlane /></span>
                         <div>
@@ -180,15 +186,16 @@ const PlanDetailPage = () => {
                 )}
             </section>
 
-            <div className="plan-detail-actions">
-                <button
-                    type="button"
-                    className={`plan-detail-cta ${plan.recommended ? 'plan-detail-cta--primary' : 'plan-detail-cta--secondary'}`}
-                    onClick={debouncedSelectPlan}
-                    disabled={!plan.active && plan.id !== 'FREE'}
-                >
-                    {plan.id === 'FREE' ? 'Ücretsiz Başla' : plan.active ? 'Planı Seç' : 'Satın alınamıyor'}
-                </button>
+                <div className="plan-detail-actions">
+                    <button
+                        type="button"
+                        className={`plan-detail-cta ${plan.recommended ? 'plan-detail-cta--primary' : 'plan-detail-cta--secondary'}`}
+                        onClick={debouncedSelectPlan}
+                        disabled={!plan.active && plan.id !== 'FREE'}
+                    >
+                        {plan.id === 'FREE' ? 'Ücretsiz Başla' : plan.active ? 'Planı Seç' : 'Satın alınamıyor'}
+                    </button>
+                </div>
             </div>
         </div>
     );

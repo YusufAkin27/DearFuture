@@ -163,14 +163,25 @@ public class PublicMessageServiceImpl implements PublicMessageService {
             }
         }
         String textPreview = null;
+        String previewImageUrl = null;
+        int attachmentCount = 0;
         if (m.getContents() != null) {
-            textPreview = m.getContents().stream()
+            var contents = m.getContents();
+            textPreview = contents.stream()
                     .filter(c -> c.getType() == ContentType.TEXT && c.getTextContent() != null)
                     .map(c -> c.getTextContent().length() > TEXT_PREVIEW_MAX_LENGTH
                             ? c.getTextContent().substring(0, TEXT_PREVIEW_MAX_LENGTH) + "..."
                             : c.getTextContent())
                     .findFirst()
                     .orElse(null);
+            previewImageUrl = contents.stream()
+                    .filter(c -> c.getType() == ContentType.IMAGE && c.getFileUrl() != null && !c.getFileUrl().isBlank())
+                    .map(c -> messageEncryptionService.decryptFileUrlIfNeeded(c.getFileUrl()))
+                    .findFirst()
+                    .orElse(null);
+            attachmentCount = (int) contents.stream()
+                    .filter(c -> c.getType() == ContentType.IMAGE || c.getType() == ContentType.VIDEO || c.getType() == ContentType.FILE || c.getType() == ContentType.AUDIO)
+                    .count();
         }
         return PublicMessageItemResponse.builder()
                 .id(m.getId())
@@ -179,6 +190,8 @@ public class PublicMessageServiceImpl implements PublicMessageService {
                 .sentAt(m.getSentAt())
                 .senderName(senderName)
                 .textPreview(textPreview)
+                .previewImageUrl(previewImageUrl)
+                .attachmentCount(attachmentCount)
                 .starredByMe(starredByMe)
                 .build();
     }

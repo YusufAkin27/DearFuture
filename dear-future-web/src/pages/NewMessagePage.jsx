@@ -450,7 +450,7 @@ const NewMessagePage = () => {
                                 <div className="file-upload-previews file-upload-previews--photos">
                                     {photos.map((p, i) => (
                                         <div key={i} className="file-upload-preview-item">
-                                            <img src={p.url} alt="" className="file-upload-preview-img" />
+                                            <img src={p.url} alt={p.fileName ? `Yüklenen dosya: ${p.fileName}` : 'Dosya önizlemesi'} className="file-upload-preview-img" />
                                             <button
                                                 type="button"
                                                 className="file-upload-delete"

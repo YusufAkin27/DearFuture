@@ -1,4 +1,4 @@
-/* Welcome – Tüm renk ve boyutlar theme.css'ten (--welcome-*, --text-*, --space-*, --btn-*) */
+/* Welcome – Ana sayfaya özel renkler (mor–cyan gradient); diğer değişkenler theme.css'ten */
 
 .welcome-page {
     position: relative;
@@ -10,20 +10,40 @@
     align-items: center;
     justify-content: center;
     background: var(--welcome-bg);
+    /* Ana sayfa için özel gradient ve vurgu */
+    --welcome-hero-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #22d3ee 100%);
+    --welcome-cta-bg: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #22d3ee 100%);
+    --welcome-cta-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    --welcome-cta-shadow-hover: 0 8px 28px rgba(124, 58, 237, 0.5);
+    --welcome-accent: #a78bfa;
+    --welcome-icon-bg: rgba(167, 139, 250, 0.2);
+}
+
+/* Aurora: tüm sayfaya yayılan arka plan (welcome-container dışında, tam viewport) */
+.welcome-page__aurora {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .welcome-page__bg {
     position: absolute;
     inset: 0;
+    z-index: 1;
     background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 210, 252, 0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 168, 204, 0.06), transparent);
+        radial-gradient(ellipse 90% 55% at 50% -15%, rgba(124, 58, 237, 0.12), transparent 50%),
+        radial-gradient(ellipse 70% 45% at 100% 90%, rgba(34, 211, 238, 0.08), transparent 45%),
+        radial-gradient(ellipse 50% 30% at 0% 70%, rgba(167, 139, 250, 0.06), transparent 40%);
     pointer-events: none;
 }
 
 .welcome-container {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,6 +52,7 @@
     min-height: 100dvh;
     width: 100%;
     padding: var(--section-padding-y) var(--section-padding-x);
+    padding-top: max(var(--section-padding-y), env(safe-area-inset-top));
     padding-bottom: max(var(--section-padding-y), env(safe-area-inset-bottom));
     padding-left: max(var(--section-padding-x), env(safe-area-inset-left));
     padding-right: max(var(--section-padding-x), env(safe-area-inset-right));
@@ -47,6 +68,12 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-xl);
+}
+
+@media (max-width: 480px) {
+    .hero-content {
+        gap: var(--space-lg);
+    }
 }
 
 .welcome-badge {
@@ -73,7 +100,7 @@
 }
 
 .welcome-title-accent {
-    background: var(--primary-gradient);
+    background: var(--welcome-hero-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -93,24 +120,34 @@
     justify-content: center;
     gap: var(--space-md);
     min-height: 48px;
+    min-width: 160px;
     padding: var(--btn-padding-y) var(--btn-padding-x);
     padding-left: calc(var(--btn-padding-x) + 2px);
     padding-right: calc(var(--btn-padding-x) + 2px);
-    background: var(--btn-primary-bg);
-    color: var(--btn-primary-color);
+    background: var(--welcome-cta-bg);
+    color: #fff;
     border: none;
     border-radius: var(--radius-button);
     font-family: var(--font-family);
     font-size: var(--btn-font-size);
     font-weight: var(--btn-font-weight);
-    box-shadow: var(--btn-primary-shadow);
+    box-shadow: var(--welcome-cta-shadow);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 480px) {
+    .welcome-cta {
+        min-height: 52px;
+        min-width: 180px;
+        padding: 1rem 2rem;
+    }
 }
 
 .welcome-cta:hover {
     transform: translateY(-2px);
-    box-shadow: var(--btn-primary-shadow-hover);
+    box-shadow: var(--welcome-cta-shadow-hover);
 }
 
 .welcome-cta:active {
@@ -137,6 +174,14 @@
     max-width: 22rem;
 }
 
+@media (max-width: 480px) {
+    .welcome-features {
+        margin-top: var(--space-2xl);
+        gap: var(--space-md);
+        max-width: 100%;
+    }
+}
+
 .welcome-features__item {
     display: flex;
     align-items: center;
@@ -149,11 +194,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: var(--radius-sm);
-    background: rgba(0, 210, 252, 0.15);
-    color: var(--accent-bright);
+    background: var(--welcome-icon-bg);
+    color: var(--welcome-accent);
     flex-shrink: 0;
 }
 
@@ -169,13 +214,22 @@
     }
 }
 
-/* Küçük ekranlarda başlık okunaklı kalsın */
-@media (max-width: 380px) {
+/* Mobil: küçük ekranlarda başlık ve metin okunaklı */
+@media (max-width: 480px) {
     .welcome-title {
-        font-size: clamp(1.5rem, 8vw, 2rem);
+        font-size: clamp(1.5rem, 7.5vw, 2.25rem);
+        line-height: 1.25;
     }
 
     .welcome-message {
         font-size: var(--text-body-size);
+        line-height: 1.6;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .welcome-title {
+        font-size: clamp(1.35rem, 8vw, 1.9rem);
     }
 }

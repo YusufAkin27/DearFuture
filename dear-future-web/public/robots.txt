@@ -1,0 +1,15 @@
+# Dear Future - robots.txt
+# Google ve diğer arama motorlarının hangi sayfaları tarayıp taramayacağını belirler.
+
+User-agent: *
+Allow: /
+
+Disallow: /profile
+Disallow: /settings
+Disallow: /new
+Disallow: /change-subscription
+Disallow: /api/
+Disallow: /oauth2/
+Disallow: /auth/callback
+
+Sitemap: https://dearfuture.com.tr/sitemap.xml

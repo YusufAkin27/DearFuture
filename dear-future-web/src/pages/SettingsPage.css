@@ -33,6 +33,19 @@
     line-height: var(--line-height-body);
 }
 
+.settings-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+.settings-back-link:hover {
+    text-decoration: underline;
+}
+
 .settings-messages-wrap {
     width: 100%;
     margin-bottom: var(--space-2xl);
@@ -367,6 +380,44 @@
 
 .theme-dark .settings-card h2 {
     border-bottom-color: var(--border-subtle);
+}
+
+.settings-link-card {
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.settings-link-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.theme-dark .settings-link-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.settings-link-card-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: var(--space-sm);
+}
+.settings-link-card h2 {
+    margin-bottom: var(--space-sm);
+}
+.settings-link-card-desc {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+.settings-link-card-arrow {
+    margin-top: auto;
+    padding-top: var(--space-md);
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+.settings-link-card-danger .settings-link-card-icon {
+    color: #f59e0b;
+}
+.settings-link-card-danger:hover {
+    border-color: rgba(245, 158, 11, 0.5);
 }
 
 .form-group {

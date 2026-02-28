@@ -1,8 +1,43 @@
-/* Plan detay – güncel tasarım */
+/* Plan detay – modern, şık tasarım */
+
+.plan-detail-loading,
+.plan-detail-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.plan-detail-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(0, 168, 204, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: plan-detail-spin 0.8s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes plan-detail-spin {
+    to { transform: rotate(360deg); }
+}
+
+.plan-detail-error p {
+    margin: 0 0 1rem 0;
+}
+
+.plan-detail-page {
+    min-height: 100%;
+    background: var(--background-color);
+}
+
 .plan-detail-container {
-    max-width: 560px;
+    max-width: 620px;
     margin: 0 auto;
-    padding: 1.5rem 1rem 4rem;
+    padding: 1.5rem var(--section-padding-x) 4rem;
 }
 
 .plan-detail-back {
@@ -10,78 +45,101 @@
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-    padding: 0.4rem 0;
+    padding: 0.5rem 0.75rem 0.5rem 0;
     color: var(--text-secondary);
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     text-decoration: none;
-    transition: color 0.2s;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
 }
 
 .plan-detail-back:hover {
     color: var(--primary-color);
+    background: var(--link-hover-bg);
 }
 
 .plan-detail-back svg {
     font-size: 0.85rem;
+    transition: transform 0.2s;
 }
 
-/* Hero alanı */
+.plan-detail-back:hover svg {
+    transform: translateX(-3px);
+}
+
+/* Hero – gradient + hafif cam efekti */
 .plan-detail-hero {
-    background: linear-gradient(160deg, rgba(0, 168, 204, 0.08) 0%, rgba(82, 39, 255, 0.04) 100%);
-    border: 1px solid rgba(0, 168, 204, 0.12);
-    border-radius: 20px;
-    padding: 2rem 1.75rem;
+    position: relative;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
     margin-bottom: 2rem;
     text-align: center;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .theme-dark .plan-detail-hero {
-    background: linear-gradient(160deg, rgba(0, 168, 204, 0.12) 0%, rgba(82, 39, 255, 0.06) 100%);
-    border-color: rgba(0, 168, 204, 0.2);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+}
+
+.plan-detail-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, rgba(124, 58, 237, 0.06) 0%, rgba(0, 168, 204, 0.05) 50%, rgba(34, 211, 238, 0.04) 100%);
+    pointer-events: none;
+}
+
+.theme-dark .plan-detail-hero-bg {
+    background: linear-gradient(145deg, rgba(124, 58, 237, 0.12) 0%, rgba(0, 168, 204, 0.08) 50%, rgba(34, 211, 238, 0.05) 100%);
 }
 
 .plan-detail-hero-inner {
     position: relative;
+    z-index: 1;
 }
 
 .plan-detail-badge {
     display: inline-block;
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
     color: #fff;
-    padding: 0.35rem 1rem;
-    border-radius: 99px;
-    font-size: 0.75rem;
+    padding: 0.4rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
 }
 
 .plan-detail-code {
     display: inline-block;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: var(--text-muted);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
 }
 
 .plan-detail-title {
-    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-size: clamp(1.85rem, 5vw, 2.5rem);
     font-weight: 800;
     color: var(--text-main);
     margin: 0 0 0.5rem 0;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
 }
 
 .plan-detail-desc {
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
     line-height: 1.6;
-    margin: 0 0 1.5rem 0;
-    max-width: 400px;
+    margin: 0 0 1.75rem 0;
+    max-width: 420px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -90,43 +148,66 @@
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
 }
 
 .plan-detail-price-main {
-    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
     font-weight: 800;
-    color: var(--text-main);
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.theme-dark .plan-detail-price-main {
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.85) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .plan-detail-price-unit {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
 
 /* Blok başlıkları */
 .plan-detail-block {
-    margin-bottom: 1.75rem;
+    margin-bottom: 2rem;
 }
 
 .plan-detail-block-title {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-main);
-    margin: 0 0 1rem 0;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid rgba(0, 168, 204, 0.2);
+    margin: 0 0 1.25rem 0;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid rgba(0, 168, 204, 0.3);
     display: inline-block;
 }
 
 .theme-dark .plan-detail-block-title {
-    border-bottom-color: rgba(0, 168, 204, 0.35);
+    border-bottom-color: rgba(0, 168, 204, 0.4);
 }
 
-/* Özellik listesi */
+/* Özellik listesi – kart içinde */
+.plan-detail-features {
+    background: var(--surface-color);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-dark .plan-detail-features {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
 .plan-detail-feature-list {
     list-style: none;
     padding: 0;
@@ -136,40 +217,42 @@
 .plan-detail-feature-list li {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0;
-    font-size: 0.98rem;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    font-size: 1rem;
     color: var(--text-body);
-    line-height: 1.4;
-    border-bottom: 1px solid rgba(20, 40, 80, 0.06);
+    line-height: 1.45;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: padding-left 0.2s;
+}
+
+.plan-detail-feature-list li:hover {
+    padding-left: 4px;
 }
 
 .plan-detail-feature-list li:last-child {
     border-bottom: none;
-}
-
-.theme-dark .plan-detail-feature-list li {
-    border-bottom-color: rgba(255, 255, 255, 0.06);
+    padding-bottom: 0;
 }
 
 .plan-detail-feature-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: rgba(0, 168, 204, 0.15);
+    background: linear-gradient(135deg, rgba(0, 168, 204, 0.18) 0%, rgba(124, 58, 237, 0.12) 100%);
     color: var(--primary-color);
     font-size: 0.7rem;
     flex-shrink: 0;
 }
 
-/* Limit kartları */
+/* Limit kartları – modern grid */
 .plan-detail-limit-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
 @media (min-width: 480px) {
@@ -181,43 +264,45 @@
 .plan-detail-limit-card {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem 1.15rem;
+    gap: 1.1rem;
+    padding: 1.25rem 1.35rem;
     background: var(--surface-color);
-    border: 1px solid rgba(20, 40, 80, 0.08);
-    border-radius: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-subtle);
+    border-radius: 18px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .plan-detail-limit-card:hover {
-    border-color: rgba(0, 168, 204, 0.2);
-    box-shadow: 0 4px 12px rgba(20, 40, 80, 0.06);
+    border-color: rgba(0, 168, 204, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
 }
 
 .theme-dark .plan-detail-limit-card {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.06);
 }
 
 .theme-dark .plan-detail-limit-card:hover {
     border-color: rgba(0, 168, 204, 0.3);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
 }
 
 .plan-detail-limit-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     background: rgba(20, 40, 80, 0.06);
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     flex-shrink: 0;
     transition: background 0.2s, color 0.2s;
 }
 
 .plan-detail-limit-icon.enabled {
-    background: rgba(0, 168, 204, 0.12);
+    background: linear-gradient(135deg, rgba(0, 168, 204, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
     color: var(--primary-color);
 }
 
@@ -226,78 +311,72 @@
 }
 
 .theme-dark .plan-detail-limit-icon.enabled {
-    background: rgba(0, 168, 204, 0.2);
+    background: linear-gradient(135deg, rgba(0, 168, 204, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
 }
 
 .plan-detail-limit-card > div {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.25rem;
     min-width: 0;
 }
 
 .plan-detail-limit-label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
 }
 
 .plan-detail-limit-value {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--text-main);
 }
 
 .plan-detail-inactive-note {
-    margin: 1rem 0 0;
-    padding: 0.75rem 1rem;
+    margin: 1.25rem 0 0;
+    padding: 1rem 1.25rem;
     font-size: 0.9rem;
     color: var(--text-muted);
-    background: rgba(20, 40, 80, 0.04);
-    border-radius: 10px;
+    background: var(--surface-color);
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
 }
 
-.theme-dark .plan-detail-inactive-note {
-    background: rgba(255, 255, 255, 0.04);
-}
-
-/* CTA */
+/* CTA – büyük, belirgin */
 .plan-detail-actions {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(20, 40, 80, 0.08);
-}
-
-.theme-dark .plan-detail-actions {
-    border-top-color: rgba(255, 255, 255, 0.08);
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .plan-detail-cta {
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
     margin: 0 auto;
     display: block;
-    padding: 1rem 1.5rem;
-    font-size: 1.05rem;
+    padding: 1.1rem 1.75rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    border-radius: 14px;
+    border-radius: 16px;
     border: none;
     cursor: pointer;
     font-family: inherit;
     transition: transform 0.2s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .plan-detail-cta--primary {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #22d3ee 100%);
     color: #fff;
-    box-shadow: 0 4px 16px rgba(0, 168, 204, 0.35);
+    box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4);
 }
 
 .plan-detail-cta--primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 168, 204, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.45);
 }
 
 .plan-detail-cta--secondary {
@@ -308,21 +387,32 @@
 
 .plan-detail-cta--secondary:hover:not(:disabled) {
     background: rgba(0, 168, 204, 0.08);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 168, 204, 0.15);
 }
 
 .plan-detail-cta:disabled {
-    opacity: 0.65;
+    opacity: 0.6;
     cursor: not-allowed;
     transform: none;
 }
 
 @media (max-width: 480px) {
+    .plan-detail-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
     .plan-detail-hero {
-        padding: 1.5rem 1.25rem;
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
     }
 
     .plan-detail-limit-grid {
         grid-template-columns: 1fr;
+    }
+
+    .plan-detail-cta {
+        max-width: none;
     }
 }

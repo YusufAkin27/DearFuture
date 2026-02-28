@@ -23,6 +23,10 @@ public class PublicMessageItemResponse {
     private String senderName;
     /** Metin önizlemesi (ilk metin içeriği, en fazla ~200 karakter) */
     private String textPreview;
+    /** İlk fotoğraf/medya önizleme URL'i (varsa kartta gösterilir) */
+    private String previewImageUrl;
+    /** Ekli medya sayısı (fotoğraf, video, dosya) */
+    private int attachmentCount;
     /** Giriş yapan kullanıcı bu mesajı yıldızlamış mı */
     private Boolean starredByMe;
 }

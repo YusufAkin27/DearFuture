@@ -67,7 +67,7 @@ const BlogPage = () => {
                     {POSTS.map((post) => (
                         <article key={post.id} className="blog-card">
                             <div className="blog-image-wrap">
-                                <img src={post.image} alt="" className="blog-image" loading="lazy" />
+                                <img src={post.image} alt={post.title} className="blog-image" loading="lazy" />
                             </div>
                             <div className="blog-content">
                                 <div className="blog-meta">
@@ -110,7 +110,7 @@ const BlogPage = () => {
                             <FaTimes />
                         </button>
                         <div className="blog-modal-image-wrap">
-                            <img src={modalPost.image} alt="" className="blog-modal-image" />
+                            <img src={modalPost.image} alt={modalPost.title} className="blog-modal-image" />
                         </div>
                         <div className="blog-modal-content">
                             <div className="blog-modal-meta">

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaStar, FaRegStar, FaHeart } from 'react-icons/fa';
 import { getPublicMessages, getMyStarredMessages, starPublicMessage, unstarPublicMessage } from '../api/message';
@@ -9,16 +9,17 @@ import './PublicMessagesPage.css';
 const PAGE_SIZE = 12;
 
 const PublicMessagesPage = () => {
-    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get('tab');
     const [activeTab, setActiveTab] = useState(tabParam === 'starred' ? 'starred' : 'public');
-    const [publicPage, setPublicPage] = useState(0);
     const [publicData, setPublicData] = useState({ content: [], totalPages: 0, totalElements: 0 });
-    const [starredList, setStarredList] = useState([]);
+    const [nextPage, setNextPage] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [starredList, setStarredList] = useState([]);
     const [starringId, setStarringId] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const sentinelRef = useRef(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -29,33 +30,46 @@ const PublicMessagesPage = () => {
         setActiveTab(tabParam === 'starred' ? 'starred' : 'public');
     }, [tabParam]);
 
-    useEffect(() => {
-        if (activeTab === 'public') {
-            loadPublicPage(publicPage);
-        } else {
-            loadStarred();
-        }
-    }, [activeTab, publicPage]);
-
-    const loadPublicPage = async (page) => {
+    const loadFirstPage = useCallback(async () => {
         setLoading(true);
+        setNextPage(0);
         try {
-            const res = await getPublicMessages(page, PAGE_SIZE);
+            const res = await getPublicMessages(0, PAGE_SIZE);
             const data = res.data;
             setPublicData({
                 content: data.content || [],
                 totalPages: data.totalPages ?? 0,
                 totalElements: data.totalElements ?? 0,
             });
+            setNextPage(1);
         } catch (err) {
             toast.error('Mesajlar yüklenemedi.');
             setPublicData({ content: [], totalPages: 0, totalElements: 0 });
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const loadStarred = async () => {
+    const loadMore = useCallback(async () => {
+        if (loadingMore || nextPage >= publicData.totalPages) return;
+        setLoadingMore(true);
+        try {
+            const res = await getPublicMessages(nextPage, PAGE_SIZE);
+            const data = res.data;
+            const newContent = data.content || [];
+            setPublicData((prev) => ({
+                ...prev,
+                content: [...prev.content, ...newContent],
+            }));
+            setNextPage((p) => p + 1);
+        } catch (err) {
+            toast.error('Daha fazla mesaj yüklenemedi.');
+        } finally {
+            setLoadingMore(false);
+        }
+    }, [loadingMore, nextPage, publicData.totalPages]);
+
+    const loadStarred = useCallback(async () => {
         setLoading(true);
         try {
             const res = await getMyStarredMessages();
@@ -70,7 +84,31 @@ const PublicMessagesPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === 'public') {
+            loadFirstPage();
+        } else {
+            loadStarred();
+        }
+    }, [activeTab, loadFirstPage, loadStarred]);
+
+    useEffect(() => {
+        if (activeTab !== 'public' || loading || loadingMore || nextPage >= publicData.totalPages || publicData.totalPages === 0) {
+            return;
+        }
+        const el = sentinelRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0]?.isIntersecting) loadMore();
+            },
+            { rootMargin: '200px', threshold: 0.1 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [activeTab, loading, loadingMore, nextPage, publicData.totalPages, loadMore]);
 
     const handleStar = async (msg) => {
         if (!isLoggedIn) {
@@ -88,7 +126,12 @@ const PublicMessagesPage = () => {
                 toast.success('Mesaj yıldızlandı.');
             }
             if (activeTab === 'public') {
-                loadPublicPage(publicPage);
+                setPublicData((prev) => ({
+                    ...prev,
+                    content: prev.content.map((m) =>
+                        m.id === msg.id ? { ...m, starredByMe: !starred } : m
+                    ),
+                }));
             } else {
                 loadStarred();
             }
@@ -113,14 +156,38 @@ const PublicMessagesPage = () => {
         });
     };
 
+    const previewImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        const base = (import.meta.env.VITE_BACKEND_URL || 'https://api.dearfuture.info').replace(/\/$/, '');
+        return url.startsWith('/') ? base + url : `${base}/${url}`;
+    };
+
     const renderCard = (msg) => (
         <div key={msg.id} className="public-msg-card">
-            <div className="public-msg-card-header">
-                <span className="public-msg-sender">{msg.senderName || 'Anonim'}</span>
-                <span className="public-msg-date">{formatDate(msg.sentAt)}</span>
-            </div>
-            <div className="public-msg-preview">
-                {msg.textPreview || '—'}
+            {msg.previewImageUrl && (
+                <div className="public-msg-card-media">
+                    <img
+                        src={previewImageUrl(msg.previewImageUrl)}
+                        alt=""
+                        className="public-msg-preview-img"
+                        loading="lazy"
+                    />
+                    {msg.attachmentCount > 1 && (
+                        <span className="public-msg-media-badge" title={`${msg.attachmentCount} ek`}>
+                            +{msg.attachmentCount}
+                        </span>
+                    )}
+                </div>
+            )}
+            <div className="public-msg-card-body">
+                <div className="public-msg-card-header">
+                    <span className="public-msg-sender">{msg.senderName || 'Anonim'}</span>
+                    <span className="public-msg-date">{formatDate(msg.sentAt)}</span>
+                </div>
+                <div className="public-msg-preview">
+                    {msg.textPreview || (msg.previewImageUrl ? 'Fotoğraflı mesaj' : '—')}
+                </div>
             </div>
             <div className="public-msg-actions">
                 <button
@@ -202,27 +269,20 @@ const PublicMessagesPage = () => {
                             publicData.content.map(renderCard)
                         )}
                     </div>
-                    {publicData.totalPages > 1 && (
-                        <div className="public-messages-pagination">
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={publicPage === 0}
-                                onClick={() => setPublicPage((p) => Math.max(0, p - 1))}
-                            >
-                                Önceki
-                            </button>
-                            <span className="pagination-info">
-                                Sayfa {publicPage + 1} / {publicData.totalPages} (toplam {publicData.totalElements} mesaj)
-                            </span>
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={publicPage >= publicData.totalPages - 1}
-                                onClick={() => setPublicPage((p) => p + 1)}
-                            >
-                                Sonraki
-                            </button>
+                    {publicData.content.length > 0 && (
+                        <div ref={sentinelRef} className="public-messages-sentinel" aria-hidden="true">
+                            {loadingMore && (
+                                <div className="public-messages-load-more">
+                                    <div className="public-messages-spinner public-messages-spinner--small" />
+                                    <span>Daha fazla yükleniyor...</span>
+                                </div>
+                            )}
+                            {!loadingMore && publicData.content.length < publicData.totalElements && (
+                                <p className="public-messages-scroll-hint">Aşağı kaydırarak daha fazla mesaj görüntüleyebilirsiniz.</p>
+                            )}
+                            {!loadingMore && publicData.content.length >= publicData.totalElements && publicData.totalElements > 0 && (
+                                <p className="public-messages-count">Toplam {publicData.totalElements} mesaj</p>
+                            )}
                         </div>
                     )}
                 </>

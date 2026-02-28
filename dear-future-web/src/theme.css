@@ -16,7 +16,7 @@
   /* Arka plan */
   --background-color: #f7f9fb;
   --surface-color: #ffffff;
-  --welcome-bg: linear-gradient(180deg, #050508 0%, #0f172a 50%, #0c1222 100%);
+  --welcome-bg: linear-gradient(165deg, #0c0a14 0%, #12101c 30%, #16142a 60%, #0f0e18 100%);
 
   /* Metin */
   --text-main: #142850;
@@ -90,11 +90,11 @@
   --danger-text: #dc2626;
   --danger-hover-bg: rgba(239, 68, 68, 0.18);
 
-  /* Welcome özel (light’ta da aynı koyu hero kullanılabilir) */
+  /* Welcome özel (light’ta da aynı koyu hero) */
   --welcome-title-color: #ffffff;
-  --welcome-message-color: rgba(255, 255, 255, 0.78);
-  --welcome-badge-bg: rgba(255, 255, 255, 0.08);
-  --welcome-badge-border: rgba(255, 255, 255, 0.12);
+  --welcome-message-color: rgba(255, 255, 255, 0.82);
+  --welcome-badge-bg: rgba(255, 255, 255, 0.1);
+  --welcome-badge-border: rgba(255, 255, 255, 0.14);
   --welcome-card-bg: rgba(255, 255, 255, 0.06);
   --welcome-card-border: rgba(255, 255, 255, 0.1);
 }
@@ -110,7 +110,7 @@
 
   --background-color: #0a0e14;
   --surface-color: #151b24;
-  --welcome-bg: linear-gradient(180deg, #050508 0%, #0b0f18 35%, #0f172a 70%, #0a0e14 100%);
+  --welcome-bg: linear-gradient(165deg, #0c0a14 0%, #12101c 30%, #16142a 60%, #0f0e18 100%);
 
   --text-main: #e8ecf1;
   --text-body: #c5cdd8;
@@ -180,9 +180,9 @@
   --danger-hover-bg: rgba(239, 68, 68, 0.2);
 
   --welcome-title-color: #ffffff;
-  --welcome-message-color: rgba(255, 255, 255, 0.78);
-  --welcome-badge-bg: rgba(255, 255, 255, 0.08);
-  --welcome-badge-border: rgba(255, 255, 255, 0.12);
+  --welcome-message-color: rgba(255, 255, 255, 0.85);
+  --welcome-badge-bg: rgba(255, 255, 255, 0.1);
+  --welcome-badge-border: rgba(255, 255, 255, 0.14);
   --welcome-card-bg: rgba(255, 255, 255, 0.05);
   --welcome-card-border: rgba(255, 255, 255, 0.1);
 }
